@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.taskAllot.dao.AllotPersonConfigMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.AllotPersonConfig">
+        <result column="S_REPAIRPERSONALLOTID" property="repairPersonAllotId" />
+        <result column="S_DEPTCODE" property="deptCode" />
+        <result column="S_DEPTNAME" property="deptName" />
+        <result column="S_BRANCHCODE" property="branchCode" />
+        <result column="S_BRANCHNAME" property="branchName" />
+        <result column="S_WORKCODE" property="workCode" />
+        <result column="S_WORKNAME" property="workName" />
+        <result column="C_PARTTIME" property="partTime" />
+        <result column="C_FLAG" property="flag" />
+        <result column="S_UNITCODE" property="unitCode" />
+        <result column="S_SORT" property="sort" />
+        <result column="D_CREATETIME" property="createTime" />
+        <result column="S_CREATEUSERCODE" property="createUserCode" />
+        <result column="S_CREATEUSERNAME" property="createUserName" />
+        <result column="D_DELTIME" property="delTime" />
+        <result column="S_DELUSERCODE" property="delUserCode" />
+        <result column="S_DELUSERNAME" property="delUserName" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_REPAIRPERSONALLOTID, S_DEPTCODE, S_DEPTNAME, S_BRANCHCODE, S_BRANCHNAME, S_WORKCODE, S_WORKNAME, C_PARTTIME, C_FLAG, S_UNITCODE, S_SORT, D_CREATETIME, S_CREATEUSERCODE, S_CREATEUSERNAME, D_DELTIME, S_DELUSERCODE, S_DELUSERNAME
+    </sql>
+    <update id="updAllotPersonConfig" parameterType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.AllotPersonConfig">
+        update XZY_C_ALLOTPERSON_CONFIG set S_SORT=#{sort} where S_REPAIRPERSONALLOTID=#{repairPersonAllotId}
+    </update>
+</mapper>

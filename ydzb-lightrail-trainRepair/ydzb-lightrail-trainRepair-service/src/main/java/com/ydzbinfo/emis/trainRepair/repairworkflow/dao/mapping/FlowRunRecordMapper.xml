@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.repairworkflow.dao.FlowRunRecordMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.repairworkflow.querymodel.FlowRunRecord">
+        <id column="S_ID" property="id" />
+        <result column="S_FLOWRUNID" property="flowRunId" />
+        <result column="S_TYPE" property="type" />
+        <result column="S_REMARK" property="remark" />
+        <result column="D_RECORDTIME" property="recordTime" />
+        <result column="S_WORKERID" property="workerId" />
+        <result column="S_WORKERNAME" property="workerName" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_ID, S_FLOWRUNID, S_TYPE, S_REMARK, D_RECORDTIME, S_WORKERID, S_WORKERNAME
+    </sql>
+    <select id="getFlowRunRecordsByForceEnd" resultMap="BaseResultMap">
+        select * from XZY_M_FLOWRUNRECORD
+            where S_FLOWRUNID IN(
+                    select S_ID from XZY_M_FLOWRUN f where 1=1
+                    <if test="dayPlanId!=null and dayPlanId !=''">
+                        and  f.S_DAYPLANID=#{dayPlanId}
+                    </if>
+                    <if test="unitCode!=null and unitCode!=''">
+                        and f.S_UNITCODE=#{unitCode}
+                    </if>
+                     <if test="startDate!=null and endDate!=null">
+                    and f.D_STARTTIME &gt; #{startDate} and f.D_STARTTIME &lt; #{endDate}
+                    </if>
+                    )
+        <if test="flowRunId!=null and flowRunId!=''">
+            and S_FLOWRUNID=#{flowRunId}
+        </if>
+
+    </select>
+
+</mapper>

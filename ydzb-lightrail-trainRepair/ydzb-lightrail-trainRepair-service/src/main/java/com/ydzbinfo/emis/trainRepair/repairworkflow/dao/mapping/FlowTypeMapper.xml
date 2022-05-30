@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.repairworkflow.dao.FlowTypeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.repairworkflow.querymodel.FlowType">
+        <id column="S_CODE" property="code"/>
+        <result column="S_NAME" property="name"/>
+        <result column="C_DELETED" property="deleted"/>
+        <result column="D_DELETETIME" property="deleteTime"/>
+        <result property="sort" column="I_SORT"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_CODE, S_NAME, C_DELETED, D_DELETETIME
+    </sql>
+
+    <resultMap id="FlowTypeCommonInfoMap"
+               type="com.ydzbinfo.emis.trainRepair.repairworkflow.querymodel.extend.FlowTypeWithComments">
+        <id column="S_CODE" property="code"/>
+        <result column="S_NAME" property="name"/>
+        <result column="C_DELETED" property="deleted"/>
+        <result column="D_DELETETIME" property="deleteTime"/>
+        <result property="sort" column="I_SORT"/>
+        <collection property="flowTypeComments"
+                    ofType="com.ydzbinfo.emis.trainRepair.repairworkflow.querymodel.FlowTypeComment">
+            <id column="S_ID" property="id" />
+            <result column="S_FLOWTYPECODE" property="flowTypeCode" />
+            <result column="S_COMMENT" property="comment" />
+            <result column="S_UNITCODE" property="unitCode" />
+        </collection>
+    </resultMap>
+    <select id="getFlowTypeInfos" resultMap="BaseResultMap" >
+        select f.S_CODE, f.S_NAME, f.C_DELETED, f.D_DELETETIME,f.I_SORT
+        from
+        XZY_B_FLOWTYPE f
+        ORDER BY f.I_SORT
+    </select>
+
+    <select id="getFlowTypeWithComment"  resultMap="FlowTypeCommonInfoMap" parameterType="java.lang.String">
+        select * from XZY_B_FLOWTYPE f
+        LEFT JOIN XZY_B_FLOWTYPECOMMENT bf on f.S_CODE=BF.S_FLOWTYPECODE
+        where 1=1
+        <if test="unitCode!=null and unitCode!=''">
+            and (bf.S_UNITCODE = #{unitCode} or bf.S_UNITCODE is NULL)
+        </if>
+        <if test="codeList.size() > 0">
+           and f.S_CODE in
+            <foreach collection="codeList" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        ORDER BY bf.S_UNITCODE,f.I_SORT
+    </select>
+</mapper>

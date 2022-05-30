@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hyperlink</title>
+</head>
+<body>
+<div class="hyperlink-dialog">
+    <div class="hyperlink-dialog-text-info">
+        <div class="hyperlink-dialog-display">
+            <div>
+                <label for="hyperlinkTextDisplay" data-bind="text: res.hyperlinkDialog.textDisplay">Text to display:</label>
+            </div>
+            <input id="hyperlinkTextDisplay" type="text"/>
+        </div>
+        <div class="hyperlink-dialog-screen-tip">
+            <div>
+                <label for="hyperlinkScreenTip" data-bind="text: res.hyperlinkDialog.screenTip">ScreenTip:</label>
+            </div>
+            <input id="hyperlinkScreenTip" type="text"/>
+        </div>
+        <div>
+            <div class="hyperlink-dialog-drawUnderline">
+                <div class="hyperlink-dialog-draw-underline-label">
+                    <label for="hyperlinkDrawUnderline" data-bind="text: res.hyperlinkDialog.drawUnderline">Draw underline</label>
+                </div>
+                <div class="hyperlink-dialog-draw-underline-input">
+                    <input id="hyperlinkDrawUnderline" type="checkbox">
+                </div>
+            </div>
+            <div class="hyperlink-dialog-target">
+                <div class="hyperlink-dialog-target-label">
+                    <label for="hyperlinkTarget" data-bind="text: res.hyperlinkDialog.target">Target:</label>
+                </div>
+                <select id="hyperlinkTarget"
+                        name="hyperlinkTarget">
+                    <option value="0" data-bind="text: res.hyperlinkDialog.blank">blank</option>
+                    <option value="1" data-bind="text: res.hyperlinkDialog.self">self</option>
+                    <option value="2" data-bind="text: res.hyperlinkDialog.parent">parent</option>
+                    <option value="3" data-bind="text: res.hyperlinkDialog.top">top</option>
+                </select>
+            </div>
+        </div>
+        <div>
+            <div class="hyperlink-dialog-link-color">
+                <label for="hyperlink-dialog-link-color-selector" data-bind="text: res.hyperlinkDialog.linkColor">Link Color:</label>
+                <div id="hyperlink-dialog-link-color-selector">
+                    <span>
+                                <span class="link-color-span"></span>
+                            </span>
+                    <div class="link-color-container">
+                    </div>
+                </div>
+            </div>
+            <div class="hyperlink-dialog-visited-link-color">
+                <label for="hyperlink-dialog-visited-link-color-selector" data-bind="text: res.hyperlinkDialog.visitedLinkColor">Visited link Color:</label>
+                <div id="hyperlink-dialog-visited-link-color-selector">
+                    <span>
+                                <span class="visited-link-color-span"></span>
+                            </span>
+                    <div class="visited-link-color-container">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <fieldset class="hyperlink-dialog-link-info">
+        <legend align="center" class="hyperlink-dialog-link-type">
+            <ul>
+                <li>
+                    <a href="#hyperlinkWebPageDetails" id="hyperlinkWebPageDetailsLink">
+                        <button class="hyperlink-web-page" data-bind="text: res.hyperlinkDialog.existingFileOrWebPage">
+                            Web Page or File
+                        </button>
+                    </a>
+                </li><li>
+                    <a href="#hyperlinkDocumentDetails" id="hyperlinkDocumentDetailsLink">
+                        <button class="hyperlink-document" data-bind="text: res.hyperlinkDialog.placeInThisDocument">
+                            This Document
+                        </button>
+                    </a>
+                </li><li>
+                    <a href="#hyperlinkEmailDetails" id="hyperlinkEmailDetailsLink">
+                        <button class="hyperlink-email" data-bind="text: res.hyperlinkDialog.emailAddress">
+                            Email Address
+                        </button>
+                    </a>
+                </li>
+            </ul>
+        </legend>
+        <div>
+            <div id="hyperlinkWebPageDetails" class="hyperlink-web-page-details">
+                <div>
+                    <span data-bind="text: res.hyperlinkDialog.linkToTheWebPage">Link to an existing file path or web page.</span>
+                </div>
+                <div>
+                    <label for="hyperlinkAddress" data-bind="text: res.hyperlinkDialog.address">Address:</label>
+                    <input id="hyperlinkAddress" type="text">
+                </div>
+            </div>
+            <div id="hyperlinkDocumentDetails" class="hyperlink-document-details">
+                    <div class="hyperlink-document-details-cell-reference">
+                        <label for="hyperlinkCellReference" data-bind="text: res.hyperlinkDialog.typeCellReference">Type the cell reference:</label>
+                        <input id="hyperlinkCellReference" type="text">
+                    </div>
+                    <span data-bind="text: res.hyperlinkDialog.selectPlaceInDocument">Or select a place in this document:</span>
+                    <div class="hyperlink-document-details-place">
+                        <ul>
+                            <li>
+                                <a href="#hyperlinkSheetName" data-bind="text: res.hyperlinkDialog.cellReference">Cell Reference</a>
+                                <div id="hyperlinkSheetName">
+                                </div>
+                            </li>
+                            <li>
+                                <a href="#hyperlinkDefinedNames" data-bind="text: res.hyperlinkDialog.definedNames">Defined Names</a>
+                                <div id="hyperlinkDefinedNames">
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            <div id="hyperlinkEmailDetails" class="hyperlink-email-details">
+                <div>
+                    <label for="hyperlinkEmailAddress" data-bind="text: res.hyperlinkDialog.emailAddressString">E-mail address:</label>
+                    <input id="hyperlinkEmailAddress" type="text">
+                </div>
+                <div>
+                    <label for="hyperlinkEmailSubject" data-bind="text: res.hyperlinkDialog.emailSubject">Subject</label>
+                    <input id="hyperlinkEmailSubject" type="text">
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</div>
+</body>
+</html>

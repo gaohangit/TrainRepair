@@ -1,0 +1,24 @@
+.bilConfigContainer {
+  color: #212121;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.bilConfigContainer>div {
+  margin-right: 30px;
+  display: flex;
+  align-items: center;
+}
+
+.bilConfigContainer>div:last-child {
+  margin-right: 0px;
+}
+
+.bilConfigContainer>div.btnGroup>* {
+  margin-right: 10px;
+}
+
+.bilConfigContainer>div.btnGroup>*:last-child {
+  margin-right: 0px;
+}

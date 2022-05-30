@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.workProcess.dao.ProcessDeptMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.workprocess.querymodel.ProcessDept">
+        <id column="S_PROCESSDEPTID" property="processDeptId" />
+        <result column="S_DEPTCODE" property="deptCode" />
+        <result column="S_DEPTNAME" property="deptName" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_PROCESSDEPTID, S_DEPTCODE, S_DEPTNAME
+    </sql>
+
+</mapper>

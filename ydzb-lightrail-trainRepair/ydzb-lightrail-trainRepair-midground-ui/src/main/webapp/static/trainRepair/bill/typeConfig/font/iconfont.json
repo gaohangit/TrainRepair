@@ -1,0 +1,16 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "9874562",
+      "name": "KHCFDC_作废",
+      "font_class": "zuofei",
+      "unicode": "e6e6",
+      "unicode_decimal": 59110
+    }
+  ]
+}

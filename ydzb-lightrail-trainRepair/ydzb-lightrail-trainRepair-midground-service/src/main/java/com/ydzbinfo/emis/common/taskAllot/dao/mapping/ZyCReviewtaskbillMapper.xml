@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.common.taskAllot.dao.ZyCReviewtaskbillMapper">
+
+    <!--通用查询映射结果-->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.ZyCReviewtaskbill">
+        <id column="S_ID" property="id"/>
+        <result column="S_CHECKITEMID" property="checkitemid"/>
+        <result column="S_TYPE" property="type"/>
+        <result column="S_BILLTYPE" property="billtype"/>
+        <result column="S_CREATEUSERID" property="createuserid"/>
+        <result column="S_CREATEUSERNAME" property="createusername"/>
+        <result column="D_CREATETIME" property="createtime"/>
+        <result column="D_DELETETIME" property="deletetime"/>
+        <result column="C_USEFLAG" property="useflag"/>
+        <result column="S_DELETEUSERID" property="deleteuserid"/>
+        <result column="S_DELETEUSERNAME" property="deleteusername"/>
+        <result column="S_CHECKITEMNAME" property="checkitemname"/>
+    </resultMap>
+
+    <select id="selectByFlag"  resultMap="BaseResultMap">
+          select s_id,
+               s_checkitemid,
+               s_type,
+               s_billtype,
+               s_createuserid,
+               s_createusername,
+               d_createtime,
+               d_deletetime,
+               c_useflag,
+               s_deleteuserid,
+               s_deleteusername,
+               s_checkitemname
+          from zy_c_reviewtaskbill where c_useflag = #{flag}
+    </select>
+
+</mapper>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.bill.fillback.dao.ChecklistSummaryMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ${tableAlias}S_CHECKLISTSUMMARYID as "${columnPrefix}checklistSummaryId",
+        ${tableAlias}S_DAYPLANID as "${columnPrefix}dayPlanId",
+        ${tableAlias}S_TRAINSETID as "${columnPrefix}trainSetId",
+        ${tableAlias}S_DEPTCODE as "${columnPrefix}deptCode",
+        ${tableAlias}S_DEPTNAME as "${columnPrefix}deptName",
+        ${tableAlias}S_ITEMCODE as "${columnPrefix}itemCode",
+        ${tableAlias}S_ITEMNAME as "${columnPrefix}itemName",
+        ${tableAlias}S_MAINCYC as "${columnPrefix}mainCyc",
+        ${tableAlias}S_ITEMTYPE as "${columnPrefix}itemType",
+        ${tableAlias}S_UNITNAME as "${columnPrefix}unitName",
+        ${tableAlias}S_UNITCODE as "${columnPrefix}unitCode",
+        ${tableAlias}S_TEMPLATEID as "${columnPrefix}templateId",
+        ${tableAlias}S_TEMPLATENO as "${columnPrefix}templateNo",
+        ${tableAlias}S_TEMPLATETYPE as "${columnPrefix}templateType",
+        ${tableAlias}S_VERSION as "${columnPrefix}version",
+        ${tableAlias}I_MARSHALLINGTYPE as "${columnPrefix}marshallingType",
+        ${tableAlias}C_BACKFILLTYPE as "${columnPrefix}backFillType",
+        ${tableAlias}D_LASTFILLTIME as "${columnPrefix}lastFillTime",
+        ${tableAlias}S_LASTFILLWORKCODE as "${columnPrefix}lastFillWorkCode",
+        ${tableAlias}S_LASTFILLWORKNAME as "${columnPrefix}lastFillWorkName",
+        ${tableAlias}S_LASTIPADDRESS as "${columnPrefix}lastIpAddress",
+        ${tableAlias}S_LASTHOSTNAME as "${columnPrefix}lastHostName",
+        ${tableAlias}S_FILLWORKNAME as "${columnPrefix}fillWorkName",
+        ${tableAlias}S_REMARKS as "${columnPrefix}remarks",
+        ${tableAlias}S_PACKETCODE as "${columnPrefix}packetCode",
+        ${tableAlias}S_PACKETNAME as "${columnPrefix}packetName",
+        ${tableAlias}S_PACKETTYPE as "${columnPrefix}packetType",
+        ${tableAlias}S_TASKID as "${columnPrefix}taskId",
+        ${tableAlias}S_ITEMTASKID as "${columnPrefix}itemTaskId",
+        ${tableAlias}S_PART as "${columnPrefix}part",
+        ${tableAlias}S_CAR as "${columnPrefix}car",
+        ${tableAlias}S_ACCUMILE as "${columnPrefix}accuMile",
+        ${tableAlias}S_FILLWORKCODE as "${columnPrefix}fillWorkCode",
+        ${tableAlias}S_FOREMANSIGNCODE as "${columnPrefix}foremanSignCode",
+        ${tableAlias}S_FOREMANSIGNNAME as "${columnPrefix}foremanSignName",
+        ${tableAlias}S_QUALITYSIGNCODE as "${columnPrefix}qualitySignCode",
+        ${tableAlias}S_QUALITYSIGNNAME as "${columnPrefix}qualitySignName",
+        ${tableAlias}S_FILLREMARKCODE as "${columnPrefix}fillRemarkCode",
+        ${tableAlias}S_FILLREMARKNAME as "${columnPrefix}fillRemarkName",
+        ${tableAlias}D_FILLREMARKTIME as "${columnPrefix}fillRemarkTime",
+        ${tableAlias}D_CREATETIME as "${columnPrefix}createTime",
+        ${tableAlias}S_CREATESTAFFCODE as "${columnPrefix}createStaffCode",
+        ${tableAlias}S_CREATESTAFFNAME as "${columnPrefix}createStaffName"
+    </sql>
+
+</mapper>

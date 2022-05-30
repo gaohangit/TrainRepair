@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.warnmanagent.dao.WorkWorningMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.warnmanagent.querymodel.WorkWorning">
+        <id column="S_WORNINGID" property="worningId" />
+        <result column="S_CARNO" property="carNo" />
+        <result column="S_WORNINGCONTENT" property="worningContent" />
+        <result column="S_EFFECTSTATE" property="effectState" />
+        <result column="S_EFFECTSTUFFID" property="effectStuffId" />
+        <result column="S_EFFECTSTUFFNAME" property="effectStuffName" />
+        <result column="D_EFFECTTIME" property="effectTime" />
+        <result column="S_REMARK" property="remark" />
+        <result column="S_UNITCODE" property="unitCode" />
+        <result column="S_UNITNAME" property="unitName" />
+        <result column="S_ITEMCODE" property="itemCode" />
+        <result column="S_ITEMNAME" property="itemName" />
+        <result column="S_TRAINSETTYPE" property="trainsetType" />
+        <result column="D_CREATETIME" property="createTime" />
+        <result column="S_WORKERNAME" property="workerName" />
+        <result column="S_TRAINSETNAME" property="trainsetName" />
+        <result column="S_WORKCONTENT" property="workContent" />
+        <result column="S_DEPTNAME" property="deptName" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_WORNINGID, S_CARNO, S_WORNINGCONTENT, S_EFFECTSTATE, S_EFFECTSTUFFID, S_EFFECTSTUFFNAME, D_EFFECTTIME, S_REMARK, S_UNITCODE, S_UNITNAME, S_ITEMCODE, S_ITEMNAME, S_TRAINSETTYPE, D_CREATETIME, S_WORKERNAME, S_TRAINSETNAME, S_WORKCONTENT, S_DEPTNAME
+    </sql>
+
+</mapper>

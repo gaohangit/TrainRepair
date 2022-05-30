@@ -1,0 +1,50 @@
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd">
+    <defaultCache maxElementsInMemory="10000"
+        maxElementsOnDisk="0" eternal="true" overflowToDisk="true"
+        diskPersistent="false" timeToIdleSeconds="0" timeToLiveSeconds="0"
+        diskSpoolBufferSizeMB="50" diskExpiryThreadIntervalSeconds="120"
+        memoryStoreEvictionPolicy="LFU" />
+        
+    <cache name="hussar_dict_of_type_cache" eternal="false"
+        maxEntriesLocalHeap="0" timeToIdleSeconds="200">
+        <searchable />
+    </cache>
+    <cache name="menu_info" eternal="false" maxEntriesLocalHeap="0"
+        timeToIdleSeconds="200">
+        <searchable />
+    </cache>
+    <cache name="authorization_info" eternal="false"
+        maxEntriesLocalHeap="0" timeToIdleSeconds="200">
+        <searchable />
+    </cache>
+    <cache name="CONSTANT" eternal="false" maxEntriesLocalHeap="0"
+        timeToIdleSeconds="200">
+        <searchable />
+    </cache>
+    <cache name="Login_Lock" eternal="false" maxEntriesLocalHeap="0"
+        timeToIdleSeconds="200">
+        <searchable />
+    </cache>
+    <cache name="base_config" eternal="false" maxEntriesLocalHeap="0"
+           timeToIdleSeconds="200">
+        <searchable />
+    </cache>
+    <cache name="user_ip" eternal="false" maxEntriesLocalHeap="0"
+           timeToIdleSeconds="200">
+        <searchable />
+    </cache>
+    <cache name="securitylog_count" eternal="false" maxEntriesLocalHeap="0"
+           timeToIdleSeconds="200">
+        <searchable />
+    </cache>
+    <!--表单设计器-->
+    <cache name="flowCache" eternal="false" maxEntriesLocalHeap="0"
+           timeToIdleSeconds="200">
+        <searchable />
+    </cache>
+    <!-- eternal：true表示对象永不过期，此时会忽略timeToIdleSeconds和timeToLiveSeconds属性，默认为false -->
+    <!-- maxEntriesLocalHeap：堆内存中最大缓存对象数，0没有限制 -->
+    <!-- timeToIdleSeconds： 设定允许对象处于空闲状态的最长时间，以秒为单位。当对象自从最近一次被访问后， 如果处于空闲状态的时间超过了timeToIdleSeconds属性值，这个对象就会过期，EHCache将把它从缓存中清空。 
+        只有当eternal属性为false，该属性才有效。如果该属性值为0，则表示对象可以无限期地处于空闲状态 -->
+</ehcache>

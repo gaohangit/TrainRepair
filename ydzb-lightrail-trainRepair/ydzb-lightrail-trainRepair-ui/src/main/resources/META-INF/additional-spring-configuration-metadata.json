@@ -1,0 +1,27 @@
+{"properties": [
+  {
+    "name": "hussar.file-upload-path-windows",
+    "type": "java.lang.String",
+    "description": "A description for 'XXXXXXXXXXXXXXXXXXXXXX'"
+  },
+  {
+    "name": "hussar.file-upload-path-linux",
+    "type": "java.lang.String",
+    "description": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'"
+  },
+  {
+    "name": "spring.devtools.restart.enabled",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.devtools.restart.enabled'"
+  },
+  {
+    "name": "spring.devtools.restart.additional-paths",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.devtools.restart.additional-paths'"
+  },
+  {
+    "name": "spring.devtools.restart.exclude",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.devtools.restart.exclude'"
+  }
+]}

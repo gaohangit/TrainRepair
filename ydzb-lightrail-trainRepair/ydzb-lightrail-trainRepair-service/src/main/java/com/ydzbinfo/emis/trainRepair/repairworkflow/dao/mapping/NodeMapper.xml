@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.repairworkflow.dao.NodeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.repairworkflow.querymodel.Node">
+        <id column="S_ID" property="id" />
+        <result column="S_NAME" property="name" />
+        <result column="S_FLOWID" property="flowId" />
+        <result column="S_CHILDFLOWID" property="childFlowId" />
+        <result column="S_REMARK" property="remark" />
+        <result column="C_SYNFLAG" property="synFlag" />
+        <result column="D_SYNDATE" property="synDate" />
+    </resultMap>
+    <resultMap id="nodeResultMap" type="com.ydzbinfo.emis.trainRepair.repairworkflow.querymodel.extend.NodeWithExtraInfo">
+        <id column="S_ID" property="id" />
+        <result column="S_NAME" property="name" />
+        <result column="S_FLOWID" property="flowId" />
+        <result column="S_CHILDFLOWID" property="childFlowId" />
+        <result column="S_REMARK" property="remark" />
+        <result column="C_SYNFLAG" property="synFlag" />
+        <result column="D_SYNDATE" property="synDate" />
+        <collection property="nodeExtraInfoList" ofType="com.ydzbinfo.emis.trainRepair.repairworkflow.querymodel.NodeExtraInfo">
+            <result column="S_NODEID" property="nodeId" />
+            <result column="S_TYPE" property="type" />
+            <result column="S_VALUE" property="value" />
+            <result column="C_SYNFLAG1" property="synFlag" />
+            <result column="D_SYNDATE1" property="synDate" />
+        </collection>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_ID, S_NAME, S_FLOWID, S_CHILDFLOWID, S_REMARK, C_SYNFLAG, D_SYNDATE
+    </sql>
+    <select id="getNodeWithExtraInfoList" resultMap="nodeResultMap">
+    select * from
+        XZY_C_NODE c
+    LEFT JOIN XZY_C_NODEEXTRAINFO cn on c.S_ID=cn.S_NODEID
+    where c.S_FLOWID=#{flowId}
+    </select>
+
+    <select id="getNodeWithExtraInfoByNodeId" resultMap="nodeResultMap">
+    select * from
+        XZY_C_NODE c
+    LEFT JOIN XZY_C_NODEEXTRAINFO cn on c.S_ID=cn.S_NODEID
+    where c.S_ID=#{NodeId}
+    </select>
+</mapper>

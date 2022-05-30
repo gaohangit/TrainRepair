@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="${publicStaticPath}/IE/babel-browser.min.js"></script>
+
+    <link rel="stylesheet" href="${publicStaticPath}/elementUI/index.css" />
+
+    <script src="${publicStaticPath}/vue/vue.js"></script>
+    <script src="${publicStaticPath}/elementUI/index.js"></script>
+    <script src="${ctxPath}/static/lib/day/day.js"></script>
+    <script src="${publicStaticPath}/vue/axios.min.js"></script>
+    <script src="${ctxPath}/static/lib/wangEditor.min.js"></script>
+    <script src="${ctxPath}/static/lib/element-resize-detector.min.js"></script>
+    <link rel="stylesheet" href="${ctxPath}/static/lib/input_word_limit.css" />
+
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/workRepairFlowConfig/config/index.js"></script>
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/workRepairFlowConfig/api/apiTrainRepair/flowTypeRequest.js"></script>
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/workRepairFlowConfig/api/apiTrainRepair/taskFlowConfigRequest.js"></script>
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/workRepairFlowConfig/api/apiTrainRepair/commonRequest.js"></script>
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/workRepairFlowConfig/api/apiTrainRepair/nodeFunctionTypeRequest.js"></script>
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/workRepairFlowConfig/api/apiTrainRepair/flowMarkConfigRequest.js"></script>
+
+    <link rel="stylesheet" href="${ctxPath}/static/components/contextMenuHover/contextMenuHover.css" />
+    <script src="${ctxPath}/static/components/contextMenuHover/contextMenuHover.js"></script>
+
+    <link rel="stylesheet" href="${ctxPath}/static/components/flowContainer/flowContainer.css" />
+    <script type="text/babel" src="${ctxPath}/static/components/flowContainer/workRepairNodeVector.js"></script>
+    <script type="text/babel" src="${ctxPath}/static/components/flowContainer/workRepairNode.js"></script>
+    <script type="text/babel" src="${ctxPath}/static/components/flowContainer/workRepairPairNodeConnect.js"></script>
+    <script type="text/babel" src="${ctxPath}/static/components/flowContainer/workRepairFlow.js"></script>
+    <!-- <script src="${ctxPath}/static/components/flowContainer/workRepairFlow.min.js"></script> -->
+    <script src="${ctxPath}/static/utils/GeneralUtil.js"></script>
+
+    <script src="${ctxPath}/static/components/wangEditor/wangEditor.js"></script>
+    <link rel="stylesheet" href="${publicStaticPath}/common/base.css" />
+    <link rel="stylesheet" href="${ctxPath}/static/trainRepair/workRepairFlow/workRepairFlowConfig/css/index.css" />
+    <link rel="stylesheet" href="${ctxPath}/static/components/multipleSelect/multipleSelect.css" />
+    <script src="${ctxPath}/static/components/multipleSelect/multipleSelect.js"></script>
+
+    <script>
+    </script>
+  </head>
+  <body>
+    <div id="workRepairFlowConfig" v-cloak v-loading="loading">
+      <el-card class="box-card">
+        <div slot="header">
+          <span class="adorn"></span>
+          <h2>{{pageTitle}}</h2>
+        </div>
+
+        <el-form
+          ref="headerQueryFormRef"
+          :rules="headerQueryFormRules"
+          :model="headerQueryFormData"
+          label-width="100px"
+          style="margin-top: 20px"
+        >
+          <el-row>
+            <el-col :span="6">
+              <el-form-item label="流程名称：" prop="flowName">
+                <el-input v-model.trim="headerQueryFormData.flowName" clearable :maxlength="50"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="流程类型：" prop="flowTypeCode">
+                <el-select v-model="headerQueryFormData.flowTypeCode" filterable clearable>
+                  <el-option
+                    v-for="item in flowTypeList"
+                    :key="item.code"
+                    :value="item.code"
+                    :label="item.name"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="车型：" prop="trainType">
+                <el-select
+                  v-model="headerQueryFormData.trainType"
+                  filterable
+                  clearable
+                  \@change="headerQueryFormTrainTypeChange"
+                >
+                  <el-option
+                    v-for="item in trainTypeList"
+                    :key="item.traintype"
+                    :value="item.traintype"
+                    :label="item.traintype"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="批次：" prop="trainTemplate">
+                <el-select
+                  v-model="headerQueryFormData.trainTemplate"
+                  ref="headerQueryFormTrainTemplateRef"
+                  filterable
+                  clearable
+                  \@change="headerQueryFormTrainTemplateChange"
+                >
+                  <el-option
+                    v-for="item in trainTempList"
+                    :key="item.traintempid"
+                    :value="item.traintempid"
+                    :label="item.traintempid"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="6">
+              <el-form-item label="车组：" prop="trainsetId">
+                <el-select
+                  v-model="headerQueryFormData.trainsetId"
+                  filterable
+                  clearable
+                  \@change="headerQueryFormTrainsetIdChange"
+                >
+                  <el-option
+                    v-for="item in trainsetList"
+                    :key="item.trainsetid"
+                    :value="item.trainsetid"
+                    :label="item.trainsetname"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="运用所：" prop="unitCode">
+                <el-select v-model="headerQueryFormData.unitCode" filterable clearable>
+                  <el-option
+                    v-for="item in unitList"
+                    :key="item.unitCode"
+                    :label="item.unitName"
+                    :value="item.unitCode"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="是否发布：" prop="usable">
+                <el-select v-model="headerQueryFormData.usable" filterable clearable>
+                  <el-option value="1" label="是"></el-option>
+                  <el-option value="0" label="否"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6" style="text-align: right">
+              <el-button type="primary" size="mini" \@click="getTaskFlowConfigListBtn">查询</el-button>
+              <el-button type="primary" size="mini" \@click="resetHeaderQueryFormDataBtn">重置</el-button>
+              @if(shiro.hasPermission("flowConfig:edit")){
+              <el-button type="primary" size="mini" \@click="openTypeConfigDialog('add')">新增</el-button>
+              @} 
+              @if(shiro.hasPermission("flow:verifyFlowType")){
+              <el-button type="primary" size="mini" \@click="verifyFlowType">校验流程配置</el-button>
+              @}
+            </el-col>
+          </el-row>
+        </el-form>
+        <div class="main-table" ref="mainTable">
+          <el-table :data="mainFlowTableData" border :height="mainTableHeight">
+            <el-table-column type="index" label="序号" width="50"></el-table-column>
+            <el-table-column label="流程名称" prop="name" sortable show-overflow-tooltip></el-table-column>
+            <el-table-column label="流程类型" sortable prop="flowTypeCode" show-overflow-tooltip>
+              <template slot-scope="{row}"> {{row.flowTypeCode | repairTypeFilter(that)}} </template>
+            </el-table-column>
+            <el-table-column label="车型" sortable prop="trainTypes" show-overflow-tooltip>
+              <template slot-scope="{row}"> {{row.trainTypes.toString() ? row.trainTypes.toString() : '全部'}} </template>
+            </el-table-column>
+            <el-table-column label="批次" sortable prop="trainTemplates" show-overflow-tooltip>
+              <template slot-scope="{row}"> {{row.trainTemplates.toString() ? row.trainTemplates.toString() : '全部'}} </template>
+            </el-table-column>
+            <el-table-column label="车组" sortable prop="trainsetIds" show-overflow-tooltip>
+              <template slot-scope="{row}"> {{row.trainsetIds.length != 0 ? row.trainsetIds.map(id=>trainsetIdNameMap[id]).toString() : '全部'}} </template>
+            </el-table-column>
+            <el-table-column label="是否发布" show-overflow-tooltip>
+              <template slot-scope="{row}"> {{row.usable|booToTextFilter}} </template>
+            </el-table-column>
+            <el-table-column label="默认流程" show-overflow-tooltip>
+              <template slot-scope="{row}"> {{row.defaultType|booToTextFilter}} </template>
+            </el-table-column>
+            <el-table-column label="操作" width="600" class-name="left-column">
+              <template slot-scope="{row,$index}">
+                <el-button type="primary" plain size="mini" \@click="openTypeConfigDialog('look',row.id)"
+                  ><i class="self-icon view"></i>查看</el-button
+                >
+                @if(shiro.hasPermission("flowConfig:edit")){
+                <el-button type="primary" plain size="mini" \@click="openTypeConfigDialog('edit',row.id)"
+                  ><i class="self-icon edit"></i>编辑</el-button
+                >
+                <el-button type="primary" plain size="mini" \@click="deleteTaskFlowConfig(row)"
+                  ><i class="self-icon del"></i>删除</el-button
+                >
+                <el-button type="primary" plain size="mini" \@click="openTypeConfigDialog('copyToAdd',row.id)"
+                  ><i class="self-icon copy"></i>复制到新增</el-button
+                >
+                <el-button
+                  v-if="!row.defaultType&&row.defaultType!==null"
+                  type="primary"
+                  plain
+                  size="mini"
+                  \@click="setFlowDefaultBtn(row.id)"
+                  ><i class="self-icon default"></i>默认</el-button
+                >
+                <el-button
+                  v-if="!row.usable"
+                  type="primary"
+                  plain
+                  size="mini"
+                  icon="el-icon-s-flag"
+                  \@click="setFlowUsableBtn(row.id)"
+                  >发布</el-button
+                >
+                @}
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+        <el-pagination
+          \@size-change="mainFlowTablePageSizeChange"
+          \@current-change="mainFlowTablePageNumChange"
+          :current-page="mainFlowTablePageNum"
+          :page-sizes="[10, 20, 50,100]"
+          :page-size="mainFlowTablePageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="mainFlowTablePageTotal"
+        >
+        </el-pagination>
+      </el-card>
+      
+      <!-- main弹出框 -->
+      <el-dialog
+        :title="typeDialogTitle"
+        width="80%"
+        :visible.sync="typeDialogVisible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        \@closed="typeDialogClose"
+        class="center-dialog"
+        top="auto"
+      >
+        <el-form
+          ref="typeDialogFormRef"
+          :rules="typeDialogFormRules"
+          :model="typeDialogFormData"
+          label-width="100px"
+          class="type-dialog-form"
+          :class="{'look-disabled-form':typeDialogStatus == 'look'}"
+        >
+          <el-row>
+            <el-col :span="8">
+              <el-form-item label="流程类型：" prop="flowTypeCode">
+                <el-select
+                  v-model="typeDialogFormData.flowTypeCode"
+                  filterable
+                  clearable
+                  :disabled="typeDialogStatus == 'look'"
+                  \@change="flowTypeCodeChange"
+                >
+                  <el-option
+                    v-for="item in flowTypeList"
+                    :key="item.code"
+                    :value="item.code"
+                    :label="item.name"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="流程名称：" prop="name">
+                <el-input
+                  v-model.trim="typeDialogFormData.name"
+                  :maxlength="50"
+                  show-word-limit
+                  clearable
+                  :disabled="typeDialogStatus == 'look'"
+                  class="fix-count-out"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="运用所：" prop="unitCode">
+                <el-select
+                  v-model="typeDialogFormData.unitCode"
+                  filterable
+                  clearable
+                  :disabled="typeDialogStatus == 'look'"
+                >
+                  <el-option
+                    v-for="item in unitList"
+                    :key="item.unitCode"
+                    :label="item.unitName"
+                    :value="item.unitCode"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row v-show="typeDialogFormData.flowTypeCode!='TEMPLATE'">
+            <el-col :span="8">
+              <el-form-item prop="trainTypeExclude">
+                <el-radio-group v-model="typeDialogFormData.trainTypeExclude" :disabled="typeDialogStatus == 'look'">
+                  <el-radio :label="false">包含车型</el-radio>
+                  <el-radio :label="true">排除车型</el-radio>
+                </el-radio-group>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item prop="trainTemplateExclude">
+                <el-radio-group
+                  v-model="typeDialogFormData.trainTemplateExclude"
+                  :disabled="typeDialogStatus == 'look'"
+                >
+                  <el-radio :label="false">包含批次</el-radio>
+                  <el-radio :label="true">排除批次</el-radio>
+                </el-radio-group>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item prop="trainsetIdExclude">
+                <el-radio-group v-model="typeDialogFormData.trainsetIdExclude" :disabled="typeDialogStatus == 'look'">
+                  <el-radio :label="false">包含车组</el-radio>
+                  <el-radio :label="true">排除车组</el-radio>
+                </el-radio-group>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row v-show="typeDialogFormData.flowTypeCode!='TEMPLATE'">
+            <el-col :span="8">
+              <el-form-item :label="trainTypesLabel" prop="trainTypes">
+                <el-tooltip effect="dark" :content="trainTypesName" :disabled="!trainTypesName" placement="top-start">
+                  <el-input
+                    :value="trainTypesName"
+                    readonly
+                    \@focus="openTransferDialog('trainTypes')"
+                    :disabled="typeDialogStatus == 'look'"
+                  ></el-input>
+                </el-tooltip>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item :label="trainTemplatesLabel" prop="trainTemplates">
+                <el-tooltip
+                  effect="dark"
+                  :content="trainTemplatesName"
+                  :disabled="!trainTemplatesName"
+                  placement="top-start"
+                >
+                  <el-input
+                    :value="trainTemplatesName"
+                    readonly
+                    \@focus="openTransferDialog('trainTemplates')"
+                    :disabled="typeDialogStatus == 'look'"
+                  ></el-input>
+                </el-tooltip>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item :label="trainsetIdsLabel" prop="trainsetIds">
+                <el-tooltip effect="dark" :content="trainsetIdsName" :disabled="!trainsetIdsName" placement="top-start">
+                  <el-input
+                    :value="trainsetIdsName"
+                    readonly
+                    \@focus="openTransferDialog('trainsetIds')"
+                    :disabled="typeDialogStatus == 'look'"
+                  ></el-input>
+                </el-tooltip>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="16">
+              <el-row>
+                <el-col :span="12">
+                  <el-form-item
+                    v-if="conditionShow('KEY_WORD')"
+                    label="关键字："
+                    prop="keyWords"
+                    style="margin-bottom: 0"
+                  >
+                    <el-tooltip effect="dark" :content="keyWordsName" :disabled="!keyWordsName" placement="top-start">
+                      <el-input
+                        :value="keyWordsName"
+                        \@focus="openTransferDialog('keyWords')"
+                        readonly
+                        :disabled="typeDialogStatus == 'look'"
+                      ></el-input>
+                    </el-tooltip>
+
+                    <el-button
+                      type="primary"
+                      size="mini"
+                      \@click="openkeywordConfigDialog"
+                      v-if="typeDialogStatus != 'look'"
+                      >配置</el-button
+                    >
+                  </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                  <el-form-item
+                    v-if="conditionShow('REPAIR_TYPE')"
+                    label="检修类型："
+                    prop="repairType"
+                    style="margin-bottom: 0"
+                  >
+                    <el-select
+                      v-model="typeDialogFormData.repairType"
+                      filterable
+                      :disabled="typeDialogStatus == 'look'"
+                    >
+                      <el-option
+                        v-for="item in repairTypeList"
+                        :key="item.value"
+                        :value="item.value"
+                        :label="item.label"
+                      ></el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+              <span
+                v-if="!conditionShow('KEY_WORD')&&!conditionShow('REPAIR_TYPE')"
+                style="display: inline-block; width: 20px"
+              ></span>
+            </el-col>
+
+            <el-col :span="8" style="text-align: right">
+              <el-button
+                type="primary"
+                size="mini"
+                \@click="confirmTypeConfigBtn()"
+                v-if="typeDialogStatus != 'look'"
+                >保存</el-button
+              >
+              <el-button
+                type="primary"
+                size="mini"
+                \@click="confirmTypeConfigBtn(true)"
+                v-show="typeDialogFormData.flowTypeCode != 'TEMPLATE'"
+                v-if="typeDialogStatus != 'look' && !originalFlowConfigUsable"
+                >保存并发布</el-button
+              >
+              <el-button
+                type="primary"
+                size="mini"
+                \@click="confirmTypeConfigBtn(false)"
+                v-show="typeDialogFormData.flowTypeCode != 'TEMPLATE'"
+                v-if="typeDialogStatus != 'look' && originalFlowConfigUsable"
+                >保存并取消发布</el-button
+              >
+              <el-button type="primary" size="mini" \@click="typeDialogVisible = false">返回</el-button>
+            </el-col>
+          </el-row>
+        </el-form>
+        <work-repair-flow
+          v-init="()=>{refreshWorkRepairFlowComponentFlag()}"
+          :data="flowData"
+          :rolemap="roleCodeNameMap"
+          ref="workRepairFlow"
+          :move-node-status="selectVectorStatus.parent"
+          \@has-select="hasSelect"
+          \@context-menu="contextMenu"
+          \@change="flowDataChange"
+
+          \@click.native="flowContainerClick"
+          \@contextmenu.prevent.native="parentFlowContainerContextMenu"
+          v-background-black="selectVectorStatus.parent"
+          style="max-height: calc(90vh - 282px);"
+        ></work-repair-flow>
+        <div class="contextmenu-wrap" v-show="contextmenuWrapStatus" :style="contextmenuWrapStyle">
+          <context-menu ref="context-menu-f" \@select="select" :menu="contextMenuList"></context-menu>
+        </div>
+      </el-dialog>
+      <!-- 关键字 -->
+      <el-dialog
+        title="临修任务关键字配置"
+        :visible.sync="keywordConfigDialogVisible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        \@close="keywordConfigDialogClose"
+        class="center-dialog"
+        top="auto"
+      >
+        <el-form
+          ref="keywordConfigForm"
+          :model="keywordConfigFormData"
+          :rules="keywordConfigFormRules"
+          label-width="100px"
+          class="keyword-config-form"
+        >
+          <el-row>
+            <el-col :span="16">
+              <el-form-item label="关键字：" prop="mark">
+                <el-input class="fix-count-in fix-height" v-model.trim="keywordConfigFormData.mark" :maxlength="50" show-word-limit clearable></el-input>
+                <el-button type="primary" size="mini" \@click="addFlowMarkConfig">增加</el-button>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <el-table :data="keywordConfigTableData" height="528" border>
+          <el-table-column label="关键字" prop="mark" show-overflow-tooltip></el-table-column>
+          <el-table-column label="操作" width="100px">
+            <template slot-scope="{row}">
+              <el-button type="text" icon="el-icon-delete" \@click="delFlowMarkConfigByIdBtn(row.id)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-dialog>
+      <!-- 穿梭框 -->
+      <el-dialog
+        :title="transferTitle"
+        :visible.sync="transferDialogVisible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        \@close="transferDialogClose"
+        class="center-dialog"
+        top="auto"
+      >
+        <el-transfer
+          ref="transfer"
+          v-model="transferValue"
+          :titles="transferTitles"
+          :data="transferList"
+          :props="transferConfig"
+          filterable
+          filter-placeholder="请输入关键字"
+        ></el-transfer>
+        <!-- :filter-method="transferFilterMethod" -->
+        <div slot="footer" class="dialog-footer">
+          <el-button \@click="confirmTransferBtn" type="primary" size="mini">确定</el-button>
+          <el-button \@click="transferDialogVisible = false" type="primary" size="mini">取消</el-button>
+        </div>
+      </el-dialog>
+      <!-- 节点配置 -->
+      <el-dialog
+        title="节点配置"
+        :visible.sync="nodeConfigDialogVisible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        class="center-dialog"
+        top="auto"
+        width="80%"
+        custom-class="node-config-dialog"
+        destroy-on-close
+        ref="nodeConfigDialog"
+      >
+        <el-form
+          ref="nodeConfigFormRef"
+          :model="nodeConfigFormData"
+          :rules="nodeConfigFormRules"
+          class="node-config-form"
+          label-width="230px"
+        >
+          <el-form-item label="节点名称：" prop="name">
+            <el-input class="fix-count-in fix-height" maxlength="10" show-word-limit clearable v-model.trim="nodeConfigFormData.name"></el-input>
+          </el-form-item>
+
+          <el-form-item label="是否可跳过：" prop="skip" v-if="!selectPairEndNode">
+            <el-select v-model="nodeConfigCore.strSkip">
+              <el-option v-for="option in nodeConfigCore.yesNoOptions" :key="option.value" :value="option.value" :label="option.label"></el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="角色：" prop="roleConfigs" v-if="!selectPairEndNode">
+            <lp-select
+              v-model="nodeConfigFormData.roleConfigs"
+              :hasnum="true"
+              :rolenum="roleConfigsNum"
+              \@rolenum-change="roleConfigsChange"
+              :list="postRoleList"
+              value="value"
+            ></lp-select>
+            <el-tooltip class="item" effect="dark" :content="getTooltipContent('roleConfigs')" placement="top-start">
+              <i class="el-icon-question question-icon"></i>
+            </el-tooltip>
+          </el-form-item>
+
+          <el-form-item
+            label="跳过后是否可补卡："
+            prop="disposeAfterSkip"
+            v-if="!selectPairEndNode && nodeConfigFormData.skip"
+            v-init="() => {let doSet = () => {nodeConfigFormData.disposeAfterSkip = false};doSet();return doSet;}"
+          >
+            <el-select v-model="nodeConfigCore.strDisposeAfterSkip">
+              <el-option v-for="option in nodeConfigCore.yesNoOptions" :key="option.value" :value="option.value" :label="option.label"></el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="排除角色：" prop="excludeRoles" v-if="!selectPairEndNode">
+            <lp-select v-model="nodeConfigFormData.excludeRoles" :list="excludeRoleList" value="value"></lp-select>
+            <el-tooltip class="item" effect="dark" :content="getTooltipContent('excludeRoles')" placement="top-start">
+              <i class="el-icon-question question-icon"></i>
+            </el-tooltip>
+          </el-form-item>
+
+          <el-form-item label="关联成对节点：" prop="pair" v-if="getFormItemPairNodeShow()">
+            <el-select :value="nodeConfigFormData.pair" \@change="pairChange" filterable clearable>
+              <el-option v-for="node in pairNodeList" :key="node.id" :value="node.id" :label="node.name"></el-option>
+            </el-select>
+            <el-tooltip class="item" effect="dark" :content="getTooltipContent('pair')" placement="top-start">
+              <i class="el-icon-question question-icon"></i>
+            </el-tooltip>
+          </el-form-item>
+
+          <el-form-item label="建议上传图片的数量：" prop="recommendedPicNum">
+            <el-input v-model.trim="nodeConfigFormData.recommendedPicNum"> </el-input>
+          </el-form-item>
+
+          <el-form-item
+            label="最小处理节点人数："
+            prop="minDisposeNum"
+            v-if="!selectPairEndNode"
+          >
+            <el-input v-model.trim="nodeConfigFormData.minDisposeNum"> </el-input>
+          </el-form-item>
+
+          <!-- <el-form-item label="距上节点超时预警（分钟）：" prop="overtimeWaring">
+            <el-input v-model="nodeConfigFormData.overtimeWaring"> </el-input>
+            <el-tooltip class="item" effect="dark" :content="getTooltipContent('overtimeWaring')" placement="top-start">
+              <i class="el-icon-question question-icon"></i>
+            </el-tooltip>
+          </el-form-item> -->
+
+          <el-form-item
+            label="按子流程打卡："
+            prop="disposeSubflow"
+            v-if="getFormItemPairShow()&&getFormItemChildFlowShow()"
+          >
+            <el-select v-model="nodeConfigFormData.disposeSubflow">
+              <el-option :value="true" label="是"></el-option>
+              <el-option :value="false" label="否"></el-option>
+            </el-select>
+            <el-tooltip class="item" effect="dark" :content="getTooltipContent('disposeSubflow')" placement="top-start">
+              <i class="el-icon-question question-icon"></i>
+            </el-tooltip>
+          </el-form-item>
+
+          <el-form-item label="距上节点最小时间间隔（分钟）：" prop="minIntervalRestrict">
+            <el-input v-model.trim="nodeConfigFormData.minIntervalRestrict"> </el-input>
+            <el-tooltip
+              class="item"
+              effect="dark"
+              :content="getTooltipContent('minIntervalRestrict')"
+              placement="top-start"
+            >
+              <i class="el-icon-question question-icon"></i>
+            </el-tooltip>
+          </el-form-item>
+          <!--
+          <el-form-item label="提醒角色：" prop="remindRoles">
+            <lp-select v-model="nodeConfigFormData.remindRoles" :list="remindRoleList"></lp-select>
+            <el-tooltip class="item" effect="dark" :content="getTooltipContent('excludeRoles')" placement="top-start">
+              <i class="el-icon-question question-icon"></i>
+            </el-tooltip>
+          </el-form-item> -->
+          <el-form-item label="业务类型：" prop="functionType">
+            <el-select v-model="nodeConfigFormData.functionType" filterable clearable>
+              <el-option
+                v-for="type in nodeTaskFlowConfigList"
+                :key="type.code"
+                :label="type.name"
+                :value="type.code"
+              ></el-option>
+            </el-select>
+            <el-tooltip class="item" effect="dark" :content="getTooltipContent('functionType')" placement="top-start">
+              <i class="el-icon-question question-icon"></i>
+            </el-tooltip>
+          </el-form-item>
+
+          <el-form-item label="作业说明：" prop="remark">
+            <wang-editor
+              ref="wangEditor"
+              :content="nodeConfigFormData.remark"
+            ></wang-editor>
+            <!-- <el-input type="textarea" :rows="2" v-model="nodeConfigFormData.remark"></el-input> -->
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button ref="nodeConfigDialogConfirmBtn" type="primary" size="mini">确定</el-button>
+          <el-button \@click="nodeConfigDialogVisible = false" type="primary" size="mini">取消</el-button>
+        </div>
+      </el-dialog>
+      <!-- 并行区段配置 -->
+      <el-dialog
+        title="并行区段配置"
+        :visible.sync="parallelConfigDialogVisible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        \@close="parallelConfigDialogClose"
+        class="center-dialog"
+        top="auto"
+        width="30%"
+      >
+        <el-form
+          ref="parallelConfigFormRef"
+          :model="parallelConfigFormData"
+          :rules="parallelConfigFormRules"
+          label-width="150px"
+        >
+          <el-row>
+            <el-col>
+              <el-form-item label="区段起始相邻节点：" prop="trunkStartNodeId">
+                <el-select v-model="parallelConfigFormData.trunkStartNodeId" clearable filterable>
+                  <el-option
+                    v-for="node in trunkNodeList"
+                    :key="node.id"
+                    :value="node.id"
+                    :label="node.name"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col>
+              <el-form-item label="区段结束相邻节点：" prop="trunkEndNodeId">
+                <el-select v-model="parallelConfigFormData.trunkEndNodeId" clearable filterable>
+                  <el-option
+                    v-for="node in trunkNodeList"
+                    :key="node.id"
+                    :value="node.id"
+                    :label="node.name"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button \@click="confirmParallelConfigBtn" type="primary" size="mini">确定</el-button>
+          <el-button \@click="parallelConfigDialogVisible = false" type="primary" size="mini">取消</el-button>
+        </div>
+      </el-dialog>
+      <!-- 流程模板 -->
+      <el-dialog
+        title="插入流程模板"
+        width="50%"
+        :visible.sync="flowTempalteDialog.flowTempalteDialogVisible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        \@close="flowTempalteDialogClose"
+        class="center-dialog"
+        top="auto"
+      >
+        <el-form
+          ref="flowTempalteFormRef"
+          :model="flowTempalteDialog.flowTempalteFormData"
+          :rules="flowTempalteDialog.flowTempalteRules"
+          label-width="100px"
+        >
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="模板名称：" prop="flowName">
+                <el-input v-model.trim="flowTempalteDialog.flowTempalteFormData.flowName" clearable></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12" style="text-align: right">
+              <el-button type="primary" size="mini" \@click="getFlowTemplateListBtn">查询</el-button>
+            </el-col>
+          </el-row>
+        </el-form>
+        <el-table :data="flowTempalteDialog.flowTempalteTableData" border height="500">
+          <el-table-column type="index" label="序号" width="50"></el-table-column>
+          <el-table-column label="模板名称" prop="name"></el-table-column>
+          <el-table-column label="操作" width="100">
+            <template slot-scope="{row}">
+              <el-button type="primary" size="mini" \@click="insertFlowTemplate(row)">插入</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-pagination
+          \@size-change="flowTempaltePageSizeChange"
+          \@current-change="flowTempaltePageNumberChange"
+          :current-page="flowTempalteDialog.flowTempaltePageNumber"
+          :page-sizes="[10, 20, 50,100]"
+          :page-size="flowTempalteDialog.flowTempaltePageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="flowTempalteDialog.flowTempalteTotal"
+          style="margin-top: 10px"
+        >
+        </el-pagination>
+      </el-dialog>
+      <!-- 子流程配置弹出框 -->
+      <el-dialog
+        title="子流程配置"
+        width="80%"
+        :visible.sync="childFlowDialog.childFlowDialogVisible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        \@closed="childFlowDialogClose"
+        class="center-dialog"
+        top="auto"
+        destroy-on-close
+        :before-close="beforeConfigSubFlowDialogClose"
+      >
+        <work-repair-flow
+          v-init="()=>{refreshWorkRepairFlowComponentFlag()}"
+          :data="subFlowData"
+          :rolemap="roleCodeNameMap"
+          ref="workRepairSubFlow"
+          :move-node-status="selectVectorStatus.child"
+          \@has-select="hasSelect"
+          \@context-menu="contextMenu"
+          \@change="subFlowDataChange"
+
+          \@click.native="flowContainerClick"
+          \@contextmenu.prevent.native="childFlowContainerContextMenu"
+          v-background-black="selectVectorStatus.child"
+          style="max-height: 500px;"
+        ></work-repair-flow>
+        <div class="contextmenu-wrap" v-show="contextmenuWrapStatus" :style="contextmenuWrapStyle">
+          <context-menu ref="context-menu-c" \@select="select" :menu="contextMenuList"></context-menu>
+        </div>
+        <div slot="footer" class="dialog-footer">
+          <el-button \@click="confirmConfigSubFlowBtn" type="primary" size="mini">确定</el-button>
+          <el-button \@click="cancelConfigSubFlowBtn" type="primary" size="mini">取消</el-button>
+        </div>
+      </el-dialog>
+    </div>
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/workRepairFlowConfig/js/index.js?v6"></script>
+  </body>
+</html>

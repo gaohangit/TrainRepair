@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.bill.fillback.dao.ChecklistFaultRelationMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ${tableAlias}S_ID as "${columnPrefix}id",
+        ${tableAlias}S_DAYPLANID as "${columnPrefix}dayPlanId",
+        ${tableAlias}S_CHECKLISTSUMMARYID as "${columnPrefix}checklistSummaryId",
+        ${tableAlias}S_DETAILID as "${columnPrefix}detailId",
+        ${tableAlias}S_TRAINSETID as "${columnPrefix}trainsetId",
+        ${tableAlias}S_FAULTID as "${columnPrefix}faultId",
+        ${tableAlias}D_CREATETIME as "${columnPrefix}createTime",
+        ${tableAlias}S_STUFFID as "${columnPrefix}stuffId"
+    </sql>
+
+</mapper>

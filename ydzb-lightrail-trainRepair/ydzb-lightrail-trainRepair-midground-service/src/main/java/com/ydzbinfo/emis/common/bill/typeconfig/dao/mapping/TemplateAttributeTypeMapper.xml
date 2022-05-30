@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.common.bill.typeconfig.dao.TemplateAttributeTypeMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ${tableAlias}S_ATTRIBUTETYPECODE as "${columnPrefix}attributeTypeCode",
+        ${tableAlias}S_ATTRIBUTETYPENAME as "${columnPrefix}attributeTypeName",
+        ${tableAlias}S_REMARK as "${columnPrefix}remark",
+        ${tableAlias}S_SORT as "${columnPrefix}sort"
+    </sql>
+
+</mapper>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="${publicStaticPath}/IE/babel-browser.min.js"></script>
+
+    <link rel="stylesheet" href="${publicStaticPath}/elementUI/index.css" />
+    <script src="${publicStaticPath}/vue/vue.js"></script>
+    <script src="${publicStaticPath}/elementUI/index.js"></script>
+    <script src="${ctxPath}/static/lib/day/day.js"></script>
+    <script src="${publicStaticPath}/vue/axios.min.js"></script>
+    <script src="${ctxPath}/static/utils/GeneralUtil.js"></script>
+    <link rel="stylesheet" href="${ctxPath}/static/lib/input_word_limit.css" />
+
+    <script src="${ctxPath}/static/config/index.js"></script>
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/faultToKeyWork/api/index.js"></script>
+
+    <link rel="stylesheet" href="${publicStaticPath}/common/base.css" />
+    <link rel="stylesheet" href="${ctxPath}/static/trainRepair/workRepairFlow/faultToKeyWork/css/index.css" />
+
+    <script>
+      const unitCode = '${thirdOrganCode}'; //所编码
+    </script>
+  </head>
+  <body>
+    <div id="faultToKeyWork" v-cloak>
+      <el-card class="box-card">
+        <div slot="header">
+          <span class="adorn"></span><h2>{{pageTitle}}</h2>
+        </div>
+        
+        <el-form
+        ref="headerForm"
+        class="home-form mb-10-form"
+        :model="headerFormData"
+        :rules="headerFormRules"
+        label-width="130px"
+      >
+        <el-row>
+          <el-col :span="6">
+            <el-form-item label="发现时间：" prop="findTime">
+              <el-date-picker
+                v-model="headerFormData.findTime"
+                type="daterange"
+                align="right"
+                value-format="yyyy-MM-dd"
+                unlink-panels
+                range-sparator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+
+              ></el-date-picker>
+              <!-- :picker-options="pickerOptions" -->
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="车组：" prop="trainsetId">
+              <el-select v-model="headerFormData.trainsetId" filterable clearable>
+                <el-option
+                  v-for="item in trainsetList"
+                  :key="item.trainsetid"
+                  :label="item.trainsetname"
+                  :value="item.trainsetid"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="6">
+            <el-form-item label="功能分类：" prop="subFunctionClassId">
+              <el-cascader
+                :options="classificationTreeData"
+                :props="funcNodeCodeProps"
+                v-model="headerFormData.subFunctionClassId"
+                :show-all-levels="false"
+                :debounce="300"
+                filterable
+                clearable
+                popper-class="funcNodeCodePopper"
+                placeholder="请选择功能分类"
+              >
+              </el-cascader>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="故障等级：" prop="faultGrade">
+              <el-select v-model="headerFormData.faultGrade" filterable clearable>
+                <el-option
+                  v-for="item in faultLevelList"
+                  :key="item.id"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row class="border-bottom">
+          <el-col :span="6">
+            <el-form-item label="处理状态：" prop="dealWithDescCode">
+              <el-select v-model="headerFormData.dealWithDescCode" filterable clearable>
+                <el-option
+                  v-for="item in dealStateList"
+                  :key="item.id"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="6">
+            <el-form-item label="转换状态" prop="convertKeyWork">
+              <el-select v-model="headerFormData.convertKeyWork" filterable clearable>
+                <el-option
+                  v-for="item in convertKeyWorkList"
+                  :key="item.id"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" class="text-r">
+            <el-button type="primary" size="mini" \@click="openToKeyWorkDialog">转为关键作业</el-button>
+            <el-button type="primary" size="mini" \@click="getCenterFaultInfo">查询</el-button>
+            <el-button type="primary" size="mini" \@click="resetHeaderForm">重置</el-button>
+          </el-col>
+        </el-row>
+        </el-form>
+        <div class="main-table" ref="mainTable">
+          <el-table
+            :data="mainTable.data"
+            border
+            :height="mainTable.height"
+            row-key="id"
+            \@selection-change="selectFault"
+          >
+            <el-table-column type="selection"></el-table-column>
+            <el-table-column type="index" label="序号" width="50"></el-table-column>
+            <el-table-column label="故障描述" prop="faultDescription" show-overflow-tooltip></el-table-column>
+            <el-table-column label="车组" prop="trainsetName" sortable show-overflow-tooltip></el-table-column>
+            <el-table-column label="车辆号" prop="carNo" sortable show-overflow-tooltip></el-table-column>
+            <el-table-column label="功能分类" prop="sysFunctionName" sortable show-overflow-tooltip></el-table-column>
+            <el-table-column label="故障等级" prop="faultGrade" sortable show-overflow-tooltip></el-table-column>
+            <el-table-column
+              label="发现时间"
+              sortable
+              prop="findFaultTime"
+              :formatter="timeFormat"
+              show-overflow-tooltip
+            ></el-table-column>
+            <el-table-column label="处理状态" sortable prop="dealWithDesc" show-overflow-tooltip></el-table-column>
+            <el-table-column label="转换状态" show-overflow-tooltip>
+              <template v-slot="{row}">
+                <div>
+                  {{row.convertKeyWork ==  true ? '是' : '否'}}
+                </div>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+        <el-pagination
+          \@size-change="faultTablePageSizeChange"
+          \@current-change="faultTablePageNumChange"
+          :current-page="mainTable.pageNum"
+          :page-sizes="[10, 20, 50,100]"
+          :page-size="mainTable.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="mainTable.total"
+        >
+        </el-pagination>
+      </el-card>
+      <el-dialog
+        title="故障转关键作业"
+        width="80%"
+        :visible.sync="toKeyWorkDialog.visible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        \@closed="toKeyWorkDialogClose"
+        class="center-dialog"
+        top="auto"
+      >
+      <el-form ref="faultForm" :model="toKeyWorkDialog.faultFormData" :rules="toKeyWorkDialog.faultFormRules">
+          <el-table :data="toKeyWorkDialog.faultToKeyWorkList" border height="350" row-key="id">
+            <el-table-column label="车组" prop="trainsetName" show-overflow-tooltip></el-table-column>
+            <el-table-column label="车辆号" prop="carNo" show-overflow-tooltip></el-table-column>
+            <el-table-column label="功能分类" prop="sysFunctionName" show-overflow-tooltip></el-table-column>
+            <el-table-column label="故障等级" prop="faultGrade" show-overflow-tooltip></el-table-column>
+            <el-table-column
+              label="发现时间"
+              prop="findFaultTime"
+              :formatter="timeFormat"
+              show-overflow-tooltip
+            ></el-table-column>
+            <el-table-column label="处理状态" prop="dealWithDesc" show-overflow-tooltip></el-table-column>
+            <el-table-column label="作业内容" width="300" show-overflow-tooltip>
+              <template v-slot="{row}">
+                <el-form-item :prop="row.faultId">
+                  <el-input type="textarea" class="fix-count-in" :rows="3" maxlength="200" show-word-limit v-model.trim="toKeyWorkDialog.faultFormData[row.faultId]" size="mini" clearable></el-input>
+                </el-form-item>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-form>
+
+        <el-form
+          ref="toKeyWorkDialogFormRef"
+          :model="toKeyWorkDialog.toKeyWorkFormData"
+          :rules="toKeyWorkDialog.toKeyWorkFormRules"
+          label-width="100px"
+          class="mar-top-20"
+        >
+          <el-row>
+            <el-col :span="6">
+              <el-form-item label="类型：" prop="keyWorkType">
+                <el-select v-model="toKeyWorkDialog.toKeyWorkFormData.keyWorkType" filterable clearable>
+                  <el-option
+                  v-for="item in workTypeList"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="位置：" prop="position">
+                <el-input
+                  v-model.trim="toKeyWorkDialog.toKeyWorkFormData.position"
+                  :maxlength="50" 
+                  show-word-limit
+                  type="text"
+                  clearable
+                  class="fix-count-out"
+                ></el-input>
+              </el-form-item>
+              <el-form-item label="作业条件：" prop="workEnv">
+                <el-select v-model="toKeyWorkDialog.toKeyWorkFormData.workEnv" filterable clearable>
+                  <el-option
+                  v-for="item in workEnvList"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="作业班组：" prop="workTeam">
+                <el-select v-model="toKeyWorkDialog.toKeyWorkFormData.workTeam" filterable value-key="teamCode">
+                  <el-option
+                  v-for="item in workTeamList"
+                  :key="item.teamCode"
+                  :label="item.teamName"
+                  :value="item"
+                ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="18">
+              <el-form-item label="备注：" prop="remark">
+                <el-input class="fix-count-in" :maxlength="500" show-word-limit show-word-limit v-model.trim="toKeyWorkDialog.toKeyWorkFormData.remark" type="textarea" :rows="7"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <el-row style="margin: 10px 0px 0">
+          <el-col class="text-c">
+            <el-button type="primary" size="mini" \@click="setKeyWorkFlowRunByFault">转为关键作业</el-button>
+            <el-button type="primary" size="mini" \@click="toKeyWorkDialog.visible = false">取消</el-button>
+          </el-col>
+        </el-row>
+      </el-dialog>
+    </div>
+    <script type="text/babel" src="${ctxPath}/static/trainRepair/workRepairFlow/faultToKeyWork/js/index.js"></script>
+  </body>
+</html>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.common.workprocess.dao.ProcessCarPartMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.workprocess.querymodel.ProcessCarPart">
+        <id column="S_PROCESSID" property="processId" />
+        <result column="S_DAYPLANID" property="dayPlanId" />
+        <result column="S_TRAINSETNAME" property="trainsetName" />
+        <result column="S_TRAINSETID" property="trainsetId" />
+        <result column="S_UNITCODE" property="unitCode" />
+        <result column="S_UNITNAME" property="unitName" />
+        <result column="S_ITEMCODE" property="itemCode" />
+        <result column="S_ITEMNAME" property="itemName" />
+        <result column="S_REPAIRTYPE" property="repairType" />
+        <result column="S_ARRAGETYPE" property="arrageType" />
+        <result column="S_DATASOURCE" property="dataSource" />
+        <result column="S_PARTTYPE" property="partType" />
+        <result column="S_PARTPOSITION" property="partPosition" />
+        <result column="S_REMARK" property="remark" />
+        <result column="S_REPAIRMODE" property="repairMode" />
+        <result column="S_PARTNAME" property="partName" />
+        <result column="S_RECORDTIME" property="recordTime" />
+        <result column="S_RECORDERNAME" property="recorderName" />
+        <result column="S_RECORDERCODE" property="recorderCode" />
+        <result column="S_PROCESSDEPTID" property="processDeptId" />
+        <result column="S_PROCESSPACKETID" property="processPacketId" />
+        <result column="S_CARNO" property="carNo" />
+        <result column="S_TRAINSETTYPE" property="trainsetType" />
+        <result column="C_FLAG" property="flag" />
+        <result column="S_DELUSERCODE" property="delUserCode" />
+        <result column="S_DELUSERNAME" property="delUserName" />
+        <result column="D_DELTIME" property="delTime" />
+        <result column="S_ITEMPUBLCISHED" property="itemPublcished" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_PROCESSID, S_DAYPLANID, S_TRAINSETNAME, S_TRAINSETID, S_UNITCODE, S_UNITNAME, S_ITEMCODE, S_ITEMNAME, S_REPAIRTYPE, S_ARRAGETYPE, S_DATASOURCE, S_PARTTYPE, S_PARTPOSITION, S_REMARK, S_REPAIRMODE, S_PARTNAME, S_RECORDTIME, S_RECORDERNAME, S_RECORDERCODE, S_PROCESSDEPTID, S_PROCESSPACKETID, S_CARNO, S_TRAINSETTYPE, C_FLAG, S_DELUSERCODE, S_DELUSERNAME, D_DELTIME, S_ITEMPUBLCISHED
+    </sql>
+</mapper>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.common.bill.typeconfig.dao.TemplateAttributeMapper">
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ${tableAlias}S_ID as "${columnPrefix}id",
+        ${tableAlias}S_ATTRIBUTECODE as "${columnPrefix}attributeCode",
+        ${tableAlias}S_ATTRIBUTENAME as "${columnPrefix}attributeName",
+        ${tableAlias}S_ATTRIBUTETYPECODE as "${columnPrefix}attributeTypeCode",
+        ${tableAlias}S_ATTRIBUTEMODECODE as "${columnPrefix}attributeModeCode",
+        ${tableAlias}S_ATTRIBUTENOTE as "${columnPrefix}attributeNote",
+        ${tableAlias}S_REMARK as "${columnPrefix}remark",
+        ${tableAlias}C_LINKATTR as "${columnPrefix}linkAttr",
+        ${tableAlias}S_SORT as "${columnPrefix}sort",
+        ${tableAlias}C_SYNFLAG as "${columnPrefix}synFlag",
+        ${tableAlias}D_SYNDATE as "${columnPrefix}synDate",
+        ${tableAlias}D_CREATETIME as "${columnPrefix}createTime",
+        ${tableAlias}S_CREATEUSERCODE as "${columnPrefix}createUserCode",
+        ${tableAlias}S_CREATEUSERNAME as "${columnPrefix}createUserName",
+        ${tableAlias}D_DELTIME as "${columnPrefix}delTime",
+        ${tableAlias}S_DELUSERCODE as "${columnPrefix}delUserCode",
+        ${tableAlias}S_DELUSERNAME as "${columnPrefix}delUserName",
+        ${tableAlias}C_FLAG as "${columnPrefix}flag",
+        ${tableAlias}C_BACKFILLVERIFY as "${columnPrefix}backFillVerify",
+        ${tableAlias}C_READONLY as "${columnPrefix}readOnly",
+        ${tableAlias}C_SYSTYPE as "${columnPrefix}sysType"
+    </sql>
+
+    <!--获取属性类型下拉框数据-->
+    <select id="getAttributeTypeList"
+            resultType="com.ydzbinfo.emis.trainRepair.bill.querymodel.attribute.TemplateAttributeType">
+        select S_ATTRIBUTETYPECODE as attributeTypeCode,
+               S_ATTRIBUTETYPENAME as attributeTypeName,
+               S_REMARK            as remark,
+               S_SORT              as sort
+        from XZY_B_TEMPLATEATTRIBUTETYPE
+        order by S_SORT
+    </select>
+
+    <!--获取属性模式下拉框数据-->
+    <select id="getAttributeModeList"
+            resultType="com.ydzbinfo.emis.trainRepair.bill.querymodel.attribute.TemplateAttributeMode">
+        select S_ATTRIBUTEMODECODE as attributeModeCode,
+               S_ATTRIBUTEMODENAME as attributeModeName,
+               D_CREATETIME        as createTime,
+               S_NOTE              as note,
+               S_CONTROLTYPE       as controlType
+        from XZY_B_TEMPLATEATTRIBUTEMODE
+    </select>
+
+    <!--获取单据属性列表数据-->
+    <select id="getTemplateAttributeList"
+            resultType="com.ydzbinfo.emis.trainRepair.bill.model.attribute.TemplateAttributeForShow">
+        select
+        a.S_ID AS id,
+        a.S_ATTRIBUTECODE AS attributeCode,
+        a.S_ATTRIBUTENAME AS attributeName,
+        ype.S_ATTRIBUTETYPECODE AS attributeTypeCode,
+        ype.S_ATTRIBUTETYPENAME AS attributeTypeName,
+        cde.S_ATTRIBUTEMODECODE AS attributeModeCode,
+        cde.S_ATTRIBUTEMODENAME AS attributeModeName,
+        cde.S_NOTE AS attributeModeNote,
+        a.S_ATTRIBUTENOTE AS attributeNote,
+        a.C_LINKATTR AS linkAttr,
+        a.C_BACKFILLVERIFY AS backFillVerify,
+        a.C_READONLY as readOnly,
+        (select to_char(substr(replace(wm_concat(b.S_ATTRIBUTERANGEVALUE),',',','),1,20000)) templatevalues from XZY_B_TEMPLATEVALUE
+        b where b.S_ATTRIBUTECODE=a.S_ATTRIBUTECODE and b.C_FLAG='1') templateValues,a.C_SYSTYPE AS sysType
+        from
+        XZY_B_TEMPLATEATTRIBUTE a
+        LEFT join XZY_B_TEMPLATEATTRIBUTEMODE cde on a.S_ATTRIBUTEMODECODE=cde.S_ATTRIBUTEMODECODE
+        left join XZY_B_TEMPLATEATTRIBUTETYPE ype on a.S_ATTRIBUTETYPECODE = ype.S_ATTRIBUTETYPECODE
+        where
+        1=1
+        and a.C_FLAG='1'
+        <if test="attributeName!=null and attributeName!=''">
+            and UPPER(a.S_ATTRIBUTENAME) like CONCAT(CONCAT('%',UPPER(#{attributeName})),'%') escape '\'
+        </if>
+        <if test="attributeTypeCode!=null and attributeTypeCode!=''">
+            and a.S_ATTRIBUTETYPECODE = #{attributeTypeCode}
+        </if>
+        <if test="attributeCode!=null and attributeCode!=''">
+            and a.S_ATTRIBUTECODE=#{attributeCode}
+        </if>
+        <if test="sysType!=null and sysType!=''">
+            and a.C_SYSTYPE=#{sysType}
+        </if>
+        order by attributeTypeName,a.S_ATTRIBUTENAME
+    </select>
+
+    <!--获取取值范围列表-->
+    <select id="getTemplateValueList"
+            resultType="com.ydzbinfo.emis.trainRepair.bill.querymodel.attribute.TemplateValue">
+        select S_ID                  as id,
+               S_ATTRIBUTECODE       as attributeCode,
+               S_ATTRIBUTERANGEVALUE as attributeRangeValue
+        from XZY_B_TEMPLATEVALUE
+        where 1 = 1
+          and C_FLAG = 1
+          and S_ATTRIBUTECODE = #{attributeCode}
+    </select>
+
+    <update id="updateTemplateAttribute"
+            parameterType="com.ydzbinfo.emis.trainRepair.bill.querymodel.attribute.TemplateAttribute">
+        update XZY_B_TEMPLATEATTRIBUTE
+        set S_ATTRIBUTENAME=#{attributeName},
+            S_ATTRIBUTETYPECODE=#{attributeTypeCode},
+            S_ATTRIBUTEMODECODE=#{attributeModeCode},
+            S_ATTRIBUTENOTE=#{attributeNote},
+            C_LINKATTR=#{linkAttr},
+            C_BACKFILLVERIFY=#{backFillVerify},
+            C_READONLY=#{readOnly}
+        where S_ID = #{id}
+    </update>
+
+    <resultMap id="TemplateAttributeWithDetailResultMap"
+               type="com.ydzbinfo.emis.trainRepair.bill.model.attribute.TemplateAttributeForSave"
+               autoMapping="true">
+        <id column="id" property="id"/>
+        <collection property="templateValueList"
+                    ofType="com.ydzbinfo.emis.trainRepair.bill.querymodel.attribute.TemplateValue"
+                    columnPrefix="V_"
+                    autoMapping="true">
+            <id column="id" property="id"/>
+        </collection>
+    </resultMap>
+    <select id="selectTemplateAttributeWithDetail"
+            resultMap="TemplateAttributeWithDetailResultMap">
+        select
+        a.S_ID,
+        <include refid="com.ydzbinfo.emis.common.bill.typeconfig.dao.TemplateAttributeMapper.Base_Column_List">
+            <property name="tableAlias" value="a."/>
+            <property name="columnPrefix" value=""/>
+        </include>
+        ,
+        <include refid="com.ydzbinfo.emis.common.bill.typeconfig.dao.TemplateValueMapper.Base_Column_List">
+            <property name="tableAlias" value="v."/>
+            <property name="columnPrefix" value="V_"/>
+        </include>
+        from
+        XZY_B_TEMPLATEATTRIBUTE a
+        left join
+        XZY_B_TEMPLATEVALUE v on a.S_ATTRIBUTECODE = v.S_ATTRIBUTECODE
+        where a.S_ID = #{id}
+    </select>
+
+    <!--删除一条单据属性-->
+    <update id="delTemplateAttribute" parameterType="String">
+        update XZY_B_TEMPLATEATTRIBUTE
+        set c_flag = '0',S_DELUSERCODE='',
+            S_DELUSERNAME='',D_DELTIME=sysdate
+        where S_ID = #{id}
+    </update>
+
+    <!--获取单据模板类型和属性关系数据-->
+    <select id="getLinkAttrCountByAttributeCode" resultType="int">
+        select count(1) as linkNum
+        from
+        XZY_C_TEMPLATELINKATTR
+        where 1=1 and C_FLAG='1'
+        <if test="attributeCode!=null and attributeCode!=''">
+            and S_ATTRIBUTECODE=#{attributeCode}
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.workProcessMonitor.dao.ProcessUserConfigMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.workProcessMonitor.querymodel.ProcessUserConfig">
+        <id column="S_CONFIGID" property="configId" />
+        <result column="S_STAFFID" property="staffId" />
+        <result column="S_PARMNAME" property="parmName" />
+        <result column="S_PARMVALUE" property="parmValue" />
+        <result column="S_REMARK" property="remark" />
+        <result column="I_SORTID" property="sortId" />
+        <result column="S_UNITCODE" property="unitCode" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_CONFIGID, S_STAFFID, S_PARMNAME, S_PARMVALUE, S_REMARK, I_SORTID, S_UNITCODE
+    </sql>
+
+</mapper>

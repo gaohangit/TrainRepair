@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.systemmanagent.rfid.dao.XzyCRfidcarCritertionMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.systemmanagent.rfid.querymodel.XzyCRfidcarCritertion">
+        <id column="S_ID" property="id"/>
+        <result column="S_CRITERTIONID" property="critertionId"/>
+        <result column="D_CREATETIME" property="createTime"/>
+        <result column="S_CREATEUSERCODE" property="createUserCode"/>
+        <result column="S_CREATEUSERNAME" property="createUserName"/>
+        <result column="S_REPAIRPLACECODE" property="repairPlaceCode"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_ID as id,
+        S_CRITERTIONID as critertionId,
+        D_CREATETIME as createTime,
+        S_CREATEUSERCODE as createUserCode,
+        S_CREATEUSERNAME as createUserName,
+        S_REPAIRPLACECODE as repairPlaceCode
+    </sql>
+
+    <select id="selectRfIdCriterion" resultType="com.ydzbinfo.emis.trainRepair.systemmanagent.rfid.model.RfidCritertion">
+        select
+            cr.S_ID as id,
+            cr.S_REPAIRPLACECODE as repairPlaceCode,
+            p.s_repairplacename as repairPlaceName,
+            wo.S_ITEMCODE as itemCode,
+            wo.S_TRAINSETTYPE as trainsetType,
+            wo.S_TRAINSETSUBTYPE as trainsetSubtype,
+            wo.S_ITEMNAME as itemName
+        from
+        XZY_C_RFIDCAR_CRITERTION cr left join XZY_C_WORKCRITERTION wo on cr.S_CRITERTIONID = wo.S_CRITERTIONID
+        left join XZY_B_RFIDPLACE_TYPE p on cr.s_repairplacecode=p.s_repairplacecode
+        <where>
+            <if test="itemName != null and itemName != ''">
+               and UPPER(wo.S_ITEMNAME) like CONCAT(CONCAT('%',UPPER(#{itemName})),'%') escape '\'
+            </if>
+            <if test="trainsetSubType != null and trainsetSubType != ''">
+               and wo.S_TRAINSETSUBTYPE = #{trainsetSubType}
+            </if>
+            <if test="trainsetType != null and trainsetType != ''">
+               and wo.S_TRAINSETTYPE = #{trainsetType}
+            </if>
+            <if test="repairPlaceCode != null and repairPlaceCode != ''">
+               and cr.S_REPAIRPLACECODE = #{repairPlaceCode}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    status : 这个用于设置log4j2自身内部的信息输出,可以不设置,当设置成trace时,会看到log4j2内部各种详细输出
+    monitorInterval : Log4j能够自动检测修改配置文件和重新配置本身, 设置间隔秒数。
+            注：本配置文件的目标是将不同级别的日志输出到不同文件，最大2MB一个文件，
+            文件数据达到最大值时，旧数据会被压缩并放进指定文件夹
+-->
+<configuration status="WARN" monitorInterval="30">
+
+    <Properties>
+        <!-- 配置日志文件输出目录，此配置将日志输出到tomcat根目录下的指定文件夹 -->
+        <Property name="log.path">/logs/apiTrainRepair/</Property>
+        <!-- 控制台输出日志级别 -->
+        <Property name="log.level.console.print">warn</Property>
+        <Property name="log.level.console.error">error</Property>
+        <!-- 日志输出格式 -->
+        <Property name="log.pattern">%5p [%t] %d{yyyy-MM-dd HH:mm:ss} (%F:%L) %m%n</Property>
+        <Property name="project.name">hussar</Property>
+    </Properties>
+
+    <Appenders>
+    
+        <!-- 优先级从高到低分别是 OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL -->
+        <!-- 单词解释： Match：匹配 DENY：拒绝 Mismatch：不匹配 ACCEPT：接受 -->
+        <!-- DENY，日志将立即被抛弃不再经过其他过滤器； NEUTRAL，有序列表里的下个过滤器过接着处理日志； ACCEPT，日志会被立即处理，不再经过剩余过滤器。 -->
+        <!--输出日志的格式
+         %d{yyyy-MM-dd HH:mm:ss, SSS} : 日志生产时间
+         %p : 日志输出格式
+         %c : logger的名称 
+         %m : 日志内容，即 logger.info("message") 
+         %n : 换行符 
+         %C : Java类名
+         %L : 日志输出所在行数 
+         %M : 日志输出所在方法名 
+        -->
+         
+        <!--这个输出控制台的配置，这里输出除了warn和error级别的信息到System.out-->
+        <Console name="console_out_appender" target="system_out">
+            <!-- 控制台只输出level及以上级别的信息(onMatch),其他的直接拒绝(onMismatch) -->
+            <ThresholdFilter level="${log.level.console.print}" onMatch="deny" onMismatch="neutral"/>  
+            <!-- 输出日志的格式 -->
+            <PatternLayout pattern="${log.pattern}" />
+        </Console>
+        <!--这个输出控制台的配置，这里输出warn和error级别的信息到System.err，在eclipse控制台上看到的是红色文字-->
+        <Console name="console_err_appender" target="system_err">
+            <!-- 控制台只输出level及以上级别的信息(onMatch),其他的直接拒绝(onMismatch) -->
+            <ThresholdFilter level="${log.level.console.error}" onMatch="accept" onMismatch="deny"/>
+            <!-- 输出日志的格式 -->
+            <PatternLayout pattern="${log.pattern}"/>
+        </Console>
+        
+        <!-- TRACE级别日志 -->
+        <!-- 设置日志格式并配置日志压缩格式，压缩文件独立放在一个文件夹内，
+                             日期格式不能为冒号，否则无法生成，因为文件名不允许有冒号，此appender只输出trace级别的数据到trace.log -->
+        <RollingRandomAccessFile name="trace_appender"
+                                 immediateFlush="true" fileName="${log.path}/trace.log"
+                                 filePattern="${log.path}/${project.name}/trace/trace - %d{yyyy-MM-dd HH_mm_ss}.log.gz">
+            <PatternLayout>
+                <pattern>${log.pattern}</pattern>
+            </PatternLayout>
+            <Policies>
+                <!-- 每个日志文件最大2MB -->
+                <SizeBasedTriggeringPolicy size="2MB"/>
+            </Policies>
+            <Filters>
+                <!-- 此Filter意思是，只输出debug级别的数据 -->
+                <!-- DENY，日志将立即被抛弃不再经过其他过滤器；
+                       NEUTRAL，有序列表里的下个过滤器过接着处理日志；
+                       ACCEPT，日志会被立即处理，不再经过剩余过滤器。 -->
+                <ThresholdFilter level="debug" onMatch="deny" onMismatch="neutral"/>  
+                <ThresholdFilter level="trace" onMatch="accept" onMismatch="deny"/> 
+            </Filters>
+        </RollingRandomAccessFile>
+
+        <!-- DEBUG级别日志 -->
+        <!-- 设置日志格式并配置日志压缩格式，压缩文件独立放在一个文件夹内，
+                        日期格式不能为冒号，否则无法生成，因为文件名不允许有冒号，此appender只输出debug级别的数据到debug.log -->
+        <RollingRandomAccessFile name="debug_appender"
+                                 immediateFlush="true" fileName="${log.path}/debug.log"
+                                 filePattern="${log.path}/${project.name}/debug/debug - %d{yyyy-MM-dd HH_mm_ss}.log.gz">
+            <PatternLayout>
+                <pattern>${log.pattern}</pattern>
+            </PatternLayout>
+            <Policies>
+                <!-- 每个日志文件最大2MB -->
+                <SizeBasedTriggeringPolicy size="2MB"/>
+
+                <!-- 如果启用此配置，则日志会按文件名生成新压缩文件，
+                                               即如果filePattern配置的日期格式为 %d{yyyy-MM-dd HH} ，则每小时生成一个压缩文件，
+                                               如果filePattern配置的日期格式为 %d{yyyy-MM-dd} ，则天生成一个压缩文件 -->
+               <!--<TimeBasedTriggeringPolicy interval="1" modulate="true" /> -->
+            </Policies>
+            <Filters>
+                <!-- 此Filter意思是，只输出debug级别的数据 -->
+                <!-- DENY，日志将立即被抛弃不再经过其他过滤器；
+                       NEUTRAL，有序列表里的下个过滤器过接着处理日志；
+                       ACCEPT，日志会被立即处理，不再经过剩余过滤器。 -->
+                <ThresholdFilter level="info" onMatch="deny" onMismatch="neutral"/>  
+                <ThresholdFilter level="debug" onMatch="accept" onMismatch="deny"/> 
+            </Filters>
+        </RollingRandomAccessFile>
+
+        <!-- INFO级别日志 -->
+        <RollingRandomAccessFile name="info_appender"
+                                 immediateFlush="true" fileName="${log.path}/info.log"
+                                 filePattern="${log.path}/${project.name}/info/info - %d{yyyy-MM-dd HH_mm_ss}.log.gz">
+            <PatternLayout>
+                <pattern>${log.pattern}</pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20MB"/>
+            </Policies>
+            <Filters>
+                <ThresholdFilter level="warn" onMatch="deny" onMismatch="neutral"/>  
+                <ThresholdFilter level="info" onMatch="accept" onMismatch="deny"/> 
+            </Filters>
+        </RollingRandomAccessFile>
+
+        <!-- WARN级别日志 -->
+        <RollingRandomAccessFile name="warn_appender"
+                                 immediateFlush="true" fileName="${log.path}/warn.log"
+                                 filePattern="${log.path}/${project.name}/warn/warn - %d{yyyy-MM-dd HH_mm_ss}.log.gz">
+            <PatternLayout>
+                <pattern>${log.pattern}</pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10MB"/>
+            </Policies>
+            <Filters>
+                <ThresholdFilter level="error" onMatch="deny" onMismatch="neutral"/>  
+                <ThresholdFilter level="warn" onMatch="accept" onMismatch="deny"/> 
+              </Filters>
+        </RollingRandomAccessFile>
+
+        <!-- ERROR级别日志 -->
+        <RollingRandomAccessFile name="error_appender"
+                                 immediateFlush="true" fileName="${log.path}/error.log"
+                                 filePattern="${log.path}/${project.name}/error/error - %d{yyyy-MM-dd HH_mm_ss}.log.gz">
+            <PatternLayout>
+                <pattern>${log.pattern}</pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="2MB"/>
+            </Policies>
+            <Filters>
+                <ThresholdFilter level="error" onMatch="accept" onMismatch="deny"/>
+              </Filters>
+        </RollingRandomAccessFile>
+        
+        
+        <RollingFile name="com.jxdinfo.hussar.monitor" fileName="${log.path}/monitor.log" append="true" filePattern="${log.path}/${project.name}/$${date:yyyy-MM}/monitor-%d{yyyy-MM-dd}-%i.log">
+            <ThresholdFilter level="debug" />
+            <PatternLayout pattern="${log.pattern}" />
+            <Policies>
+                <!-- 归档每天的文件 -->
+                <TimeBasedTriggeringPolicy  interval="1" modulate="true"/>
+                <!-- 限制单个文件大小 -->
+                <SizeBasedTriggeringPolicy size="10 MB" />
+            </Policies>
+        </RollingFile>
+               
+        <RollingFile name="accessLogger" fileName="${log.path}/smon-accessLogger.log" append="true" filePattern="${log.path}/${project.name}/$${date:yyyy-MM}/smon-accessLogger-%d{yyyy-MM-dd}-%i.log">
+            <ThresholdFilter level="debug" />
+            <PatternLayout pattern="${log.pattern}" />
+            <Policies>
+                <!-- 归档每天的文件 -->
+                <TimeBasedTriggeringPolicy  interval="1" modulate="true"/>
+                <!-- 限制单个文件大小 -->
+                <SizeBasedTriggeringPolicy size="10 MB" />
+            </Policies>
+        </RollingFile>
+
+        <!--用于配置慢SQL的输出-->
+        <RollingFile name="slowSQL" fileName="${log.path}/slowSQL.log" append="true" filePattern="${log.path}/${project.name}/$${date:yyyy-MM}/slowSQL-%d{yyyy-MM-dd}-%i.log">
+            <ThresholdFilter level="error" />
+            <PatternLayout pattern="${log.pattern}" />
+            <Policies>
+                <!-- 归档每天的文件 -->
+                <TimeBasedTriggeringPolicy  interval="1" modulate="true"/>
+                <!-- 限制单个文件大小 -->
+                <SizeBasedTriggeringPolicy size="10 MB" />
+            </Policies>
+        </RollingFile>
+        
+        <!-- 配置mongdb appender -->
+        <!--<NoSql name="mongoAppender">
+            <ThresholdFilter level="warn" />
+            <MongoDb databaseName="log4j" collectionName="logs" server="mongodb.jxdinfo.com" port="27017"/>
+        </NoSql>-->
+    </Appenders>
+
+    <loggers>
+         <!-- 配置日志的根节点 -->
+        <root level="ALL">
+            <appender-ref ref="console_out_appender"/>
+            <appender-ref ref="console_err_appender"/>
+            <appender-ref ref="trace_appender"/>
+            <appender-ref ref="debug_appender"/>
+            <appender-ref ref="info_appender"/>
+            <appender-ref ref="warn_appender"/>
+            <appender-ref ref="error_appender"/>
+        </root>
+
+        <!-- 第三方日志系统 -->
+        <logger name="org.springframework.core" level="info"/>
+        <logger name="org.springframework.beans" level="info"/>
+        <logger name="org.springframework.context" level="info"/>
+        <logger name="org.springframework.web" level="info"/>
+        <logger name="org.jboss.netty" level="warn"/>
+        <logger name="org.apache.http" level="warn"/>
+        <logger name="com.mongodb" level="debug" />
+        <logger name="com.sgcc" level="debug"/>
+        <logger name="com.sgcc.isc" level="debug"/>
+        <logger name="org.jasig" level="debug"/>
+        
+        <!-- 系统监控日志配置 -->
+        <logger name="com.jxdinfo.hussar.monitor" level="debug" additivity="false">
+            <appender-ref ref="com.jxdinfo.hussar.monitor" />
+        </logger>
+        <logger name="accessLogger" level="debug" additivity="false">
+            <appender-ref ref="accessLogger" />
+        </logger>
+        <logger name="com.alibaba.druid.filter.stat" level="error" additivity="false">
+            <appender-ref ref="slowSQL" />
+        </logger>
+    </loggers>
+
+</configuration>

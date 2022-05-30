@@ -1,0 +1,257 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+[v-cloak] {
+    display: none !important;
+}
+
+.searchBtnBox {
+    width: 80%;
+    text-align: right;
+}
+
+.common_title .tag {
+    margin-top: 12px;
+}
+
+.common_title {
+    margin-bottom: 10px;
+}
+
+.iconBtn {
+    font-size: 16px;
+}
+
+.listTable th {
+    background: #d4e1ff;
+    line-height: 30px;
+    padding: 4px 8px;
+    color: #333;
+}
+
+.listTable td {
+    line-height: 30px;
+    padding: 0 8px;
+    text-align: center;
+}
+
+.listTable {
+    border-radius: 6px;
+    width: 96%;
+    margin: 0 auto;
+}
+
+.dialog-body {
+    margin-bottom: 20px;
+}
+
+.table tbody td {
+    padding: 4px 20px;
+}
+
+.dialog-body table label {
+    width: 100px;
+    display: inline-block;
+    text-align: right;
+}
+
+.el-input__inner {
+    height: 34px;
+    line-height: 34px;
+}
+
+.el-input__icon {
+    line-height: 34px;
+}
+
+.el-tabs--border-card>.el-tabs__header {
+    border-radius: 8px 8px 0 0;
+}
+
+.el-tabs__nav-wrap {
+    border-radius: 8px 8px 0 0;
+}
+
+.el-tabs--border-card>.el-tabs__content {
+    padding: 0 15px;
+}
+
+.el-popper[x-placement^=bottom] {
+    margin-top: 2px;
+}
+
+.el-select-dropdown__wrap {
+    margin-bottom: 0 !important;
+}
+
+.popper__arrow {
+    display: none;
+}
+
+.el-message-box__btns {
+    text-align: center;
+}
+
+.el-select {
+    width: 66%;
+    max-width: 170px;
+}
+
+.dialog-body .el-select {
+    width: 240px;
+    max-width: 240px;
+}
+
+.el-table .sort-caret.descending {
+    bottom: 6px;
+}
+
+.el-table .sort-caret.ascending {
+    top: 7px;
+}
+
+.el-table .sort-caret {
+    left: 0;
+}
+
+.el-scrollbar__wrap {
+    overflow-x: hidden;
+}
+
+.el-dialog__header {
+    line-height: 20px;
+    padding: 10px;
+    text-align: left;
+    height: 20px;
+    background: #409EFF;
+    border-radius: 6px 6px 0 0;
+}
+
+.el-dialog__title {
+    color: #fff;
+}
+
+.el-dialog__headerbtn {
+    top: 12px;
+}
+
+.el-dialog {
+    border-radius: 6px;
+}
+
+.el-dialog__headerbtn .el-dialog__close {
+    color: #fff;
+}
+
+.el-dialog__headerbtn:focus .el-dialog__close,
+.el-dialog__headerbtn:hover .el-dialog__close {
+    color: #000;
+}
+
+.el-input__inner {
+    height: 30px;
+}
+
+.el-input__icon {
+    line-height: 30px;
+}
+
+.el-popper[x-placement^=bottom] {
+    margin-top: 0;
+}
+
+.dialog-body .el-input {
+    width: 240px
+}
+
+.dialog-body .lastTd .el-input {
+    width: calc(100% - 145px);
+}
+
+.el-select .el-tag {
+    min-width: 80px;
+}
+
+.el-col {
+    margin-bottom: 6px;
+}
+
+.el-row .el-col label {
+    width: 70px;
+    display: inline-block;
+    text-align: right;
+}
+
+.el-table--striped .el-table__body tr.el-table__row--striped td {
+    background-color: #F3F6FD;
+}
+
+.el-date-picker {
+    height: 426px;
+}
+
+.el-date-editor .el-range__icon {
+    line-height: 24px;
+}
+
+.el-date-editor .el-range-separator {
+    line-height: 24px;
+}
+
+.dateTime .el-date-editor.el-input,
+.el-date-editor.el-input__inner {
+    width: 66%;
+    max-width: 170px;
+}
+
+.dialog-body .workTimes .el-select {
+    width: 100px;
+}
+
+.dialog-body .workTimes .el-select .el-input {
+    width: 100px;
+}
+
+.dialog-body .workTimes .el-input {
+    width: 135px;
+}
+
+.dialog-body .timeBox {
+    display: inline-block;
+    width: 240px;
+}
+
+.dialog-body .dateTime {
+    display: inline-block;
+}
+
+.dialog-body .dateTime .el-date-editor.el-input,
+.el-date-editor.el-input__inner {
+    width: 240px;
+    max-width: 240px;
+}
+
+.el-table {
+    border: 1px solid #d4e1ff;
+}
+
+.el-table .caret-wrapper {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    height: 34px;
+    width: 24px;
+    vertical-align: middle;
+    cursor: pointer;
+    overflow: initial;
+    position: relative;
+}
+
+.el-col-5 {
+    width: 20%;
+    text-align: right;
+    font-size: 14px;
+    margin-bottom: 10x;
+}

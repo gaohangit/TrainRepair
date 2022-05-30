@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>作业过程监控</title>
+    <script src="${publicStaticPath}/IE/babel-browser.min.js"></script>
+    <script src="${ctxPath}/static/lib/vue-seamless-scroll.min.js"></script>
+    <link rel="stylesheet" href="${publicStaticPath}/elementUI/index.css" />
+    <script src="${publicStaticPath}/vue/vue.js"></script>
+    <script src="${ctxPath}/static/lib/vue/vuex.js"></script>
+    <script src="${publicStaticPath}/elementUI/index.js"></script>
+    <script src="${ctxPath}/static/lib/day/day.js"></script>
+    <script src="${publicStaticPath}/vue/axios.min.js"></script>
+    <script src="${ctxPath}/static/trainRepair/trainMonitor/config/index.js"></script>
+    <script>
+      Vue.config.devtools = true;
+      Vue.config.productionTip = true;
+      const ctxPath = '${ctxPath}';
+      const baseImgPath = `${ctxPath}/static/trainRepair/trainMonitor/img`;
+
+      const thirdOrganCode = '${thirdOrganCode}'; //所编码
+      const thirdOrganName = '${thirdOrganName}'; //所名称
+      const departMentCode = '${departMentCode}'; //用户当前单位编码
+      const departMentName = '${departMentName}'; //用户当前单位名称
+
+      var transferTrainJurisdiction = false
+      @if(shiro.hasPermission("trainMonitor:MoveTrain")){
+        transferTrainJurisdiction = true
+      @}
+    </script>
+    <script src="${ctxPath}/static/trainRepair/trainMonitor/api/apiTrainRepair/commonRequest.js?v7"></script>
+    <script src="${ctxPath}/static/trainRepair/trainMonitor/api/apiTrainRepair/configRequest.js?v1"></script>
+    <script src="${ctxPath}/static/trainRepair/trainMonitor/api/apiTrainRepair/monitorNoteContentRequest.js?v2"></script>
+    <script src="${ctxPath}/static/trainRepair/trainMonitor/api/apiTrainRepair/trackpowerStateCurRequest.js?v1"></script>
+    <script src="${ctxPath}/static/trainRepair/trainMonitor/api/apiTrainRepair/trainsetPostIonCurRequest.js?v1"></script>
+    <script src="${ctxPath}/static/trainRepair/trainMonitor/api/apiTrainRepair/connectTrainTypeRequest.js"></script>
+    <script src="${ctxPath}/static/trainRepair/trainMonitor/api/apiTrainRepair/monitorPacketRequest.js"></script>
+    <script src="${ctxPath}/static/trainRepair/trainMonitor/api/apiTrainRepair/trainsetLocationConfigRequest.js?v1"></script>
+    <script src="${ctxPath}/static/trainRepair/trainMonitor/api/apiTrainRepair/reCheckTaskRequest.js?"></script>
+    <script src="${ctxPath}/static/trainRepair/trainMonitor/api/apiTrainRepair/flowRequest.js?"></script>
+
+    <link rel="stylesheet" href="${ctxPath}/static/components/trackAreaConfig/trackAreaConfig.css" />
+    <script src="${ctxPath}/static/components/trackAreaConfig/trackAreaConfig.js"></script>
+
+    <script src="${ctxPath}/static/components/track/getTrainUrls.js"></script>
+    <link rel="stylesheet" href="${ctxPath}/static/components/track/track.css" />
+    <script type="text/babel" src="${ctxPath}/static/components/track/trainWrapper.js"></script>
+    <script type="text/babel" src="${ctxPath}/static/components/track/trainFooter.js"></script>
+    <script type="text/babel" src="${ctxPath}/static/components/track/positionWrapper.js"></script>
+    <script type="text/babel" src="${ctxPath}/static/components/track/trackWrapper.js"></script>
+    <script type="text/babel" src="${ctxPath}/static/components/track/trackContainer.js"></script>
+
+    <link rel="stylesheet" href="${ctxPath}/static/trainRepair/trainMonitor/css/index.css" />
+
+    <link rel="stylesheet" href="${ctxPath}/static/components/contextMenuClick/contextMenuClick.css" />
+    <script type="text/babel" src="${ctxPath}/static/components/contextMenuClick/contextMenuClick.js"></script>
+    <!-- input全局指令 -->
+    <script  src="${ctxPath}/static/utils/InputNumberDirective.js"></script>
+  </head>
+
+  <body>
+    <div id="app" v-cloak ref="app" :class="{full:isFullScreen}">
+      <el-container class="container">
+        <el-header class="container-header" ref="header">
+          <div class="title tc">{{monitorTitle}}作业过程监控</div>
+          <div class="sub-title">
+            <span class="time">{{time}}</span>
+            <div class="config-button">
+              <img
+                :src="baseImgPath+'/top_ico5.png'"
+                alt=""
+                \@click="openShuntInfoDialog('')"
+                style="cursor: pointer"
+              />
+              <img :src="baseImgPath+'/top_ico2.png'" alt="" \@click="openRunInfoDialog('')" style="cursor: pointer" />
+              <img :src="baseImgPath+'/top_ico3.png'" alt="" \@click="showConfigButtons" style="cursor: pointer" />
+              <div class="config-button-item" v-show="configButtonsVisible">
+                <img
+                  :src="baseImgPath+'/btn_setting1.png'"
+                  alt=""
+                  \@click="openBaseConfigDialog"
+                  style="cursor: pointer"
+                />
+                <img
+                  :src="baseImgPath+'/btn_setting2.png'"
+                  alt=""
+                  \@click="openReconnectConfigDialog"
+                  style="cursor: pointer"
+                />
+                <img
+                  :src="baseImgPath+'/btn_setting3.png'"
+                  alt=""
+                  \@click="openRepairConfigDialog"
+                  style="cursor: pointer"
+                />
+              </div>
+            </div>
+            <img
+              :src="baseImgPath+'/top_ico4.png'"
+              alt=""
+              \@click="fullscreenClick"
+              v-if="!isFullScreen"
+              style="cursor: pointer"
+            />
+            <img :src="baseImgPath+'/top_ico4-1.png'" alt="" \@click="fullscreenClick" v-else style="cursor: pointer" />
+          </div>
+        </el-header>
+
+        <el-container style="height: 94%">
+          <el-aside class="aside">
+            <div class="aside-part">
+              <div class="little-title">出入所车组</div>
+
+              <el-row style="margin: 10px 10px 0px">
+                <el-col>
+                  <el-input placeholder="请输入车组号进行检索" v-model.trim="inOutTrainGroup.trainGroupName" size="mini">
+                    <img
+                      slot="suffix"
+                      :src="baseImgPath+'/ico_search.png'"
+                      alt=""
+                      style="cursor: pointer; position: absolute; right: 0; top: 50%; transform: translateY(-50%)"
+                    />
+                  </el-input>
+                </el-col>
+              </el-row>
+              <div class="trainGroup-scrollbar-parent">
+                <el-scrollbar class="scrollbar" style="height: 100%">
+                  <ul>
+                    <li
+                      v-for="(item,index) in trainGroupNameShowList"
+                      :key="item.trainsetid"
+                      class="train-set"
+                      \@contextmenu.prevent="rightMenuClick('inOut',item,$event)"
+                      draggable="true"
+                      \@dragstart="dragstart(item)"
+                      \@dblclick="dblclickLi(item)"
+                      :class="{'active':inOutTrainGroup.inOutActive[item.trainsetid]}"
+                    >
+                      <el-tooltip
+                        placement="right-start"
+                        :disabled="!baseFormConfig.ShowTrainsetTrackcode||!getTrainTrackPostionInfo(item.trainsetid)"
+                      >
+                        <div slot="content">{{getTrainTrackPostionInfo(item.trainsetid)}}</div>
+                        <div class="content">
+                          <span>{{item.trainsetname}}</span>
+                          <span v-show="!baseFormConfig.ShowTrainsetTrackcode" style="margin-left: 5px">
+                            {{getTrainTrackPostionInfo(item.trainsetid)}}
+                          </span>
+                        </div>
+                      </el-tooltip>
+                    </li>
+                  </ul>
+                </el-scrollbar>
+              </div>
+            </div>
+
+            <div class="aside-part" :style="{height:otherTrainGroup.otherHeight}">
+              <div class="little-title">其他车组</div>
+              <el-row style="margin: 10px">
+                <el-col>
+                  <el-input
+                    placeholder="请输入车组号进行检索"
+                    v-model.trim="otherTrainGroup.otherTrainGroupName"
+                    size="mini"
+                  >
+                    <img
+                      slot="suffix"
+                      :src="baseImgPath+'/ico_search.png'"
+                      alt=""
+                      style="cursor: pointer; position: absolute; right: 0; top: 50%; transform: translateY(-50%)"
+                    />
+                  </el-input>
+                </el-col>
+              </el-row>
+              <div class="trainGroup-scrollbar-parent">
+                <el-scrollbar class="scrollbar" style="height: 100%">
+                  <ul>
+                    <li v-for="(item,index) in otherTrainGroupNameShowList" :key="index">
+                      <el-tooltip placement="right-start">
+                        <div slot="content">{{item.remark}}</div>
+                        <div class="content">
+                          <span style="cursor: context-menu">{{item.trainsetName}}</span>
+                        </div>
+                      </el-tooltip>
+                    </li>
+                  </ul>
+                </el-scrollbar>
+              </div>
+            </div>
+
+            <div style="height: 15%" class="aside-part" v-if="!baseFormConfig.MovePlan">
+              <div class="little-title" \@dblclick="shuntingNotesDblclick">
+                <el-input
+                  v-model.trim="noteNameShow"
+                  v-if="noteConfigDialog.dblState"
+                  ref="dblInputRef"
+                  maxlength="6"
+                  show-word-limit
+                  clearable
+                  \@keyup.enter.native="dbltitleEnter"
+                ></el-input>
+                <span v-else>{{baseFormConfig['NoteName']}}</span>
+              </div>
+              <div class="note-wrapper" \@contextmenu.prevent="noteRgihtClick">
+                <vue-seamless-scroll
+                  ref="scroll"
+                  :key="scrollKey"
+                  :data="noteConfigDialog.noteList"
+                  class="seamless-wrap"
+                  style="height: 100%"
+                  :class-option="classOption"
+                >
+                  <ul id="scrollUl" class="list-scroll" ref="scrollUl">
+                    <li v-for="item in noteConfigDialog.noteList" :key="item.id">{{item.content}}</li>
+                  </ul>
+                </vue-seamless-scroll>
+              </div>
+            </div>
+          </el-aside>
+          <el-main style="padding: 0">
+            <el-container class="info-container">
+              <div class="split-img"></div>
+              <el-header class="info-header-f">
+                <div class="aside-title">线区</div>
+                <div class="info-header">
+                  <div class="little-title">车组信息</div>
+                </div>
+              </el-header>
+              <el-main \@mouseover.native="wrapperMouseOver" \@mouseleave.native="wrapperMouseLeave">
+                <track-container ref="track" :height="trackContainerHeight">
+                  <track-wrapper
+                    v-for="trackItem in groupAllTrackMap[trackPageNum]"
+                    :key="trackItem.trackCode"
+                    :track-info="trackItem"
+                    :track-area-name="trackAreaCodeNameMap[showTrackAreaCodeMap[trackItem.trackCode]]"
+                    :is-connect="connectTrackCodes[trackItem.trackCode]"
+                    :power-info="trackCodePowerMap[trackItem.trackCode]"
+                    :is-active="trainWrapperActive[trackItem.trackCode]"
+                    :track-power-changed-state="baseFormConfig.TrackPowerChangedState"
+                    :unit-code="unitCode"
+                    :unit-name="unitName"
+                    \@track-power-change="trackPowerChange"
+                    \@train-position-exchange="trainPostionExchange"
+                  >
+                    <position-wrapper
+                      v-if="!notShowPositionCodesByLongTail.includes(positionItem.trackPositionCode)"
+                      v-for="positionItem in trackItem.lstTrackPositionInfo"
+                      :key="positionItem.trackPositionCode"
+                      :position-info="positionItem"
+                      :is-active="trainWrapperActive[trackItem.trackCode+'-'+positionItem.trackPositionCode]"
+                      \@drop="drop"
+                      \@empty-track-click="emptyTrackClick"
+                      \@set-train-wrapper-active="setTrainWrapperActive"
+                      \@reset-train-wrapper-active="resetTrainWrapperActive"
+                    >
+                      <train-wrapper
+                        v-if="positionCodeTrainsetInfoMap[positionItem.trackPositionCode]"
+                        :trainset-info="positionCodeTrainsetInfoMap[positionItem.trackPositionCode]"
+                        :focus-id="focusId"
+                        :show-move-train-plan="baseFormConfig.ShowMoveTrainPlan"
+                        :is-move-train-plan-warning="baseFormConfig.IsMoveTrainPlanWarning"
+                        :move-train-plan-warning-time="baseFormConfig.MoveTrainPlanWarningTime"
+                        :warning-config="warningConfig"
+                        \@drag-start="dragstart(positionCodeTrainsetInfoMap[positionItem.trackPositionCode], true)"
+                        \@train-contextmenu="trainContextmenu"
+                        \@train-head-change="trainHeadChange"
+                        hover-active
+                      >
+                        <div class="train-header" slot="train-header">
+                          <div class="train-icon-group">
+                            <div
+                              class="train-icon"
+                              v-if="trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]&&
+                              (trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].repairOne 
+                              || trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].repairTwo    
+                              || trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].machineRepair
+                              || trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].faultNumber > 0
+                              || trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].filterNumber > 0
+                              || trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].temporaryNumber > 0
+                              || trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].planLessKeyNumber > 0 
+                              || trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].hostLing)"
+                            >
+                              <div>任务:</div>
+                              <div
+                                class="ico"
+                                :class="{ico_red: trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]&&trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].dayPlan == false}"
+                                v-if="trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]&&trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].repairOne"
+                                \@click="showIframe('one',positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId)"
+                              >
+                                <span>一</span>
+                              </div>
+
+                              <div
+                                class="ico"
+                                :class="{ico_red: trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]&&trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].dayPlan == false}"
+                                v-if="trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]&&trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].repairTwo"
+                                \@click="showIframe('two',positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId)"
+                              >
+                                <span>二</span>
+                              </div>
+
+                              <div
+                                class="ico"
+                                :class="{ico_red: trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]&&trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].dayPlan == false}"
+                                v-if="trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]&&trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].millWheel ? trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].millWheel.trigger : false"
+                                \@click="lookupNodeDealInfoBtn(trainsetIdNodeListMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId], trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].millWheel)"
+                              >
+                                <span>镟</span>
+                              </div>
+
+                              <div
+                                class="ico"
+                                :class="{ico_red: trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]&&trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].dayPlan == false}"
+                                v-if="trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]&&trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].machineRepair ? trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].machineRepair.trigger : false"
+                                \@click="lookupNodeDealInfoBtn(trainsetIdNodeListMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId], trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].machineRepair)"
+                              >
+                                <span>机</span>
+                              </div>
+
+                              <div
+                                class="ico"
+                                :class="{ico_red: trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]&&trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].dayPlan == false}"
+                                v-if="trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]&&trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].faultNumber > 0"
+                                \@click="openFaultListDialog(positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId)"
+                              >
+                                <span>故</span>
+
+                                <div
+                                  class="task-num"
+                                  v-if="trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]&&trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].faultNumber > 0"
+                                >
+                                  {{trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].faultNumber}}
+                                </div>
+                              </div>
+
+                              <div
+                                class="ico"
+                                :class="{ico_red: trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]&&trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].dayPlan == false}"
+                                v-if="trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]&&trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].filterNumber > 0"
+                              >
+                                <span> 滤 </span>
+
+                                <div
+                                  class="task-num"
+                                  v-if="trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]&&trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].filterNumber > 0"
+                                >
+                                  {{trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].filterNumber}}
+                                </div>
+                              </div>
+
+                              <div
+                                class="ico"
+                                :class="{ico_red: trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]&&trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].dayPlan == false}"
+                                v-if="trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]&&trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].temporaryNumber > 0"
+                                \@click="showIframe('temporary',positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId)"
+                              >
+                                <span> 临 </span>
+
+                                <div
+                                  class="task-num"
+                                  v-if="trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]&&trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].temporaryNumber > 0"
+                                >
+                                  {{trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].temporaryNumber}}
+                                </div>
+                              </div>
+
+                              <div
+                                class="ico"
+                                :class="{ico_red: trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]&&trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].planLessKeyDay == false}"
+                                v-if="trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]&&trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].planLessKeyNumber > 0"
+                                \@click="showIframe('planLessKey',positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId)"
+                              >
+                                <span> 关 </span>
+
+                                <div
+                                  class="task-num"
+                                  v-if="trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]&&trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].planLessKeyNumber > 0"
+                                >
+                                  {{trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].planLessKeyNumber}}
+                                </div>
+                              </div>
+
+                              <div
+                                class="ico"
+                                :class="{ico_red: trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]&&trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].dayPlan == false}"
+                                v-if="trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId] && trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].hostLing ? trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].hostLing.trigger : false"
+                                \@click="lookupNodeDealInfoBtn(trainsetIdNodeListMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId], trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].hostLing)"
+                              >
+                                <span> 整 </span>
+
+                                <!-- <div
+                                  class="task-num"
+                                  v-if="trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]&&trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].hostLingNumber > 0"
+                                >
+                                  {{trainsetIdTaskMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].hostLingNumber}}
+                                </div> -->
+                              </div>
+                            </div>
+                            <div
+                              class="train-icon"
+                              v-if="trainsetIdLYMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]||trainsetIdSJMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]"
+                            >
+                              <div>预警:</div>
+                              <div
+                                class="ico"
+                                v-if="trainsetIdLYMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]"
+                              >
+                                <span
+                                  \@click="openWarningDialog('LY',positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId)"
+                                  >LY</span
+                                >
+                                <div class="task-num">
+                                  {{trainsetIdLYMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].length}}
+                                </div>
+                              </div>
+                              <div
+                                class="ico"
+                                v-if="trainsetIdSJMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]"
+                              >
+                                <span
+                                  \@click="openWarningDialog('SJ',positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId)"
+                                  >SJ</span
+                                >
+                                <div class="task-num">
+                                  {{trainsetIdSJMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].length}}
+                                </div>
+                              </div>
+                            </div>
+                            <div class="train-icon base-info">
+                              <div
+                                v-if="!baseFormConfig.ShowRunningPlan ||
+                                      !baseFormConfig.ShowRepair ||
+                                      !baseFormConfig.ShowMoveTrainPlan"
+                              >
+                                基本信息:
+                              </div>
+
+                              <div
+                                class="ico"
+                                :class="{'ico-active':trainsetIdHasRun[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]}"
+                                v-if="!baseFormConfig.ShowRunningPlan"
+                                \@click="openRunInfoDialog(positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId)"
+                              >
+                                开
+                              </div>
+                              <div
+                                class="ico"
+                                :class="{'ico-active':pgMMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId] && (pgMMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].highLevelRepairInfos.length != 0 || pgMMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId].unitLevelRepairInfos.length != 0)}"
+                                v-if="!baseFormConfig.ShowRepair"
+                                \@click="openRepairInfoDialog(positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId)"
+                              >
+                                检
+                              </div>
+
+                              <div
+                                class="ico"
+                                :class="{'ico-active':trainsetIdHasShunt[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]}"
+                                v-if="!baseFormConfig.ShowMoveTrainPlan"
+                                \@click="openShuntInfoDialog(positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId)"
+                              >
+                                调
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <train-footer
+                          slot="train-footer"
+                          :is-long="positionCodeTrainsetInfoMap[positionItem.trackPositionCode].isLong=='1'"
+                          :node-list-id="trainsetIdNodeListIdMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId] || trainsetIdHostLingNodeListIdMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]"
+                          :node-list="trainsetIdNodeListMapFooter[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId] || trainsetIdHostLingNodeListMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]"
+                          :node-id="trainsetIdNodeIdMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId] || trainsetIdHostLingNodeListIdMap[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId]"
+                          :full-screen="isFullScreen"
+                          \@lookup-node-deal-info-btn="lookupNodeDealInfoBtn(trainsetIdNodeListMapFooter[positionCodeTrainsetInfoMap[positionItem.trackPositionCode].trainsetId])"
+                        >
+                        </train-footer>
+                      </train-wrapper>
+                    </position-wrapper>
+                  </track-wrapper>
+                </track-container>
+              </el-main>
+              <el-footer>
+                <el-pagination
+                  small
+                  background
+                  layout="pager"
+                  :page-count="trackPageCount"
+                  :current-page.sync="trackPageNum"
+                ></el-pagination>
+              </el-footer>
+            </el-container>
+          </el-main>
+        </el-container>
+      </el-container>
+
+      <!-- 调用页面 -->
+      <div class="iframe-mask" :class="{monitor:monitorFlag}" v-if="iframeVisible" \@click="iframeVisible = false">
+        <iframe :src="iframeSrc" frameborder="0" scrolling="no"></iframe>
+      </div>
+
+      <!-- 节点处理情况查看 -->
+      <el-dialog
+        title="节点处理情况查看"
+        width="80%"
+        :visible.sync="lookupNodeDealInfoDialog.visible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        :modal="false"
+        center
+        custom-class="reconnect-dialog"
+        class="center-dialog"
+        top="auto"
+      >
+        <el-table
+          :data="nodeDealData"
+          height="500px"
+          :cell-style="cellStyle"
+          border
+          header-row-class-name="table-header"
+          stripe
+          class="reconnect-table"
+          :key="tableRefresh"
+        >
+          <el-table-column
+            width="200"
+            show-overflow-tooltip
+            prop="node"
+            label="流程节点"
+            align="center"
+            v-if="nodeDealData.length > 0"
+            fixed
+          ></el-table-column>
+          <el-table-column
+            prop="node"
+            align="center"
+            v-else
+          ></el-table-column>
+          <el-table-column
+            min-width="200"
+            v-for="column in nodeColumns"
+            :key="column.key"
+            :prop="column.prop"
+            :label="column.label"
+            align="center"
+          >
+            <template v-slot="{row}">
+              <el-tooltip placement="top">
+                <div slot="content">{{getDetail(row.roleWorkerDetails[column.prop])}}</div>
+
+                <span class="hander" \@click="cellClick(row,column.prop)">{{row[column.prop]}}</span>
+              </el-tooltip>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-dialog>
+      <!-- 节点详细处理记录 -->
+      <el-dialog
+        title="节点详细处理记录"
+        width="80%"
+        :visible.sync="nodeDealDetailDialog.visible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        :modal="false"
+        center
+        custom-class="reconnect-dialog"
+        class="center-dialog"
+        top="auto"
+      >
+        <el-card style="max-height: 500px; overflow: scroll">
+          <div v-for="workerId in Object.keys(workerPicMap)" :key="workerId">
+            <el-row style="color: #ffffff">{{workerDetail[workerId]}}</el-row>
+            <el-row class="before-img">
+              <el-upload action="#" :auto-upload="false" list-type="picture-card" :file-list="workerPicMap[workerId]">
+                <i class="el-icon-plus"></i>
+                <template v-slot:file="{file}">
+                  <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
+                  <span class="el-upload-list__item-actions">
+                    <span class="el-upload-list__item-preview" \@click="previewPicture(file,workerPicMap[workerId])">
+                      <i class="el-icon-zoom-in"></i>
+                    </span>
+                  </span>
+                </template>
+              </el-upload>
+            </el-row>
+          </div>
+        </el-card>
+      </el-dialog>
+
+      <el-image ref="myImg" :src="imgUrl" :preview-src-list="prePics"></el-image>
+
+      <!-- 右键菜单 -->
+      <right-menu
+        ref="rightMenu"
+        :list="contextMenuMap"
+        :visible="getRightMenuShow"
+        :left="axis.x"
+        :top="axis.y"
+        :action="action"
+        :active="active"
+        :child-visible="childVisible"
+        :right-menu-type="rightMenuType"
+        :track-area-code-track-name-map="trackAreaCodeTrackNameMap"
+        \@root-left-change="rootLeftChange"
+        \@root-top-change="rootTopChange"
+        \@set-active="setActive"
+        \@reset-active="resetActive"
+        \@set-child-visible="setChildVisible"
+        \@reset-child-visible="resetChildVisible"
+        \@set-action="setAction"
+        \@menu-select="rightMenuSelect"
+        \@children-change="childrenChange"
+      ></right-menu>
+
+      <!-- 基础配置弹框 -->
+      <el-dialog
+        :visible.sync="baseConfigDialog.visible"
+        width="50%"
+        :modal="false"
+        center
+        :close-on-click-modal="false"
+        custom-class="base-dialog"
+        top="7vh"
+      >
+        <div slot="title">
+          <span class="little-title el-dialog__title">基础配置</span>
+        </div>
+        <track-area-config
+          :line-table-data="lineTableData"
+          :all-track-area-list="allTrackAreaSortList"
+          :track-show-config="baseConfigDialog.trackShowConfig"
+          :line-table-height="400"
+          \@set-track-show-config="setTrackShowConfig"
+        >
+        </track-area-config>
+
+        <div class="dialog-title-text flex-row">
+          是否开启股道切换：
+          <div class="switch">
+            <el-switch
+              v-model="baseConfigDialog.formData.ShowTrackRefresh"
+              active-color="#22395b"
+              inactive-color="#22395b"
+            >
+            </el-switch>
+            <div class="switch-choose">
+              <div>是</div>
+              <div>否</div>
+            </div>
+          </div>
+          <div v-if="!baseConfigDialog.formData.ShowTrackRefresh" style="margin-left: 20px;">
+            <el-input size="mini" v-number-input="{ min: 0, integer: 9, decimal: 0 }" v-model.trim="baseConfigDialog.formData.TrackRefreshTime"></el-input>
+            秒 【注意：不小于30秒】
+          </div>
+        </div>
+
+        <div class="dialog-title-text">
+          股道位置切换：
+          <div class="switch">
+            <el-switch
+              v-model="baseConfigDialog.TrackPositionChange"
+              active-color="#22395b"
+              inactive-color="#22395b"
+            >
+            </el-switch>
+            <div class="switch-choose">
+              <div>是</div>
+              <div>否</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dialog-title-text">
+          是否显示上一班次任务：
+          <div class="switch">
+            <el-switch
+              v-model="baseConfigDialog.formData.ShowLastRepairTask"
+              active-color="#22395b"
+              inactive-color="#22395b"
+            >
+            </el-switch>
+            <div class="switch-choose">
+              <div>是</div>
+              <div>否</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dialog-title-text">
+          是否显示下次调车时间：
+          <div class="switch">
+            <el-switch
+              v-model="baseConfigDialog.formData.ShowShuntPlan"
+              active-color="#22395b"
+              inactive-color="#22395b"
+            >
+            </el-switch>
+            <div class="switch-choose">
+              <div>是</div>
+              <div>否</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dialog-title-text">
+          是否显示开行信息：
+          <div class="switch">
+            <el-switch
+              v-model="baseConfigDialog.formData.ShowRunningPlan"
+              active-color="#22395b"
+              inactive-color="#22395b"
+            >
+            </el-switch>
+            <div class="switch-choose">
+              <div>是</div>
+              <div>否</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dialog-title-text">
+          是否显示检修信息：
+          <div class="switch">
+            <el-switch v-model="baseConfigDialog.formData.ShowRepair" active-color="#22395b" inactive-color="#22395b">
+            </el-switch>
+            <div class="switch-choose">
+              <div>是</div>
+              <div>否</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dialog-title-text">
+          是否按调车计划自动调车：
+          <div class="switch">
+            <el-switch
+              v-model="baseConfigDialog.formData.AutoMoveTrain"
+              active-color="#22395b"
+              inactive-color="#22395b"
+            >
+            </el-switch>
+            <div class="switch-choose">
+              <div>是</div>
+              <div>否</div>
+            </div>
+          </div>
+        </div>
+        <div class="dialog-title-text">
+          是否进行调车计划预警：
+          <div class="switch mr-20">
+            <el-switch
+              v-model="baseConfigDialog.formData.IsMoveTrainPlanWarning"
+              active-color="#22395b"
+              inactive-color="#22395b"
+            >
+            </el-switch>
+            <div class="switch-choose">
+              <div>是</div>
+              <div>否</div>
+            </div>
+          </div>
+          提前预警时长：<el-input size="mini" v-number-input="{ min: 0, integer: 9, decimal: 0 }" v-model.trim="baseConfigDialog.formData.MoveTrainPlanWarningTime"></el-input>
+          分钟
+        </div>
+
+        <div class="dialog-title-text">
+          是否显示调车计划：
+          <div class="switch mr-20">
+            <el-switch
+              v-model="baseConfigDialog.formData.ShowMoveTrainPlan"
+              active-color="#22395b"
+              inactive-color="#22395b"
+            >
+            </el-switch>
+            <div class="switch-choose">
+              <div>是</div>
+              <div>否</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dialog-title-text">
+          是否在出入所车组后显示股道信息：
+          <div class="switch">
+            <el-switch
+              v-model="baseConfigDialog.formData.ShowTrainsetTrackcode"
+              active-color="#22395b"
+              inactive-color="#22395b"
+            >
+            </el-switch>
+            <div class="switch-choose">
+              <div>是</div>
+              <div>否</div>
+            </div>
+          </div>
+        </div>
+        <div class="dialog-title-text" v-if="transferTrainJurisdiction">
+          车头方向默认配置：
+          <div class="switch">
+            <el-switch
+              v-model="baseConfigDialog.formData.HeadDirection"
+              active-color="#22395b"
+              inactive-color="#22395b"
+            >
+            </el-switch>
+            <div class="switch-choose">
+              <div>左</div>
+              <div>右</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dialog-title-text">
+          是否显示无车组的股道信息：
+          <div class="switch">
+            <el-switch
+              active-color="#22395b"
+              inactive-color="#22395b"
+              v-model="baseConfigDialog.formData.ShowNoTrainsetTrack"
+            >
+            </el-switch>
+            <div class="switch-choose">
+              <div>是</div>
+              <div>否</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dialog-title-text">
+          是否显示日志：
+          <div class="switch">
+            <el-switch active-color="#22395b" inactive-color="#22395b" v-model="baseConfigDialog.formData.MovePlan">
+            </el-switch>
+            <div class="switch-choose">
+              <div>是</div>
+              <div>否</div>
+            </div>
+          </div>
+        </div>
+
+        <span slot="footer" class="dialog-footer">
+          <el-button size="mini" class="confirm-button" \@click="updBaseConfigBtn">确 定</el-button>
+          <el-button size="mini" class="cancel-button" \@click="cancel">取 消</el-button>
+        </span>
+      </el-dialog>
+
+      <!-- 重联配置弹框 -->
+      <el-dialog
+        :visible.sync="reconnectConfigDialogVisible"
+        width="80%"
+        :modal="false"
+        center
+        :close-on-click-modal="false"
+        custom-class="reconnect-dialog"
+        top="7vh"
+      >
+        <div slot="title">
+          <span class="little-title el-dialog__title">重联配置</span>
+        </div>
+        <el-table
+          :data="reconnectConfigTableData"
+          header-row-class-name="table-header"
+          stripe
+          class="reconnect-table"
+          :height="reconnectConfigTableHeight"
+        >
+          <el-table-column type="index" label="序号" align="center"></el-table-column>
+          <el-table-column prop="trainType" label="车型" align="center"></el-table-column>
+          <el-table-column prop="connectTrainType" label="重联车型" align="center"></el-table-column>
+          <el-table-column label="操作" align="center" v-if="transferTrainJurisdiction">
+            <template slot-scope="scope">
+              <i class="el-icon-edit-outline re-icon" \@click="editReconnectConfig(scope.row)"></i>
+              <i class="el-icon-refresh-right re-icon" \@click="resetReconnectConfig(scope.row)"></i>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" align="center" v-else>
+            <template slot-scope="scope">
+              <i class="el-icon-edit-outline re-icon" style="color: #ffffff"></i>
+              <i class="el-icon-refresh-right re-icon" style="color: #ffffff"></i>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-pagination
+          \@size-change="handleReConnectTableSizeChange"
+          \@current-change="handleReConnectTableCurrentChange"
+          :current-page="reConnectTableCurrentPage"
+          :page-sizes="[10, 20, 50, 100]"
+          :page-size="reConnectTablePageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="reConnectTableTotal"
+          popper-class="select-down-class"
+        >
+        </el-pagination>
+      </el-dialog>
+
+      <!-- 重联车型选择弹框 -->
+      <el-dialog
+        :visible.sync="chooseTrainTypeDialogVisible"
+        width="30%"
+        :modal="false"
+        center
+        :close-on-click-modal="false"
+        custom-class="choose-traintype-dialog"
+      >
+        <div slot="title">
+          <span class="little-title el-dialog__title">车型选择</span>
+        </div>
+        <div class="dialog-body" :style="{height:chooseTrainTypeDialogBodyHeight}">
+          <el-scrollbar style="height: 100%">
+            <el-checkbox-group v-model="connectTrainType">
+              <el-checkbox :label="item" v-for="(item,index) in trainTypeList" :key="index"></el-checkbox>
+            </el-checkbox-group>
+          </el-scrollbar>
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button size="mini" class="confirm-button" \@click="chooseTrainTypeConfirmBtn">确 定</el-button>
+          <el-button size="mini" class="cancel-button" \@click="chooseTrainTypeDialogVisible = false">取 消</el-button>
+        </span>
+      </el-dialog>
+
+      <!-- 检修配置弹框 -->
+      <el-dialog
+        :visible.sync="repairConfigDialogVisible"
+        width="80%"
+        :modal="false"
+        center
+        :close-on-click-modal="false"
+        custom-class="reconnect-dialog"
+        top="7vh"
+      >
+        <div slot="title">
+          <span class="little-title el-dialog__title">检修配置</span>
+        </div>
+        <el-table
+          :data="repairConfigTableData"
+          header-row-class-name="table-header"
+          stripe
+          class="reconnect-table"
+          :height="repairConfigTableHeight"
+        >
+          <el-table-column type="index" label="序号" align="center"></el-table-column>
+          <el-table-column prop="trainType" label="车型" align="center"></el-table-column>
+          <el-table-column prop="batchCode" label="批次" align="center"></el-table-column>
+          <el-table-column label="作业包名称" align="center" show-overflow-tooltip>
+            <template v-slot="{row}"> {{row.monitorWithPacketsList.map(item=>item.packetName).toString()}} </template>
+          </el-table-column>
+          <el-table-column label="操作" align="center" v-if="transferTrainJurisdiction">
+            <template slot-scope="scope">
+              <i class="el-icon-edit-outline re-icon" \@click="editJobPackageConfig(scope.row)"></i>
+              <i class="el-icon-refresh-right re-icon" \@click="resetJobPackage(scope.row)"></i>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" align="center" v-else>
+            <template slot-scope="scope">
+              <i class="el-icon-edit-outline re-icon" style="color: #ffffff"></i>
+              <i class="el-icon-refresh-right re-icon" style="color: #ffffff"></i>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-pagination
+          \@size-change="handleRepairTableSizeChange"
+          \@current-change="handleRepairTableCurrentChange"
+          :current-page="repairTableCurrentPage"
+          :page-sizes="[10, 20, 50, 100]"
+          :page-size="repairTablePageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="repairTableTotal"
+          popper-class="select-down-class"
+        >
+        </el-pagination>
+      </el-dialog>
+
+      <!-- 作业包选择弹框 -->
+      <el-dialog
+        :visible.sync="chooseJobPackageDialogVisible"
+        width="30%"
+        :modal="false"
+        center
+        :close-on-click-modal="false"
+        custom-class="choose-traintype-dialog"
+      >
+        <div slot="title">
+          <span class="little-title el-dialog__title">作业包选择</span>
+        </div>
+        <div class="dialog-body" :style="{height:chooseJobPackageDialogBodyHeight}">
+          <el-scrollbar style="height: 100%">
+            <el-checkbox :indeterminate="isIndeterminateChooseJobPackage" v-model="chooseAllJobPackage" \@change="chooseJobPackageAllChange">全选</el-checkbox>
+            <el-checkbox-group v-model="chooseJobPackageList">
+              <el-checkbox :label="item.packetCode" v-for="(item,index) in jobPackageList" :key="index">
+                {{item.packetName}}</el-checkbox
+              >
+            </el-checkbox-group>
+          </el-scrollbar>
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button size="mini" class="confirm-button" \@click="updMonitorPacketConfirmBtn">确 定</el-button>
+          <el-button size="mini" class="cancel-button" \@click="chooseJobPackageDialogVisible = false">取 消</el-button>
+        </span>
+      </el-dialog>
+
+      <!-- 调车记事弹框 -->
+      <el-dialog
+        :visible.sync="noteConfigDialog.visible"
+        width="50%"
+        :modal="false"
+        center
+        :close-on-click-modal="false"
+        custom-class="note-dialog"
+      >
+        <div slot="title">
+          <span class="little-title el-dialog__title">备注</span>
+        </div>
+        <ul class="note-list">
+          <li v-for="(item,index) in noteConfigDialog.noteList" class="note-item">
+            <span>{{item.content}}</span>
+            <div class="icon-group" v-if="transferTrainJurisdiction">
+              <i class="el-icon-edit-outline re-icon" \@click="editNoteContent(item)"></i>
+              <i class="el-icon-delete re-icon" \@click="deleteNote(item.id)"></i>
+            </div>
+          </li>
+        </ul>
+        <div class="add-note" \@click="addNote" v-if="transferTrainJurisdiction">新增一条</div>
+      </el-dialog>
+
+      <!-- 编辑记事内容弹框 -->
+      <el-dialog
+        title="记事内容"
+        :visible.sync="noteConfigDialog.editNoteDialogVisible"
+        width="30%"
+        :modal="false"
+        center
+        :close-on-click-modal="false"
+        custom-class="choose-traintype-dialog"
+      >
+        <el-input type="textarea" v-model.trim="noteConfigDialog.noteDialogContent" rows="4" maxlength="50" show-word-limit>
+        </el-input>
+        <span slot="footer" class="dialog-footer">
+          <el-button
+            size="mini"
+            class="confirm-button"
+            v-if="noteConfigDialog.noteState==='edit'"
+            \@click="noteDialogContentEditBtn"
+          >
+            确 定</el-button
+          >
+          <el-button size="mini" class="confirm-button" v-if="noteConfigDialog.noteState==='add'" \@click="noteDialogContentAddBtn"
+            >确 定</el-button
+          >
+          <el-button size="mini" class="cancel-button" \@click="noteDialogContentCancel">取 消</el-button>
+        </span>
+      </el-dialog>
+
+      <!-- 故障列表弹框 -->
+      <el-dialog
+        :visible.sync="faultListDialogVisible"
+        width="80%"
+        :modal="false"
+        center
+        :close-on-click-modal="false"
+        custom-class="reconnect-dialog"
+        top="7vh"
+      >
+        <div slot="title">
+          <span class="little-title el-dialog__title">故障列表</span>
+        </div>
+        <el-table
+          :data="getFaultListTableData"
+          header-row-class-name="table-header"
+          stripe
+          class="reconnect-table"
+          :height="faultListTableHeight"
+        >
+          <el-table-column type="index" label="序号" align="center"></el-table-column>
+          <el-table-column prop="trainsetName" label="车组号" align="center" show-overflow-tooltip width="150">
+          </el-table-column>
+          <el-table-column
+            prop="faultCarNo"
+            label="故障辆序"
+            align="center"
+            show-overflow-tooltip
+            width="150"
+          ></el-table-column>
+          <el-table-column prop="faultDescription" label="故障描述" align="center" show-overflow-tooltip width="250">
+          </el-table-column>
+          <el-table-column prop="dealWithDesc" label="故障状态" align="center"></el-table-column>
+          <el-table-column
+            prop="findFaultTime"
+            label="故障发现时间"
+            align="center"
+            width="110"
+          ></el-table-column>
+          <el-table-column prop="findFaultMan" label="发现人" align="center"></el-table-column>
+          <el-table-column
+            prop="dealDate"
+            label="故障处理时间"
+            align="center"
+            width="110"
+          ></el-table-column>
+          <el-table-column prop="dealFaultMan" label="处理人" align="center"></el-table-column>
+        </el-table>
+        <el-pagination
+          \@size-change="handleFaultListTableSizeChange"
+          \@current-change="handleFaultListTableCurrentChange"
+          :current-page="faultListTableCurrentPage"
+          :page-sizes="[10, 20, 50, 100]"
+          :page-size="faultListTablePageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="faultListTableTotal"
+          popper-class="select-down-class"
+        >
+        </el-pagination>
+      </el-dialog>
+
+      <!-- 开行信息弹框 -->
+      <el-dialog
+        :visible.sync="runInfoDialog.visible"
+        width="80%"
+        :modal="false"
+        center
+        :close-on-click-modal="false"
+        custom-class="reconnect-dialog"
+        top="7vh"
+      >
+        <div slot="title">
+          <span class="little-title el-dialog__title">当日开行</span>
+        </div>
+        <el-table
+          :data="runInfoDialog.tableData.slice((runInfoDialog.tableCurrentPage-1)*runInfoDialog.tablePageSize,runInfoDialog.tableCurrentPage*runInfoDialog.tablePageSize)"
+          header-row-class-name="table-header"
+          stripe
+          class="reconnect-table"
+          :height="runInfoDialog.tableHeight"
+        >
+        <template v-slot:empty>
+          <div style="position: absolute; left: calc(50% - 60px);">此查询条件暂无数据</div>
+        </template>
+          <el-table-column type="index" label="序号" align="center" width="50px"></el-table-column>
+          <el-table-column prop="bureaNameAbbr1" label="配属局" align="center" width="80px"></el-table-column>
+          <el-table-column prop="trainsetName" label="动车组" align="center" width="150px"></el-table-column>
+          <el-table-column prop="accuMile" label="动车组走行里程（km）" align="center" width="200px"></el-table-column>
+          <el-table-column prop="man" label="动车组随车机师" align="center" width="300px"> </el-table-column>
+          <el-table-column prop="baseRutId" label="交路编号" align="center" width="150px"></el-table-column>
+          <el-table-column prop="interTrains" label="交路车次" align="center" width="300px" show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column prop="startTime" label="首发时刻" align="center" width="200px"></el-table-column>
+          <el-table-column prop="trainNo" label="首发车次" align="center" width="150px"></el-table-column>
+          <el-table-column prop="startStation" label="首发站" align="center" width="150px"></el-table-column>
+          <el-table-column prop="joinTrainsetName" label="重联车组" align="center" width="150px"></el-table-column>
+          <el-table-column
+            prop="jsonAccuMile"
+            label="重联车组走行里程（km）"
+            align="center"
+            width="200px"
+          ></el-table-column>
+          <el-table-column prop="joinMan" label="重联车组随车机师" align="center" width="300px"> </el-table-column>
+        </el-table>
+        <el-pagination
+          \@size-change="handleRunInfoTableSizeChange"
+          \@current-change="handleRunInfoTableCurrentChange"
+          :current-page="runInfoDialog.tableCurrentPage"
+          :page-sizes="[10, 20, 50, 100]"
+          :page-size="runInfoDialog.tablePageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="runInfoDialog.tableTotal"
+          popper-class="select-down-class"
+        >
+        </el-pagination>
+      </el-dialog>
+
+      <!-- 调车弹框 -->
+      <el-dialog
+        :visible.sync="shuntInfoDialog.visible"
+        width="85%"
+        :modal="false"
+        center
+        :close-on-click-modal="false"
+        custom-class="reconnect-dialog"
+        top="7vh"
+      >
+        <div slot="title">
+          <span class="little-title el-dialog__title">调车信息</span>
+        </div>
+        <el-table
+          :data="shuntInfoDialog.tableData.slice((shuntInfoDialog.tableCurrentPage-1)*shuntInfoDialog.tablePageSize,shuntInfoDialog.tableCurrentPage*shuntInfoDialog.tablePageSize)"
+          header-row-class-name="table-header"
+          stripe
+          class="reconnect-table"
+          :height="shuntInfoDialog.tableHeight"
+        >
+          <el-table-column type="index" label="序号" align="center" width="50px"></el-table-column>
+          <el-table-column prop="trainsetName" width="160" label="车组号" align="center" show-overflow-tooltip>
+            <!-- <template v-slot="{row}">
+              {{trainsetIdNameMap[row.emuId]}}
+            </template> -->
+          </el-table-column>
+          <el-table-column label="股道列位" align="center" width="80" show-overflow-tooltip>
+            <template v-slot="{row}"> {{row.trackName+'-'+row.trackPositionName}} </template>
+          </el-table-column>
+          <el-table-column
+            prop="inTime"
+            label="转入时间"
+            align="center"
+            width="140"
+            :formatter="timeFormat"
+            show-overflow-tooltip
+          >
+          </el-table-column>
+          <el-table-column
+            prop="outTime"
+            label="转出时间"
+            align="center"
+            width="140"
+            :formatter="timeFormat"
+            show-overflow-tooltip
+          ></el-table-column>
+          <el-table-column
+            prop="relateTrainsetName"
+            label="重联车组"
+            align="center"
+            width="160"
+            show-overflow-tooltip
+          ></el-table-column>
+          <!-- <el-table-column prop="comPositionFlag" label="编组模式" align="center" show-overflow-tooltip></el-table-column> -->
+          <el-table-column label="头向" align="center" prop="trackPositionName" show-overflow-tooltip>
+            <!--          <template v-slot="{row}"> {{row.headDirection==='1'?'左':'右'}} </template>-->
+          </el-table-column>
+          <el-table-column label="入所信息" align="center" show-overflow-tooltip>
+            <template v-slot="{row}"> {{row.backRunningInfo.map(item=>item.trainNo).toString()}} </template>
+          </el-table-column>
+          <el-table-column label="出所信息" align="center" show-overflow-tooltip>
+            <template v-slot="{row}"> {{row.outRunningInfo.map(item=>item.trainNo).toString()}} </template>
+          </el-table-column>
+          <el-table-column label="是否重联" align="center" show-overflow-tooltip>
+            <template v-slot="{row}"> {{row.comPositionFlag==='1'?'是':'否'}} </template>
+          </el-table-column>
+          <el-table-column label="是否解编" align="center" show-overflow-tooltip>
+            <template v-slot="{row}"> {{row.isResolve==='1'?'是':'否'}} </template>
+          </el-table-column>
+        </el-table>
+        <el-pagination
+          \@size-change="handleShuntInfoTableSizeChange"
+          \@current-change="handleShuntInfoTableCurrentChange"
+          :current-page="shuntInfoDialog.tableCurrentPage"
+          :page-sizes="[10, 20, 50, 100]"
+          :page-size="shuntInfoDialog.tablePageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="shuntInfoDialog.tableTotal"
+          popper-class="select-down-class"
+        >
+        </el-pagination>
+      </el-dialog>
+
+      <!-- 检修信息弹框 -->
+      <el-dialog
+        :visible.sync="repairInfoDialogVisible"
+        width="80%"
+        :modal="false"
+        center
+        :close-on-click-modal="false"
+        custom-class="reconnect-dialog"
+        top="7vh"
+      >
+        <div slot="title" v-if="yyRepairConfig">
+          <span class="little-title el-dialog__title">运用修</span>
+        </div>
+        <el-table
+          v-if="yyRepairConfig"
+          :data="yyRepairInfoTableData"
+          header-row-class-name="table-header"
+          stripe
+          class="reconnect-table"
+          height="350"
+        >
+          <el-table-column type="index" label="序号" align="center"></el-table-column>
+          <el-table-column prop="packetName" label="作业包" align="center" width="150px" show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column prop="mainCycCode" label="修程" align="center" width="100px" show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column prop="repairTime" label="上一次检修日期" align="center" width="200px"></el-table-column>
+          <el-table-column prop="repairMileage" label="上一次检修时里程" align="center" width="200px"></el-table-column>
+          <el-table-column
+            prop="mileageDifference"
+            label="上一次检修距当前里程差"
+            align="center"
+            width="200px"
+          ></el-table-column>
+          <el-table-column
+            prop="dayDifference"
+            label="上一次检修距当前天数差"
+            align="center"
+            width="200px"
+          ></el-table-column>
+
+          <el-table-column prop="accuMile" label="累计走行公里" align="center" width="200px"></el-table-column>
+        </el-table>
+
+        <div class="el-dialog__sub__title" v-if="gjRepairConfig">
+          <div class="little-title">高级修</div>
+        </div>
+
+        <el-table
+          v-if="gjRepairConfig"
+          :data="gjRepairInfoTableData"
+          header-row-class-name="table-header"
+          stripe
+          class="reconnect-table"
+          height="150px"
+        >
+          <el-table-column type="index" label="序号" align="center"></el-table-column>
+          <el-table-column prop="level" label="修程" align="center" width="200" show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column prop="time" label="修竣时间" align="center"></el-table-column>
+          <el-table-column prop="accuMile" label="高级修时走行公里" align="center" width="300"></el-table-column>
+          <el-table-column prop="repairDeptName" label="检修单位" align="center" width="200" show-overflow-tooltip>
+          </el-table-column>
+        </el-table>
+      </el-dialog>
+
+      <!-- 预警信息弹框 -->
+      <el-dialog
+        :visible.sync="warningDialogVisible"
+        width="1130px"
+        :modal="false"
+        center
+        :close-on-click-modal="false"
+        custom-class="reconnect-dialog"
+        top="7vh"
+      >
+        <div slot="title">
+          <span class="little-title el-dialog__title">预警信息</span>
+        </div>
+        <el-table
+          :data="warningTableData"
+          header-row-class-name="table-header"
+          stripe
+          class="reconnect-table"
+          :height="warningTableHeight"
+        >
+          <el-table-column type="index" label="序号" align="center" width="50"></el-table-column>
+          <el-table-column align="center" prop="trainsetName" label="车组号" width="160" show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column align="center" prop="carNo" label="辆序" width="70" show-overflow-tooltip> </el-table-column>
+          <el-table-column
+            align="center"
+            :prop="warningType==='SJ'?'pantoCode':'wheelSetPosition'"
+            label="受电弓编号/轮对位置"
+            width="100"
+            show-overflow-tooltip
+          >
+          </el-table-column>
+          <el-table-column
+            align="center"
+            :prop="warningType==='SJ'?'skaCode':'wheelPosition'"
+            label="滑板编号/轮饼位置"
+            width="90"
+            show-overflow-tooltip
+          >
+          </el-table-column>
+          <el-table-column align="center" prop="checkValue" label="检验值" width="120" show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column align="center" prop="overTypeName" label="复核类型" width="145" show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column align="center" prop="checkItemName" label="复核项目" width="145" show-overflow-tooltip>
+          </el-table-column>
+          <el-table-column align="center" prop="checkTime" label="检测时间" width="200" show-overflow-tooltip>
+          </el-table-column>
+        </el-table>
+        <el-pagination
+          \@size-change="handleWarningTableSizeChange"
+          \@current-change="handleWarningTableCurrentChange"
+          :current-page="warningTableCurrentPage"
+          :page-sizes="[10, 20, 50, 100]"
+          :page-size="warningTablePageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="warningTableTotal"
+          popper-class="select-down-class"
+        >
+        </el-pagination>
+      </el-dialog>
+    </div>
+    <!-- <script type="text/babel" src="${ctxPath}/static/trainRepair/trainMonitor/js/index.js?v3"></script> -->
+    <script src="${ctxPath}/static/trainRepair/trainMonitor/js/index.js?v3"></script>
+  </body>
+</html>

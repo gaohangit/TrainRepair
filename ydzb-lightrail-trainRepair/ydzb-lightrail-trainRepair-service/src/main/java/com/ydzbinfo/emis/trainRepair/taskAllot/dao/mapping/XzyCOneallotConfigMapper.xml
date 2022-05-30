@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.ydzbinfo.emis.trainRepair.taskAllot.dao.XzyCOneallotConfigMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap"
+		type="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyCOneallotConfig">
+		<id column="S_CONFIGID" property="sConfigid" />
+		<result column="S_MARSHALNUM" property="sMarshalnum" />
+		<result column="S_UNITCODE" property="sUnitcode" />
+		<result column="S_DEPTCODE" property="sDeptcode" />
+		<result column="S_GROUPID" property="sGroupid" />
+		<result column="C_FLAG" property="cFlag" />
+		<result column="C_CUSTOMFLAGA" property="cCustomflaga" />
+	</resultMap>
+
+	<!-- 通用查询结果列 -->
+	<sql id="Base_Column_List">
+		S_CONFIGID AS sConfigid,
+		S_MARSHALNUM AS sMarshalnum,
+		S_UNITCODE AS sUnitcode,
+		S_DEPTCODE AS sDeptcode,
+		S_GROUPID AS sGroupid,
+		C_FLAG AS cFlag,
+		C_CUSTOMFLAGA AS cCustomflaga
+	</sql>
+
+	<select id="getOneAllotConfig" parameterType="Map"
+		resultType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyCOneallotConfig">
+		select
+		<include refid="Base_Column_List"></include>
+		from XZY_C_ONEALLOT_CONFIG
+		where
+		1 = 1
+		<if test="marshalNum != null and marshalNum != ''">
+			and S_MARSHALNUM = #{marshalNum}
+		</if>
+		<if test="unitCode != null and unitCode != ''">
+			and S_UNITCODE = #{unitCode}
+		</if>
+		<if test="deptCode != null and deptCode != ''">
+			and S_DEPTCODE = #{deptCode}
+		</if>
+		<if test="groupId != null and groupId != ''">
+			and S_GROUPID = #{groupId}
+		</if>
+		and C_FLAG = '1'
+	</select>
+
+	<insert id="setOneAllotConfig"
+		parameterType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyCOneallotConfig">
+		insert into XZY_C_ONEALLOT_CONFIG
+		(
+		<if test="sMarshalnum != null and sMarshalnum != ''">
+			S_MARSHALNUM,
+		</if>
+		<if test="sUnitcode != null and sUnitcode != ''">
+			S_UNITCODE,
+		</if>
+		<if test="sDeptcode != null and sDeptcode != ''">
+			S_DEPTCODE,
+		</if>
+		<if test="sGroupid != null and sGroupid != ''">
+			S_GROUPID,
+		</if>
+		<if test="cFlag != null and cFlag != ''">
+			C_FLAG,
+		</if>
+		<if test="cCustomflaga != null and cCustomflaga != ''">
+			C_CUSTOMFLAGA,
+		</if>
+		S_CONFIGID
+		)values (
+		<if test="sMarshalnum != null and sMarshalnum != ''">
+			#{sMarshalnum},
+		</if>
+		<if test="sUnitcode != null and sUnitcode != ''">
+			#{sUnitcode},
+		</if>
+		<if test="sDeptcode != null and sDeptcode != ''">
+			#{sDeptcode},
+		</if>
+		<if test="sGroupid != null and sGroupid != ''">
+			#{sGroupid},
+		</if>
+		<if test="cFlag != null and cFlag != ''">
+			#{cFlag},
+		</if>
+		<if test="cCustomflaga != null and cCustomflaga != ''">
+			#{cCustomflaga},
+		</if>
+		#{sConfigid}
+		)
+	</insert>
+
+	<update id="updateOneAllotConfig" parameterType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyCOneallotConfig">
+		update XZY_C_ONEALLOT_CONFIG
+		<trim prefix="set" suffixOverrides=",">
+			<if test="sGroupid != null and sGroupid != ''">
+				S_GROUPID = #{sGroupid},
+			</if>
+			<if test="cFlag != null and cFlag != ''">
+				C_FLAG = #{cFlag},
+			</if>
+			<if test="cCustomflaga != null and cCustomflaga != ''">
+				C_CUSTOMFLAGA = #{cCustomflaga},
+			</if>
+		</trim>
+		where
+		S_CONFIGID = #{sConfigid}
+	</update>
+
+
+
+
+	<select id="getOneAllotConfigs" parameterType="Map" resultType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyCOneallotCarConfig">
+		select
+		f.s_templateid as sTemplateid,
+		f.s_carno as sCarno,
+		f.s_sortid as sSortid,
+		t.s_default as sDefault,
+		t.s_marshalnum as marshalNum
+		from xzy_c_oneallot_template t ,
+		xzy_c_oneallot_car_config f
+		where
+		t.s_templateid = f.s_templateid
+		<if test="marshalNum != null and marshalNum != ''">
+			and t.s_default='1' and t.s_marshalnum = #{marshalNum}
+		</if>
+		order by s_carno
+	</select>
+
+	<select id="getOneAllotConfigList" resultType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyCOneallotCarConfig">
+		select
+		f.s_templateid as sTemplateid,
+		f.s_carno as sCarno,
+		f.s_sortid as sSortid,
+		t.s_default as sDefault,
+		t.s_marshalnum as marshalNum,
+		c.s_configid as configId
+		from xzy_c_oneallot_template t inner join  xzy_c_oneallot_car_config f on t.s_templateid = f.s_templateid
+		left join XZY_C_ONEALLOT_CONFIG c on t.s_groupid = c.s_groupid and c.s_unitcode=#{unitCode}  and c.s_deptcode=#{deptCode}
+		order by s_carno
+	</select>
+
+
+	<select id="getOneAllotTemplates" parameterType="Map" resultType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyCOneallotTemplate">
+		select
+		t.s_templateid as sTemplateid,
+		t.s_marshalnum as sMarshalnum,
+		t.s_carnolist as sCarnolist,
+		t.i_sort as iSort,
+		t.s_groupid as sGroupid,
+		t.s_groupsort as sGroupsort,
+		t.s_default as sDefault
+		from
+		xzy_c_oneallot_template t
+		where 1=1
+		<if test="templateid != null and templateid != ''">
+			and t.s_templateid = #{templateid}
+		</if>
+		order by t.i_sort
+	</select>
+</mapper>

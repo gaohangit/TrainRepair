@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.bill.fillback.dao.ChecklistLinkControlMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ${tableAlias}S_ID as "${columnPrefix}id",
+        ${tableAlias}S_CONTENTID as "${columnPrefix}contentId",
+        ${tableAlias}S_TYPE as "${columnPrefix}type",
+        ${tableAlias}S_ROWID as "${columnPrefix}rowId",
+        ${tableAlias}S_COLID as "${columnPrefix}colId",
+        ${tableAlias}S_CONTENT as "${columnPrefix}content",
+        ${tableAlias}S_ATTRIBUTECODE as "${columnPrefix}attributeCode",
+        ${tableAlias}I_AREANUMBER as "${columnPrefix}areaNumber",
+        ${tableAlias}S_CHECKLISTSUMMARYID as "${columnPrefix}checklistSummaryId"
+    </sql>
+
+    <delete id="deleteList" parameterType="com.ydzbinfo.emis.trainRepair.bill.querymodel.checklist.ChecklistLinkControl">
+        delete from XZY_M_CHECKLISTLINKCONTROL where S_CONTENTID in
+        <foreach collection="list" item="checklistDetailId" index="index" open="(" close=")" separator=",">
+            #{checklistDetailId}
+        </foreach>
+    </delete>
+</mapper>

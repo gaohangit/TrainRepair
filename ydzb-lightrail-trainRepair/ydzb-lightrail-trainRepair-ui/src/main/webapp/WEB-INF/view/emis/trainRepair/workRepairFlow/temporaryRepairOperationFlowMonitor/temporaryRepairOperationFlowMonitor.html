@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>临修作业流程监控</title>
+
+    <script src="${publicStaticPath}/IE/babel-browser.min.js"></script>
+    <link rel="stylesheet" href="${publicStaticPath}/elementUI/index.css" />
+    <script src="${publicStaticPath}/vue/vue.js"></script>
+    <script src="${publicStaticPath}/elementUI/index.js"></script>
+    <script src="${ctxPath}/static/lib/day/day.js"></script>
+    <script src="${publicStaticPath}/vue/axios.min.js"></script>
+    <script src="${ctxPath}/static/config/index.js"></script>
+    <script src="${ctxPath}/static/lib/wangEditor.min.js"></script>
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/temporaryRepairOperationFlowMonitor/utils/index.js"></script>
+
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/temporaryRepairOperationFlowMonitor/api/apiTrainRepair/commonRequest.js?"></script>
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/temporaryRepairOperationFlowMonitor/api/apiTrainRepair/trackpowerStateCurRequest.js?"></script>
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/temporaryRepairOperationFlowMonitor/api/apiTrainRepair/trainsetLocationConfigRequest.js?"></script>
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/temporaryRepairOperationFlowMonitor/api/apiTrainRepair/trainsetPostIonCurRequest.js?"></script>
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/temporaryRepairOperationFlowMonitor/api/apiTrainRepair/flowRunRequest.js?"></script>
+
+    <script>
+      Vue.config.devtools = false;
+      Vue.config.productionTip = false;
+      const ctxPath = '${ctxPath}';
+
+      const unitCode = '${thirdOrganCode}'; //所编码
+    </script>
+
+    <link rel="stylesheet" href="${ctxPath}/static/components/flowLeftShow/flowLeftShow.css" />
+    <script src="${ctxPath}/static/components/flowLeftShow/subFlowItem.js"></script>
+    <script src="${ctxPath}/static/components/flowLeftShow/flowItem.js"></script>
+    <script src="${ctxPath}/static/components/flowLeftShow/flowContainer.js"></script>
+
+    <link rel="stylesheet" href="${ctxPath}/static/components/trackAreaConfig/trackAreaConfig.css" />
+    <script src="${ctxPath}/static/components/trackAreaConfig/trackAreaConfig.js"></script>
+
+    <script src="${ctxPath}/static/components/track/getTrainUrls.js"></script>
+    <link rel="stylesheet" href="${ctxPath}/static/components/track/track.css" />
+    <!-- <script src="${ctxPath}/static/components/track/trainWrapper.js"></script>
+    <script src="${ctxPath}/static/components/track/positionWrapper.js"></script>
+    <script src="${ctxPath}/static/components/track/trackWrapper.js"></script>
+    <script src="${ctxPath}/static/components/track/trackContainer.js"></script> -->
+
+    <link rel="stylesheet" href="${ctxPath}/static/components/singleTrain/singleTrain.css" />
+    <script src="${ctxPath}/static/components/singleTrain/singleTrain.js"></script>
+
+    <script src="${ctxPath}/static/components/wangEditor/wangEditor.js"></script>
+    <link
+      rel="stylesheet"
+      href="${ctxPath}/static/trainRepair/workRepairFlow/temporaryRepairOperationFlowMonitor/css/index.css"
+    />
+    <!-- input全局指令 -->
+    <script  src="${ctxPath}/static/utils/InputNumberDirective.js"></script>
+  </head>
+  <body>
+    <div id="temporaryRepairOperationFlowMonitor" v-cloak>
+      <el-container class="container">
+        <el-header class="container-header">
+          <div class="title tc">临修作业流程监控</div>
+          <div class="sub-title">
+            <span class="time1">{{time1}}</span>
+            <span class="time2">{{time2}}</span>
+            <div style="display: flex; cursor: pointer" \@click="openMonitorDialog" v-if="!paramsMap.trainsetId">
+              <img :src="baseImgPath+'/top_ico3.png'" alt="" />
+              <span style="margin: 0 5px; color: rgb(36, 129, 196)">配置</span>
+            </div>
+            <img
+              :src="baseImgPath+'/top_ico4.png'"
+              alt=""
+              \@click="fullscreenClick"
+              v-if="!isFullScreen"
+              style="cursor: pointer"
+            />
+            <img :src="baseImgPath+'/top_ico4-1.png'" alt="" \@click="fullscreenClick" v-else style="cursor: pointer" />
+          </div>
+        </el-header>
+        <el-main v-if="pageTotal>0">
+          <single-train :train="train" :power-info="trackCodePowerMap[train.trackCode]">
+            <div v-if="trainsetIdTaskPacketMap[train.trainsetId]" class="train-footer">
+              <el-tooltip placement="bottom">
+                <span slot="content"> {{trainsetIdTaskPacketMap[train.trainsetId] | packetFilter}} </span>
+                <div>
+                  <div
+                    class="info-list text_overflow"
+                    v-for="(packet,index) in trainsetIdTaskPacketMap[train.trainsetId].slice(0,2)"
+                    :key="packet.taskId"
+                  >
+                    <div class="info-item">
+                      <span class="info-key">作业任务名称：</span>
+                      <span class="info-content">{{packet.packetName}}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-key">作业班组：</span>
+                      <span class="info-content">{{packet.repairDeptName}}</span>
+                    </div>
+                    <div class="info-item" v-if="packet.workers">
+                      <span class="info-key">作业人员：</span>
+                      <span class="info-content">{{packet.workers}}</span>
+                    </div>
+                  </div>
+                </div>
+              </el-tooltip>
+            </div>
+          </single-train>
+
+          <div class="info-container">
+            <div class="flow-wrapper">
+              <div
+                class="flow-item"
+                :class="{'last-item':index+1==flowList.length}"
+                v-for="(flow,index) in flowList"
+                :key="flow.id"
+                :id="'flow-'+flow.id"
+              >
+                <el-tooltip placement="top" v-if="nodeNetalis(flow)" :content="nodeNetalis(flow)">
+                  <div
+                    class="flow-circle"
+                    :class="{circle_1:flow.couldDisposeRoleIds.length  == 0&&flow.finished,circle_2:flow.couldDisposeRoleIds.length  > 0&&flow.finished,circle_3:flow.couldDisposeRoleIds.length  > 0&&!flow.finished,circle_4:flow.couldDisposeRoleIds.length  == 0&&!flow.finished}"
+                    :id="'circle-'+flow.id"
+                  ></div>
+                </el-tooltip>
+                <div
+                  class="flow-circle"
+                  :class="{circle_1:flow.couldDisposeRoleIds.length  == 0&&flow.finished,circle_2:flow.couldDisposeRoleIds.length  > 0&&flow.finished,circle_3:flow.couldDisposeRoleIds.length  > 0&&!flow.finished,circle_4:flow.couldDisposeRoleIds.length  == 0&&!flow.finished}"
+                  :id="'circle-'+flow.id"
+                  v-if="!nodeNetalis(flow)"
+                ></div>
+                <div class="flow-text">{{flow.name}}</div>
+                <div class="flow-line" v-if="index+1!=flowList.length"></div>
+              </div>
+            </div>
+            <div class="data-container">
+              <div class="flow-show" ref="flowShow">
+                <el-scrollbar style="height: 100%">
+                  <flow-container>
+                    <flow-item
+                      v-for="(node,nodeIdx) in flowList"
+                      :key="node.id"
+                      :node="node"
+                      :id="'node-'+node.id"
+                      :is-arrow-show="nodeIdx !== 0"
+                      :is-focus="foucsNodeId == node.id"
+                      \@node-click="nodeChange"
+                    >
+                      <template v-slot="{data}">
+                        <subflow-item
+                          :id="'node-'+subNode.id"
+                          v-for="(subNode,subNodeIdx) in node.children"
+                          :key="subNode.id"
+                          :sub-node="subNode"
+                          :is-arrow-show="subNodeIdx !== 0"
+                          :class="{'show-children': data}"
+                          :is-focus="foucsNodeId == subNode.id"
+                          \@node-click="nodeChange"
+                        ></subflow-item>
+                      </template>
+                    </flow-item>
+                  </flow-container>
+                </el-scrollbar>
+              </div>
+              <div class="detail-show">
+                <div class="table-show" ref="tableShow">
+                  <el-table
+                    :data="nodeRecordList"
+                    header-row-class-name="table-header"
+                    :row-class-name="tableRowClassName"
+                    height="100%"
+                    class="flow-table"
+                  >
+                    <el-table-column type="index" label="序号" width="50"></el-table-column>
+                    <el-table-column label="处理节点" show-overflow-tooltip>
+                      <template v-slot="{row}"> {{nodeIdNameMap[row.nodeId]}} </template>
+                    </el-table-column>
+                    <!-- <el-table-column label="处理节点父节点" show-overflow-tooltip>
+                      <template v-slot="{row}">
+                        {{subNodeWithParentMap[row.nodeId]}}
+                      </template>
+                    </el-table-column> -->
+                    <el-table-column label="处理人" prop="workerName"></el-table-column>
+                    <el-table-column label="处理时间" prop="recordTime" show-overflow-tooltip></el-table-column>
+                    <el-table-column label="所属班组" prop="teamName"></el-table-column>
+                  </el-table>
+                </div>
+                <div class="node-detail-title">作业说明:</div>
+                <div class="node-detail">
+                  <wang-editor ref="wangEditor" :content="nodeRecord" :able="false"></wang-editor>
+                </div>
+              </div>
+            </div>
+          </div>
+        </el-main>
+        <el-footer v-if="pageTotal>0">
+          <el-pagination
+            small
+            background
+            layout="pager"
+            :page-count="pageTotal"
+            :current-page.sync="pageNum"
+          ></el-pagination>
+        </el-footer>
+        <div class="hiddenLayer" v-if="pageTotal == 0 && paramsMap.trainsetId">
+          <div>{{msg}}</div>
+        </div>
+      </el-container>
+      <!-- <el-container class="container" v-else>
+        <el-header class="container-header">
+          <div class="title tc">临修作业流程监控</div>
+        </el-header>
+        <el-main>
+          <div style="width: 100%;height: 100%;display: flex;justify-content: center;align-items: center; color: #ffffff; font-size: 30px;">没有符合条件的流程信息</div>
+        </el-main>
+      </el-container> -->
+
+      <!-- 基础配置弹框 -->
+      <el-dialog
+        :visible.sync="monitorDialog.visible"
+        width="50%"
+        :modal="false"
+        center
+        :close-on-click-modal="false"
+        custom-class="monitor-dialog"
+        top="7vh"
+        destroy-on-close
+      >
+        <div slot="title">
+          <span class="little-title el-dialog__title">监控配置</span>
+        </div>
+        <track-area-config
+          :line-table-data="lineTableData"
+          :all-track-area-list="allTrackAreaSortList"
+          :track-show-config="monitorDialog.trackShowConfig"
+          \@set-track-show-config="setTrackShowConfig"
+        ></track-area-config>
+
+        <div class="dialog-title-text">
+          股道切换时间：<el-input size="mini" v-number-input="{ min: 0, integer: 9, decimal: 0 }" v-model.trim="monitorDialog.trackRefreshTime"></el-input>
+          秒
+        </div>
+
+        <div class="dialog-title-text">
+          股道位置切换：
+          <div class="switch">
+            <el-switch v-model="monitorDialog.TrackPositionChange" active-color="#22395b" inactive-color="#22395b">
+            </el-switch>
+            <div class="switch-choose">
+              <div>是</div>
+              <div>否</div>
+            </div>
+          </div>
+        </div>
+
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" size="mini" class="config-button" \@click="updMonitorConfigBtn">保 存</el-button>
+          <el-button type="primary" size="mini" class="config-button" \@click="updMonitorCancel">取 消</el-button>
+        </span>
+      </el-dialog>
+    </div>
+    <script
+      type="text/babel"
+      src="${ctxPath}/static/trainRepair/workRepairFlow/temporaryRepairOperationFlowMonitor/js/index.js"
+    ></script>
+  </body>
+</html>

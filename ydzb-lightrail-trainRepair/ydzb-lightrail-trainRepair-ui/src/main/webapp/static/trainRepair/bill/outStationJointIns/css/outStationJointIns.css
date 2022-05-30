@@ -1,0 +1,168 @@
+[v-cloak] {
+  display: none !important;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  width: 100%;
+}
+
+:root {
+  --bill-border: 3px;
+}
+
+#main {
+  height: calc(91.8vh - 1px - var(--bill-border) * 2);
+  width: calc(100vw - 1px - var(--bill-border) * 2);
+  border: black var(--bill-border) solid;
+}
+
+.el-card {
+  height: calc(100vh - 2px);
+}
+
+.el-card__header {
+  position: relative;
+  height: 42px;
+  line-height: 42px;
+  padding: 0 0 0 32px;
+}
+
+.adorn {
+  position: absolute;
+  left: 20px;
+  top: 9px;
+  width: 5px;
+  height: 25px;
+  background-color: #4e86fe;
+}
+
+.el-card__header h2 {
+  font-size: 21px;
+}
+
+.el-card__body {
+  padding: 0 20px;
+}
+
+.common_title {
+  width: 100%;
+}
+
+.common_title .flex {
+  height: 30px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.common_title .flex .tag {
+  width: 5px;
+  height: 20px;
+  margin: 0 5px 0 15px;
+  background-color: #4f84fe;
+}
+
+.timeBox {
+  height: 10px;
+  margin: 0 20px;
+  border-bottom: 1px solid rgb(199, 198, 198);
+}
+
+.el-col {
+  text-align: right;
+  padding-left: 5px;
+}
+
+.el-form-item__content {
+  margin-left: 0 !important;
+}
+
+.el-form-item--small.el-form-item {
+  margin: 15px 0px 0 0;
+  padding-right: 35px;
+}
+
+.lable {
+  margin-right: 5px;
+  color: #606266;
+}
+
+.el-table .warning-row {
+  background: #f5f8fd;
+}
+
+.el-table .success-row {
+  background: #fff;
+}
+
+.block {
+  text-align: center;
+  margin-top: 7px;
+}
+
+.el-message-box__btns {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+}
+
+.el-message-box__btns button:nth-child(1) {
+  color: #fff;
+  background-color: #409eff;
+  border-color: #409eff;
+}
+
+.el-message-box__btns button:nth-child(1):focus,
+.el-message-box__btns button:nth-child(1):hover {
+  color: rgb(255, 255, 255);
+  background: rgb(102, 177, 255);
+  border-color: rgb(102, 177, 255);
+}
+.el-message-box__btns button:nth-child(2) {
+  margin-right: 10px;
+}
+
+.spread_dialog .el-dialog.is-fullscreen {
+  overflow: hidden;
+}
+
+.spread_dialog {
+  overflow: hidden;
+}
+
+
+.spread_dialog .el-dialog__header {
+  display: none;
+}
+
+.spread_dialog .el-dialog__body {
+  padding: 0;
+}
+
+#export-container {
+  position: absolute;
+  z-index: 999999;
+  left: 0px;
+  top: 0px;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+}
+
+.el-form-item--mini.el-form-item {
+  margin: 10px 0;
+}
+
+.el-time-panel {
+  left: auto;
+  right: 0;
+}

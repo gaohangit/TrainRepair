@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.common.taskAllot.dao.XzyMTaskAllotMapper">
+
+    <!--获取派工数据实体映射-->
+    <resultMap id="getTaskAllotDataMap" type="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.TaskAllotPacketEntity" autoMapping="true">
+        <id column="taskAllotPacketId" property="taskAllotPacketId"></id>
+        <!--作业项目集合-->
+        <collection property="taskAllotItemEntityList" columnPrefix="B_" ofType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.TaskAllotItemEntity" autoMapping="true">
+            <id column="Id" property="Id"></id>
+            <!--作业人员集合-->
+            <collection property="taskAllotPersonEntityList" columnPrefix="C_" ofType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.TaskAllotPersonEntity" autoMapping="true">
+                <id column="sId" property="sId"></id>
+                <!--作业岗位集合-->
+                <collection property="taskAllotPersonPostEntityList" columnPrefix="D_" ofType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.TaskAllotPersonPostEntity" autoMapping="true">
+                    <id column="sId" property="sId"></id>
+                </collection>
+            </collection>
+        </collection>
+    </resultMap>
+    <select id="getTaskAllotData" resultMap="getTaskAllotDataMap">
+        select
+        a.S_TASKALLOTPACKETID as taskAllotPacketId,
+        a.S_PACKETCODE as packetCode,
+        a.S_PACKETNAME as packetName,
+        a.S_PACKETTYPE as packetType,
+        a.S_TASKID as taskId,
+        e.S_TASKALLOTDEPTID as taskAllotDeptId,
+        e.s_deptcode as deptCode,
+        e.s_deptname as deptName,
+
+        b.S_PROCESSID as B_Id,
+        b.S_TASKALLOTPACKETID as B_taskAllotPacketId,
+        b.S_DAYPLANID as dayPlanId,
+        b.S_TRAINSETNAME as trainsetName,
+        b.S_TRAINSETID as trainsetId,
+        b.S_UNITCODE as unitCode,
+        b.S_UNITNAME as unitName,
+        b.S_ITEMCODE as B_itemCode,
+        b.S_ITEMNAME as B_itemName,
+        b.S_REPAIRTYPE as B_itemType,
+        b.S_ARRAGETYPE as B_arrageType,
+        b.S_CARNO as B_carNo,
+        b.S_TRAINSETTYPE as B_trainSetType,
+        b.S_TASKITEMID as B_taskItemId,
+        b.S_MAINCYC as mainCyc,
+        b.S_PARTPOSITION as B_partPosition,
+        b.S_LOCATIONCODE as B_locationCode,
+        b.S_LOCATIONNAME as B_locationName,
+        b.S_PARTNAME as B_partName,
+        b.S_PARTNAME as B_partId,
+        b.S_PARTTYPE as B_partType,
+        b.S_REMARK as B_remark,
+        b.S_REPAIRMODE as B_repairMode,
+        b.S_RECORDTIME as recordTime,
+        b.S_RECORDERNAME as recordName,
+        b.S_RECORDERCODE as recordCode,
+        b.S_PUBLISHCODE as B_publishCode,
+
+        c.S_TASKALLOTPERSONID as B_C_sId,
+        c.S_WORKERID as B_C_workerId,
+        c.S_WORKERNAME as B_C_workerName,
+        c.S_WORKERTYPE as B_C_workerType,
+        c.S_PROCESSID as B_C_processId,
+
+        d.S_ID as B_C_D_sId,
+        d.S_TASKALLOTPERSONID as B_C_D_taskAllotPersonId,
+        d.S_POSTID as B_C_D_postId,
+        d.S_POSTNAME as B_C_D_postName
+
+        from XZY_M_TASKALLOTPACKET a left join XZY_M_TASKCARPART b on a.S_TASKALLOTPACKETID = b.S_TASKALLOTPACKETID
+        left join XZY_M_TASKALLOTPERSON c on b.S_PROCESSID = c.S_PROCESSID
+        left join XZY_M_TASKALLOTPERSONPOST d on c.S_TASKALLOTPERSONID=d.S_TASKALLOTPERSONID
+        left join XZY_M_TASKALLOTDEPT e on e.s_taskallotdeptid= b.s_taskallotdeptid
+
+        where 1=1
+        <if test="unitCode!=null and unitCode!=''">
+           and b.S_UNITCODE=#{unitCode}
+        </if>
+        <if test="dayPlanId!=null and dayPlanId!=''">
+           and b.S_DAYPLANID=#{dayPlanId}
+        </if>
+        <if test="repairType!=null and repairType!=''">
+           and b.S_REPAIRTYPE=#{repairType}
+        </if>
+        <if test="trainsetTypeList!=null and trainsetTypeList.size()>0">
+            and b.S_TRAINSETTYPE in
+            <foreach collection="trainsetTypeList" item="trainsetTypeItem" index="index" open="(" close=")" separator=",">
+                #{trainsetTypeItem}
+            </foreach>
+        </if>
+        <if test="trainsetIdList!=null and trainsetIdList.size()>0">
+            and b.S_TRAINSETID in
+            <foreach collection="trainsetIdList" item="trainsetIdItem" index="index" open="(" close=")" separator=",">
+                #{trainsetIdItem}
+            </foreach>
+        </if>
+        <if test="itemCodeList!=null and itemCodeList.size()>0">
+            and b.S_ITEMCODE in
+            <foreach collection="itemCodeList" item="itemCodeItem" index="index" open="(" close=")" separator=",">
+                #{itemCodeItem}
+            </foreach>
+        </if>
+        <if test="branchCodeList!=null and branchCodeList.size()>0">
+            and e.s_deptcode in
+            <foreach collection="branchCodeList" item="branchCodeItem" index="index" open="(" close=")" separator=",">
+                #{branchCodeItem}
+            </foreach>
+        </if>
+        <if test="workIdList!=null and workIdList.size()>0">
+            and c.S_WORKERID in
+            <foreach collection="workIdList" item="workerIdItem" index="index" open="(" close=")" separator=",">
+                #{workerIdItem}
+            </foreach>
+        </if>
+        <if test="startDate!=null and startDate!=''">
+            and to_date(#{startDate},'yyyy-MM-dd')&lt;=to_date(substr(b.s_dayplanid,0,10),'yyyy-MM-dd' )
+        </if>
+        <if test="endDate!=null and endDate!=''">
+            and to_date(substr(b.s_dayplanid,0,10) , 'yyyy-MM-dd' )&lt;=to_date(#{endDate},'yyyy-MM-dd')
+        </if>
+        <if test="packetName !=null and packetName!=''">
+            and UPPER(a.S_PACKETNAME) like CONCAT(CONCAT('%',UPPER(#{packetName})),'%') escape '\'
+        </if>
+    </select>
+
+
+    <!--获取派工数据（到人）实体映射-->
+    <resultMap id="getTaskAllotDataPersonMap" type="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.TaskAllotPacketEntity" autoMapping="true">
+        <id column="taskAllotPacketId" property="taskAllotPacketId"></id>
+        <!--作业项目集合-->
+        <collection property="taskAllotItemEntityList" columnPrefix="B_" ofType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.TaskAllotItemEntity" autoMapping="true">
+            <id column="Id" property="Id"></id>
+            <!--作业人员集合-->
+            <collection property="taskAllotPersonEntityList" columnPrefix="C_" ofType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.TaskAllotPersonEntity" autoMapping="true">
+                <id column="sId" property="sId"></id>
+            </collection>
+        </collection>
+    </resultMap>
+    <select id="getTaskAllotDataToPerson" resultMap="getTaskAllotDataPersonMap">
+        select
+        a.S_TASKALLOTPACKETID as taskAllotPacketId,
+        a.S_PACKETCODE as packetCode,
+        a.S_PACKETNAME as packetName,
+        a.S_PACKETTYPE as packetType,
+        a.S_TASKID as taskId,
+        e.S_TASKALLOTDEPTID as taskAllotDeptId,
+        e.s_deptcode as deptCode,
+        e.s_deptname as deptName,
+
+        b.S_PROCESSID as B_Id,
+        b.S_TASKALLOTPACKETID as B_taskAllotPacketId,
+        b.S_DAYPLANID as dayPlanId,
+        b.S_TRAINSETNAME as trainsetName,
+        b.S_TRAINSETID as trainsetId,
+        b.S_UNITCODE as unitCode,
+        b.S_UNITNAME as unitName,
+        b.S_ITEMCODE as B_itemCode,
+        b.S_ITEMNAME as B_itemName,
+        b.S_REPAIRTYPE as B_itemType,
+        b.S_ARRAGETYPE as B_arrageType,
+        b.S_CARNO as B_carNo,
+        b.S_TRAINSETTYPE as B_trainSetType,
+        b.S_TASKITEMID as B_taskItemId,
+        b.S_MAINCYC as mainCyc,
+        b.S_PARTPOSITION as B_partPosition,
+        b.S_LOCATIONCODE as B_locationCode,
+        b.S_LOCATIONNAME as B_locationName,
+        b.S_PARTNAME as B_partName,
+        b.S_PARTNAME as B_partId,
+        b.S_PARTTYPE as B_partType,
+        b.S_REMARK as B_remark,
+        b.S_REPAIRMODE as B_repairMode,
+        b.S_RECORDTIME as recordTime,
+        b.S_RECORDERNAME as recordName,
+        b.S_RECORDERCODE as recordCode,
+        b.S_PUBLISHCODE as B_publishCode,
+
+        c.S_TASKALLOTPERSONID as B_C_sId,
+        c.S_WORKERID as B_C_workerId,
+        c.S_WORKERNAME as B_C_workerName,
+        c.S_WORKERTYPE as B_C_workerType,
+        c.S_PROCESSID as B_C_processId
+
+        from XZY_M_TASKALLOTPACKET a left join XZY_M_TASKCARPART b on a.S_TASKALLOTPACKETID = b.S_TASKALLOTPACKETID
+        left join XZY_M_TASKALLOTPERSON c on b.S_PROCESSID = c.S_PROCESSID
+        left join XZY_M_TASKALLOTDEPT e on e.s_taskallotdeptid= b.s_taskallotdeptid
+
+        where 1=1
+        <if test="unitCode!=null and unitCode!=''">
+            and b.S_UNITCODE=#{unitCode}
+        </if>
+        <if test="dayPlanId!=null and dayPlanId!=''">
+            and b.S_DAYPLANID=#{dayPlanId}
+        </if>
+        <if test="repairType!=null and repairType!=''">
+            and b.S_REPAIRTYPE=#{repairType}
+        </if>
+        <if test="trainsetTypeList!=null and trainsetTypeList.size()>0">
+            and b.S_TRAINSETTYPE in
+            <foreach collection="trainsetTypeList" item="trainsetTypeItem" index="index" open="(" close=")" separator=",">
+                #{trainsetTypeItem}
+            </foreach>
+        </if>
+        <if test="trainsetIdList!=null and trainsetIdList.size()>0">
+            and b.S_TRAINSETID in
+            <foreach collection="trainsetIdList" item="trainsetIdItem" index="index" open="(" close=")" separator=",">
+                #{trainsetIdItem}
+            </foreach>
+        </if>
+        <if test="itemCodeList!=null and itemCodeList.size()>0">
+            and b.S_ITEMCODE in
+            <foreach collection="itemCodeList" item="itemCodeItem" index="index" open="(" close=")" separator=",">
+                #{itemCodeItem}
+            </foreach>
+        </if>
+        <if test="branchCodeList!=null and branchCodeList.size()>0">
+            and e.s_deptcode in
+            <foreach collection="branchCodeList" item="branchCodeItem" index="index" open="(" close=")" separator=",">
+                #{branchCodeItem}
+            </foreach>
+        </if>
+<!--        <if test="workIdList!=null and workIdList.size()>0">-->
+<!--            and c.S_WORKERID in-->
+<!--            <foreach collection="workIdList" item="workerIdItem" index="index" open="(" close=")" separator=",">-->
+<!--                #{workerIdItem}-->
+<!--            </foreach>-->
+<!--        </if>-->
+        <if test="startDate!=null and startDate!=''">
+            and to_date(#{startDate},'yyyy-MM-dd')&lt;=to_date(substr(b.s_dayplanid,0,10),'yyyy-MM-dd' )
+        </if>
+        <if test="endDate!=null and endDate!=''">
+            and to_date(substr(b.s_dayplanid,0,10) , 'yyyy-MM-dd' )&lt;=to_date(#{endDate},'yyyy-MM-dd')
+        </if>
+        <if test="packetName !=null and packetName!=''">
+            and UPPER(a.S_PACKETNAME) like CONCAT(CONCAT('%',UPPER(#{packetName})),'%') escape '\'
+        </if>
+    </select>
+
+
+    <!--获取派工数据（到项目）实体映射-->
+    <resultMap id="getTaskAllotDataToItemMap" type="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.TaskAllotPacketEntity" autoMapping="true">
+        <id column="taskAllotPacketId" property="taskAllotPacketId"></id>
+        <!--作业项目集合-->
+        <collection property="taskAllotItemEntityList" columnPrefix="B_" ofType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.TaskAllotItemEntity" autoMapping="true">
+            <id column="Id" property="Id"></id>
+        </collection>
+    </resultMap>
+    <select id="getTaskAllotDataToItem" resultMap="getTaskAllotDataToItemMap">
+        select
+        a.S_TASKALLOTPACKETID as taskAllotPacketId,
+        a.S_PACKETCODE as packetCode,
+        a.S_PACKETNAME as packetName,
+        a.S_PACKETTYPE as packetType,
+        a.S_TASKID as taskId,
+        e.S_TASKALLOTDEPTID as taskAllotDeptId,
+        e.s_deptcode as deptCode,
+        e.s_deptname as deptName,
+
+        b.S_PROCESSID as B_Id,
+        b.S_TASKALLOTPACKETID as B_taskAllotPacketId,
+        b.S_DAYPLANID as dayPlanId,
+        b.S_TRAINSETNAME as trainsetName,
+        b.S_TRAINSETID as trainsetId,
+        b.S_UNITCODE as unitCode,
+        b.S_UNITNAME as unitName,
+        b.S_ITEMCODE as B_itemCode,
+        b.S_ITEMNAME as B_itemName,
+        b.S_REPAIRTYPE as B_itemType,
+        b.S_ARRAGETYPE as B_arrageType,
+        b.S_CARNO as B_carNo,
+        b.S_TRAINSETTYPE as B_trainSetType,
+        b.S_TASKITEMID as B_taskItemId,
+        b.S_MAINCYC as mainCyc,
+        b.S_PARTPOSITION as B_partPosition,
+        b.S_LOCATIONCODE as B_locationCode,
+        b.S_LOCATIONNAME as B_locationName,
+        b.S_PARTNAME as B_partName,
+        b.S_PARTNAME as B_partId,
+        b.S_PARTTYPE as B_partType,
+        b.S_REMARK as B_remark,
+        b.S_REPAIRMODE as B_repairMode,
+        b.S_RECORDTIME as recordTime,
+        b.S_RECORDERNAME as recordName,
+        b.S_RECORDERCODE as recordCode,
+        b.S_PUBLISHCODE as B_publishCode
+        from XZY_M_TASKALLOTPACKET a left join XZY_M_TASKCARPART b on a.S_TASKALLOTPACKETID = b.S_TASKALLOTPACKETID
+        left join XZY_M_TASKALLOTDEPT e on e.s_taskallotdeptid= b.s_taskallotdeptid
+        where 1=1
+        <if test="unitCode!=null and unitCode!=''">
+            and b.S_UNITCODE=#{unitCode}
+        </if>
+        <if test="dayPlanId!=null and dayPlanId!=''">
+            and b.S_DAYPLANID=#{dayPlanId}
+        </if>
+        <if test="repairType!=null and repairType!=''">
+            and b.S_REPAIRTYPE=#{repairType}
+        </if>
+        <if test="trainsetTypeList!=null and trainsetTypeList.size()>0">
+            and b.S_TRAINSETTYPE in
+            <foreach collection="trainsetTypeList" item="trainsetTypeItem" index="index" open="(" close=")" separator=",">
+                #{trainsetTypeItem}
+            </foreach>
+        </if>
+        <if test="trainsetIdList!=null and trainsetIdList.size()>0">
+            and b.S_TRAINSETID in
+            <foreach collection="trainsetIdList" item="trainsetIdItem" index="index" open="(" close=")" separator=",">
+                #{trainsetIdItem}
+            </foreach>
+        </if>
+        <if test="itemCodeList!=null and itemCodeList.size()>0">
+            and b.S_ITEMCODE in
+            <foreach collection="itemCodeList" item="itemCodeItem" index="index" open="(" close=")" separator=",">
+                #{itemCodeItem}
+            </foreach>
+        </if>
+        <if test="branchCodeList!=null and branchCodeList.size()>0">
+            and e.s_deptcode in
+            <foreach collection="branchCodeList" item="branchCodeItem" index="index" open="(" close=")" separator=",">
+                #{branchCodeItem}
+            </foreach>
+        </if>
+        <if test="packetName !=null and packetName!=''">
+            and UPPER(a.S_PACKETNAME) like CONCAT(CONCAT('%',UPPER(#{packetName})),'%') escape '\'
+        </if>
+    </select>
+
+    <!--获取派工车组-->
+    <select id="getCarPartList" resultType="com.ydzbinfo.emis.trainRepair.taskAllot.model.TaskCarPart">
+        select
+        a.S_PROCESSID as processId,
+        a.S_TASKALLOTPACKETID as taskAllotPacketId,
+        a.S_TASKALLOTDEPTID as taskAllotDeptId,
+        a.S_PUBLISHCODE as publishCode,
+        a.S_REPAIRTYPE as repairType,
+        a.S_TRAINSETID as trainsetId
+        from
+        XZY_M_TASKCARPART a inner join XZY_M_TASKALLOTDEPT b on a.S_TASKALLOTDEPTID = b.S_TASKALLOTDEPTID
+        where
+        <if test="unitCode!=null and unitCode!=''">
+            a.s_unitcode=#{unitCode}
+        </if>
+        <if test="dayPlanId!=null and dayPlanId!=''">
+            and a.s_dayplanid=#{dayPlanId}
+        </if>
+        <if test="deptCodeList!=null and deptCodeList.size()>0">
+            <bind name="values" value="deptCodeList"/>
+            <include refid="com.ydzbinfo.emis.base.dao.YdzbBaseMapper.And_Huge_Size_In">
+                <property name="column" value="s_deptcode"/>
+            </include>
+        </if>
+    </select>
+
+
+    <!--获取需要删除的派工辆序相关信息集合-->
+    <select id="getTaskAllotTrainsetList" resultType="String">
+        select
+        a.S_TRAINSETID as trainsetId
+        from XZY_M_TASKCARPART a left join XZY_M_TASKALLOTDEPT b on a.s_taskallotdeptid= b.s_taskallotdeptid
+        where 1=1
+        <if test="unitCode!=null and unitCode!=''">
+            and a.S_UNITCODE=#{unitCode}
+        </if>
+        <if test="dayPlanId!=null and dayPlanId!=''">
+            and a.S_DAYPLANID=#{dayPlanId}
+        </if>
+        <if test="branchCode!=null and branchCode!=''">
+            and b.S_DEPTCODE = #{branchCode}
+        </if>
+        <if test="mainCyc!=null and mainCyc!=''">
+            and a.S_MAINCYC=#{mainCyc}
+        </if>
+        and a.s_repairtype not in ('16')
+        group by a.S_TRAINSETID
+    </select>
+
+    <!--获取需要删除的派工辆序相关信息集合-->
+    <select id="getTaskAllotEquipmentTrainsetList" resultType="String">
+        select
+        a.S_TRAINSETID as trainsetId
+        from XZY_M_TASKCARPART a left join XZY_M_TASKALLOTDEPT b on a.s_taskallotdeptid= b.s_taskallotdeptid
+        where 1=1
+        <if test="unitCode!=null and unitCode!=''">
+            and a.S_UNITCODE=#{unitCode}
+        </if>
+        <if test="dayPlanId!=null and dayPlanId!=''">
+            and a.S_DAYPLANID=#{dayPlanId}
+        </if>
+        <if test="branchCode!=null and branchCode!=''">
+            and b.S_DEPTCODE = #{branchCode}
+        </if>
+            and a.S_MAINCYC= '1'
+            and a.s_repairtype = '16'
+        group by a.S_TRAINSETID
+    </select>
+
+    <!--获取人员-岗位配置-->
+    <select id="getPersonPostList" resultType="com.ydzbinfo.emis.trainRepair.taskAllot.model.PostModel">
+        select
+            b.S_POSTID as postId,
+            b.S_POSTNAME as postName,
+            a.S_DEPTCODE as deptCode,
+            a.S_BRANCHCODE as branchCode,
+            a.S_STAFFID as staffId,
+            a.S_STAFFNAME as staffName,
+            a.S_UNITCODE as unitCode
+        from XZY_C_PERSONPOST a inner join XZY_C_POST b on a.S_POSTID=b.S_POSTID
+        where 1=1
+        <if test="unitCode!=null and unitCode!=''">
+            and S_UNITCODE=#{unitCode}
+        </if>
+        <if test="deptCode!=null and deptCode!=''">
+            and S_DEPTCODE=#{deptCode}
+        </if>
+        <if test="branchCode!=null and branchCode!=''">
+            and S_BRANCHCODE=#{branchCode}
+        </if>
+    </select>
+
+    <!--获取需要删除的派工人员表主键集合-->
+    <select id="getDelPersonIdList" resultType="String">
+        select
+        S_TASKALLOTPERSONID
+        from XZY_M_TASKALLOTPERSON
+        where 1=1
+        <if test="delCarPartIdList!=null and delCarPartIdList.size()>0">
+            <bind name="values" value="delCarPartIdList"/>
+            <include refid="com.ydzbinfo.emis.base.dao.YdzbBaseMapper.And_Huge_Size_In">
+                <property name="column" value="S_PROCESSID"/>
+            </include>
+        </if>
+    </select>
+
+    <!--获取需要删除的派工人员岗位表主键集合-->
+    <select id="getDelPersonPostIdList" resultType="String">
+        select
+        S_ID
+        from XZY_M_TASKALLOTPERSONPOST
+        where 1=1
+        <if test="delPersonIdList!=null and delPersonIdList.size()>0">
+            and S_TASKALLOTPERSONID in
+            <trim suffixOverrides="OR S_TASKALLOTPERSONID IN()">
+                <foreach collection="delPersonIdList" item="delPersonId" index="index" open="(" close=")">
+                    <if test="index != 0">
+                        <choose>
+                            <when test="index % 1000 == 999">) OR S_TASKALLOTPERSONID in (</when>
+                            <otherwise>,</otherwise>
+                        </choose>
+                    </if>
+                    #{delPersonId}
+                </foreach>
+            </trim>
+        </if>
+    </select>
+
+
+    <!--批量删除包表-->
+    <delete id="delPacketList">
+        <if test="delPacketIdList!=null and delPacketIdList.size()>0">
+            delete from XZY_M_TASKALLOTPACKET where 1=1
+            and S_TASKALLOTPACKETID in
+            <trim suffixOverrides="OR S_TASKALLOTPACKETID IN()">
+                <foreach collection="delPacketIdList" item="delPacketId" index="index" open="(" close=")">
+                    <if test="index != 0">
+                        <choose>
+                            <when test="index % 1000 == 999">) OR S_TASKALLOTPACKETID in (</when>
+                            <otherwise>,</otherwise>
+                        </choose>
+                    </if>
+                    #{delPacketId}
+                </foreach>
+            </trim>
+        </if>
+    </delete>
+
+    <!--批量删除部门表-->
+    <delete id="delDeptList">
+        <if test="delDeptIdList!=null and delDeptIdList.size()>0">
+            delete from XZY_M_TASKALLOTDEPT where 1=1
+            and S_TASKALLOTDEPTID in
+            <trim suffixOverrides="OR S_TASKALLOTDEPTID IN()">
+                <foreach collection="delDeptIdList" item="delDeptId" index="index" open="(" close=")">
+                    <if test="index != 0">
+                        <choose>
+                            <when test="index % 1000 == 999">) OR S_TASKALLOTDEPTID IN (</when>
+                            <otherwise>,</otherwise>
+                        </choose>
+                    </if>
+                    #{delDeptId}
+                </foreach>
+            </trim>
+        </if>
+    </delete>
+
+    <!--批量删除辆序表-->
+    <delete id="delCarParList">
+        <if test="delCarPartIdList!=null and delCarPartIdList.size()>0">
+            delete from XZY_M_TASKCARPART where 1=1
+            <bind name="values" value="delCarPartIdList"/>
+            <include refid="com.ydzbinfo.emis.base.dao.YdzbBaseMapper.And_Huge_Size_In">
+                <property name="column" value="S_PROCESSID"/>
+            </include>
+        </if>
+    </delete>
+
+
+    <!--批量删除人员表-->
+    <delete id="delPersonList">
+        <if test="delPersonIdList!=null and delPersonIdList.size()>0">
+            delete from XZY_M_TASKALLOTPERSON where 1=1
+            and S_TASKALLOTPERSONID in
+            <trim suffixOverrides="OR S_TASKALLOTPERSONID IN()">
+                <foreach collection="delPersonIdList" item="delPersonId" index="index" open="(" close=")">
+                    <if test="index != 0">
+                        <choose>
+                            <when test="index % 1000 == 999">) OR S_TASKALLOTPERSONID IN (</when>
+                            <otherwise>,</otherwise>
+                        </choose>
+                    </if>
+                    #{delPersonId}
+                </foreach>
+            </trim>
+        </if>
+    </delete>
+
+    <!--批量删除岗位表-->
+    <delete id="delPersonPostList">
+        <if test="delPersonPostIdList!=null and delPersonPostIdList.size()>0">
+            delete from XZY_M_TASKALLOTPERSONPOST where 1=1
+            and S_ID in
+            <trim suffixOverrides="OR S_ID IN()">
+                <foreach collection="delPersonPostIdList" item="delPersonPostId" index="index" open="(" close=")">
+                    <if test="index != 0">
+                        <choose>
+                            <when test="index % 1000 == 999">) OR S_ID IN (</when>
+                            <otherwise>,</otherwise>
+                        </choose>
+                    </if>
+                    #{delPersonPostId}
+                </foreach>
+            </trim>
+        </if>
+    </delete>
+</mapper>

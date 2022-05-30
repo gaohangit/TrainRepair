@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.common.bill.billconfig.dao.TemplateSummaryMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ${tableAlias}S_TEMPLATEID as "${columnPrefix}templateId",
+        ${tableAlias}S_TEMPLATENO as "${columnPrefix}templateNo",
+        ${tableAlias}S_TEMPLATENAME as "${columnPrefix}templateName",
+        ${tableAlias}S_TEMPLATETYPECODE as "${columnPrefix}templateTypeCode",
+        ${tableAlias}S_PLATFORM as "${columnPrefix}platform",
+        ${tableAlias}S_TRAINSETTYPE as "${columnPrefix}trainsetType",
+        ${tableAlias}S_BATCH as "${columnPrefix}batch",
+        ${tableAlias}I_MARSHALCOUNT as "${columnPrefix}marshalCount",
+        ${tableAlias}S_VERSION as "${columnPrefix}version",
+        ${tableAlias}C_VALIDFLAG as "${columnPrefix}validFlag",
+        ${tableAlias}S_CREATEUSER as "${columnPrefix}createUser",
+        ${tableAlias}D_CREATETIME as "${columnPrefix}createTime",
+        ${tableAlias}S_UNITCODE as "${columnPrefix}unitCode",
+        ${tableAlias}S_UNITNAME as "${columnPrefix}unitName",
+        ${tableAlias}S_DEPTTYPE as "${columnPrefix}deptType",
+        ${tableAlias}S_REMARK as "${columnPrefix}remark",
+        ${tableAlias}S_ITEMCODE as "${columnPrefix}itemCode",
+        ${tableAlias}S_ITEMNAME as "${columnPrefix}itemName",
+        ${tableAlias}S_DEPOTCODE as "${columnPrefix}depotCode",
+        ${tableAlias}S_DEPOTNAME as "${columnPrefix}depotName",
+        ${tableAlias}S_BUREAUCODE as "${columnPrefix}bureauCode",
+        ${tableAlias}S_BUREAUNAME as "${columnPrefix}bureauName",
+        ${tableAlias}I_MARSHALLINGTYPE as "${columnPrefix}marshallingType",
+        ${tableAlias}S_TEMPLATEPATH as "${columnPrefix}templatePath",
+        ${tableAlias}D_VALIDDATE as "${columnPrefix}validDate",
+        ${tableAlias}D_UNVALIDDATE as "${columnPrefix}unvalidDate",
+        ${tableAlias}C_DELFLAG as "${columnPrefix}delFlag",
+        ${tableAlias}C_PUBLISH as "${columnPrefix}publish",
+        ${tableAlias}C_SYNFLAG as "${columnPrefix}synFlag",
+        ${tableAlias}D_SYNDATE as "${columnPrefix}synDate"
+    </sql>
+
+    <update id="updateTemplateSummaryStateById"
+            parameterType="com.ydzbinfo.emis.trainRepair.bill.querymodel.templatesummary.TemplateSummary">
+        update XZY_C_TEMPLATESUMMARY
+        <set>
+            <if test="unvalidDate != null">
+                D_UNVALIDDATE = #{unvalidDate} ,
+            </if>
+            <if test="validFlag != null">
+                C_VALIDFLAG = #{validFlag},
+            </if>
+            <if test="synFlag != null and synFlag != ''">
+                C_SYNFLAG = #{synFlag},
+            </if>
+            D_SYNDATE = #{synDate},
+        </set>
+        where S_TEMPLATEID = #{templateId}
+    </update>
+
+</mapper>

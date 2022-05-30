@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.repairmanagent.dao.XzyCWorkcritertionRoleMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.repairmanagement.querymodel.XzyCWorkcritertionRole">
+        <id column="S_ID" property="sId" />
+        <result column="S_CRITERTIONID" property="sCritertionid" />
+        <result column="S_ROLENAME" property="sRolename" />
+        <result column="S_ROLECODE" property="sRolecode" />
+        <result column="S_REMARK" property="sRemark" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_ID AS sId, S_CRITERTIONID AS sCritertionid, S_ROLENAME AS sRolename, S_ROLECODE AS sRolecode, S_REMARK AS sRemark
+    </sql>
+
+    <select id="getByCritertionId" resultType="com.ydzbinfo.emis.trainRepair.repairmanagement.querymodel.XzyCWorkcritertionRole">
+        select <include refid="Base_Column_List"></include>
+        from XZY_C_WORKCRITERTION_ROLE
+        where
+        S_CRITERTIONID = #{critertionId}
+    </select>
+
+    <update id="updateByEntity" parameterType="com.ydzbinfo.emis.trainRepair.repairmanagement.querymodel.XzyCWorkcritertionRole">
+        update XZY_C_WORKCRITERTION_ROLE
+        <set>
+            <if test="sCritertionid != null and sCritertionid != ''">S_CRITERTIONID = #{sCritertionid}</if>
+            <if test="sRolename != null and sRolename != ''">S_ROLENAME = #{sRolename}</if>
+            <if test="sRolecode != null and sRolecode != ''">S_ROLECODE = #{sRolecode}</if>
+            <if test="sRemark != null and sRemark != ''">S_REMARK = #{sRemark}</if>
+        </set>
+        where S_ID = #{sId}
+    </update>
+
+    <delete id="deleteByWorkcritertionId" parameterType="String">
+        delete from XZY_C_WORKCRITERTION_ROLE
+        where
+        S_CRITERTIONID = #{xzyCWorkcritertionId}
+    </delete>
+
+</mapper>

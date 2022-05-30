@@ -1,0 +1,9 @@
+.billBasicInfoContainer {
+  padding-left: 8px;
+  margin-top: 9px;
+  display: flex;
+}
+
+.billBasicInfoContainer>* {
+  margin-right: 30px;
+}

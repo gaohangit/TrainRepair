@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>一体化申请</title>
+    <link rel="stylesheet" href="${publicStaticPath}/elementUI/index.css" />
+    <script src="${publicStaticPath}/jquery/jquery-1.10.2.min.js"></script>
+    <script src="${publicStaticPath}/vue/vue.js"></script>
+    <script src="${publicStaticPath}/elementUI/index.js"></script>
+    <script src="${ctxPath}/static/lib/day/day.js"></script>
+    <script src="${publicStaticPath}/vue/axios.min.js"></script>
+    <!--时间处理工具-->
+    <script src="${publicStaticPath}/moment/moment.min.js"></script>
+
+    <!-- 引入spreadjs 等相关文件 -->
+    <script src="${ctxPath}/static/lib/spread/gc.spread.sheets.all.13.2.0.min.js"></script>
+    <link rel="stylesheet" href="${ctxPath}/static/lib/spread/gc.spread.sheets.excel2013white.13.2.0.css" />
+    <script src="${ctxPath}/static/lib/spread/gc.spread.excelio.13.2.0.min.js"></script>
+    <script src="${ctxPath}/static/lib/spread/gc.spread.sheets.resources.zh.13.2.0.min.js"></script>
+    <script src="${ctxPath}/static/lib/BillSpreadModule.js"></script>
+    <script src="${ctxPath}/static/lib/FileSaver.min.js"></script>
+    <script src="${ctxPath}/static/lib/jszip.min.js"></script>
+
+    <script src="${ctxPath}/static/utils/GeneralUtil.js"></script>
+    <link rel="stylesheet" href="${ctxPath}/static/trainRepair/bill/unifyWorkerApply/css/unifyWorkerApply.css" />
+  </head>
+
+  <body>
+    <div id="app" v-cloak>
+      <el-card class="box-card">
+        <div slot="header">
+          <!-- 标题 -->
+          <span class="adorn"></span>
+          <h2>{{pageTitle}}</h2>
+        </div>
+
+        <!-- 搜索栏 -->
+        <el-form ref="searchForm" :model="searchForm" :rules="searchRules" label-position="right" size="mini">
+          <el-row>
+            <el-col :span="6">
+              <el-form-item prop="taskTime">
+                <span class="lable">作业时间:</span>
+                <el-date-picker
+                  style="width: 220px"
+                  v-model="searchForm.taskTime"
+                  type="daterange"
+                  value-format="yyyy-MM-dd"
+                  range-sparator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  :clearable="false"
+                ></el-date-picker>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item prop="trainNumber">
+                <span class="lable">车组:</span>
+                <el-select
+                  style="width: 220px"
+                  v-model="searchForm.trainNumber"
+                  placeholder="请选择"
+                  clearable
+                  filterable
+                >
+                  <el-option
+                    v-for="item in trainSetList"
+                    :key="item.trainsetid"
+                    :label="item.trainsetname"
+                    :value="item.trainsetid"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item prop="applyCompany">
+                <span class="lable">申请单位:</span>
+                <el-input style="width: 220px" v-model.trim="searchForm.applyCompany" placeholder="请输入内容"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item prop="applyPeople">
+                <span class="lable">申请人:</span>
+                <el-input style="width: 220px" v-model.trim="searchForm.applyPeople" placeholder="请输入内容"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="6">
+              <el-form-item prop="state">
+                <span class="lable">状态:</span>
+                <el-select style="width: 220px" v-model="searchForm.state" placeholder="请选择" clearable>
+                  <el-option v-for="item in stateList" :key="item.value" :label="item.name" :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="18" style="text-align: right">
+              <el-form-item>
+                <el-button size="mini" type="primary" \@click="submitForm('searchForm')">查询</el-button>
+                <el-button size="mini" type="primary" \@click="reset('searchForm')">重置</el-button>
+                <el-button size="mini" type="primary" \@click="billsBackfill('add', false)">新增</el-button>
+                <el-button size="mini" type="primary" \@click="batchExportExcel">批量导出</el-button>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <!-- 搜索栏 -->
+        <!-- 分割线 -->
+        <div class="timeBox"></div>
+        <!-- 分割线 -->
+        <!-- 列表部分 -->
+        <div class="main">
+          <el-table
+            ref="multipleTable"
+            :data="tableData"
+            tooltip-effect="dark"
+            height="calc(100vh - 225px)"
+            style="width: calc(100vw - 40px); margin-top: 20px"
+            \@selection-change="handleSelectionChange"
+            :row-class-name="tableRowClassName"
+            border
+            :header-cell-style="{background:'#e0ebff',color:'#000'}"
+          >
+            <el-table-column type="selection" align="center" fixed width="45"> </el-table-column>
+            <el-table-column label="序号" align="center" fixed width="60">
+              <template slot-scope="scope">{{ scope.$index + 1 }}</template>
+            </el-table-column>
+            <el-table-column prop="deptName" align="center" label="申请单位" min-width="120"> </el-table-column>
+            <el-table-column prop="stuffName" align="center" label="申请人" min-width="120"> </el-table-column>
+            <el-table-column prop="trainsetName" align="center" label="车组" min-width="150"> </el-table-column>
+            <el-table-column prop="applyBeginTime" align="center" label="作业开始时间" min-width="150"> </el-table-column>
+            <el-table-column prop="applyEndTime" align="center" label="作业结束时间" min-width="150"> </el-table-column>
+            <el-table-column prop="applyContent" align="center" label="作业内容" min-width="120" show-overflow-tooltip> </el-table-column>
+            <el-table-column prop="dispatchSign" align="center" label="调度审核" min-width="120"> </el-table-column>
+            <el-table-column prop="techniqueSign" align="center" label="技术审核" min-width="120"> </el-table-column>
+            <el-table-column prop="directorSign" align="center" label="所长审批" min-width="120"> </el-table-column>
+            <el-table-column prop="finishWorkPersonSign" align="center" label="作业负责人销记" min-width="120">
+            </el-table-column>
+            <el-table-column prop="finishDispatchSign" align="center" label="调度销记" min-width="120"> </el-table-column>
+            <el-table-column prop="address" align="center" label="操作" min-width="180">
+              <template slot-scope="scope">
+                <el-button size="mini" type="primary" \@click="billsBackfill('add', false, scope.row)">回填</el-button>
+                <el-button size="mini" type="primary" \@click="billsBackfill('lookUp', true, scope.row)"
+                  >查看</el-button
+                >
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+        <!-- 列表部分 -->
+        <!-- 分页部分 -->
+        <div class="block">
+          <el-pagination
+            background
+            \@size-change="handleSizeChange"
+            \@current-change="handleCurrentChange"
+            :current-page="currentPage"
+            :page-sizes="[10, 20, 30, 40]"
+            :page-size="pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="total"
+          >
+          </el-pagination>
+        </div>
+        <!-- 分页部分 -->
+      </el-card>
+
+      <!-- 回填部分 -->
+      <el-dialog
+        class="spread_dialog"
+        :visible.sync="spreadDialog.visible"
+        width="80%"
+        fullscreen
+        center
+        :close-on-click-modal="false"
+        top="auto"
+        v-loading="spreadDialog.loading"
+      >
+        <div style="height: 5vh">
+          <el-row style="margin: 10px">
+            <el-col :span="24">
+              <el-button size="mini" type="primary" \@click="exportExcel(columnData)">导出</el-button>
+              <el-button size="mini" type="primary" v-show="spreadDialog.btnShow" \@click="dataSave">保存</el-button>
+              <el-button size="mini" type="primary" \@click="dialogClose">关闭</el-button>
+            </el-col>
+          </el-row>
+        </div>
+        <div style="height: calc(100vh - 5vh - 12px); width: calc(100vw - 7px)">
+          <bill-spread-module
+            ref="billSpreadModule"
+            main-id="main"
+            :config="spreadDialog.billSpreadModuleConfig"
+          ></bill-spread-module>
+        </div>
+      </el-dialog>
+      <!-- 回填部分 -->
+
+      <div id="export-container" v-if="excelExport.progressShow">
+        <div style="display: flex; flex-direction: column; align-items: center">
+          <el-progress v-bind="progressPropData"></el-progress>
+          {{message}}
+        </div>
+      </div>
+    </div>
+
+    <script src="${ctxPath}/static/trainRepair/bill/unifyWorkerApply/js/unifyWorkerApply.js"></script>
+  </body>
+</html>

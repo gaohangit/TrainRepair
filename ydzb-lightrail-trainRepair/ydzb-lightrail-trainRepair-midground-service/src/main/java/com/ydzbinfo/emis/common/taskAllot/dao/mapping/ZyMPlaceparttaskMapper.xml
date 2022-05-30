@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.common.taskAllot.dao.ZyMPlaceparttaskMapper">
+
+    <!--通用查询映射结果-->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.ZyMPlaceparttask">
+        <id column="S_PLACEPARTID" property="placepartid"/>
+        <result column="S_TRAINSETCAR" property="trainsetcar"/>
+        <result column="S_PARTPOSITION" property="partposition"/>
+        <result column="S_PARTPOSITIONNOTE" property="partpositionnote"/>
+        <result column="S_TRAINSETSTRUCTUREID" property="trainsetstructureid"/>
+        <result column="S_TRAINSETSTRUCTURETEXT" property="trainsetstructuretext"/>
+        <result column="S_KEYPARTTYPEID" property="keyparttypeid"/>
+        <result column="S_PARTTYPENAME" property="parttypename"/>
+        <result column="S_SERIALNUM" property="serialnum"/>
+        <result column="S_BUREAUNUMNO" property="bureaunumno"/>
+        <result column="S_DAYPLANID" property="dayplanid"/>
+        <result column="S_PUBLISHCODE" property="publishcode"/>
+        <result column="S_REMARK" property="remark"/>
+        <result column="S_TASKITEMALLOTID" property="taskitemallotid"/>
+        <result column="C_BRANCHTYPE" property="branchtype"/>
+        <result column="I_ASSIGNTASKSTATE" property="assigntaskstate"/>
+        <result column="D_TASKALLOTTIME" property="taskallottime"/>
+        <result column="S_WORKERSTUFFCODE" property="workerstuffcode"/>
+        <result column="S_WORDERSTUFFNAME" property="worderstuffname"/>
+        <result column="S_PERSONNAME" property="personname"/>
+        <result column="S_PERSONNAMECODE" property="personnamecode"/>
+        <result column="S_ALLOTMODE" property="allotmode"/>
+    </resultMap>
+
+    <delete id="deleteByParam"  parameterType="String">
+        delete ZY_M_PLACEPARTTASK p
+        where p.s_dayplanid = #{dayPlanId}
+        and p.s_taskitemallotid in
+        (
+            select t.s_taskitemallotid from ZY_M_TASKITEMALLOT t
+            where t.c_branchtype = '0'
+            and t.s_dayplanid = #{dayPlanId}
+            and t.s_trainsetid = #{trainSetId}
+            and t.s_deptcode = #{deptCode}
+            <if test="packetCode != null and packetCode != ''">
+                and t.s_sppacketcode = #{packetCode}
+            </if>
+            <if test="itemCode != null and itemCode != ''">
+                and t.s_splpacketitemcode = #{itemCode}
+            </if>
+         )
+    </delete>
+
+    <delete id="deleteByTaskId"  parameterType="String">
+        delete ZY_M_PLACEPARTTASK p
+        where p.s_dayplanid = #{dayPlanId} and p.s_taskitemallotid = #{taskItemAllotId}
+    </delete>
+
+</mapper>

@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="ydzb-lightrail-trainRepair-midground-service:war">
+    <output-path>$PROJECT_DIR$/../ydzb-lightrail-trainRepair/ydzb-lightrail-trainRepair-midground-service/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>ydzb-lightrail-trainRepair-midground-service</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="apiTrainRepairMidGround.war">
+      <element id="artifact" artifact-name="ydzb-lightrail-trainRepair-midground-service:war exploded" />
+    </root>
+  </artifact>
+</component>

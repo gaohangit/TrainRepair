@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.bill.fillback.dao.ChecklistDetailMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ${tableAlias}S_ID as "${columnPrefix}id",
+        ${tableAlias}S_CHECKLISTSUMMARYID as "${columnPrefix}checklistSummaryId",
+        ${tableAlias}S_ROWID as "${columnPrefix}rowId",
+        ${tableAlias}S_COLID as "${columnPrefix}colId",
+        ${tableAlias}S_CODE as "${columnPrefix}code",
+        ${tableAlias}S_VALUE as "${columnPrefix}value",
+        ${tableAlias}S_ATTRIBUTECODE as "${columnPrefix}attributeCode",
+        ${tableAlias}S_REMARKS as "${columnPrefix}remarks",
+        ${tableAlias}D_LASTFILLTIME as "${columnPrefix}lastFillTime",
+        ${tableAlias}S_LASTFILLWORKCODE as "${columnPrefix}lastFillWorkCode",
+        ${tableAlias}S_LASTFILLWORKNAME as "${columnPrefix}lastFillWorkName",
+        ${tableAlias}S_LASTIPADDRESS as "${columnPrefix}lastIpAddress",
+        ${tableAlias}S_LASTHOSTNAME as "${columnPrefix}lastHostName",
+        ${tableAlias}S_TEMPLATETYPE as "${columnPrefix}templateType",
+        ${tableAlias}S_TEMPLATEID as "${columnPrefix}templateId"
+    </sql>
+
+    <delete id="deleteList" parameterType="com.ydzbinfo.emis.trainRepair.bill.querymodel.checklist.ChecklistDetail">
+        delete XZY_M_CHECKLISTDETAIL from S_CHECKLISTSUMMARYID in
+        <foreach collection="list" item="checklistSummaryId" index="index" open="(" close=")" separator=",">
+            #{checklistSummaryId}
+        </foreach>
+    </delete>
+
+
+    <select id="selectByAttribute" resultType="com.ydzbinfo.emis.trainRepair.bill.querymodel.checklist.ChecklistDetail">
+        select
+        <include refid="Base_Column_List">
+            <property name="tableAlias" value=""/>
+            <property name="columnPrefix" value=""/>
+        </include>
+        from XZY_M_CHECKLISTDETAIL
+        where S_CHECKLISTSUMMARYID = #{checklistSummaryId}
+        <if test="attributeCodeList !=null and attributeCodeList.size()>0">
+            and S_ATTRIBUTECODE in
+            <foreach collection="attributeCodeList" item="attributeCode" index="index" open="(" close=")" separator=",">
+                #{attributeCode}
+            </foreach>
+        </if>
+    </select>
+
+    <update id="updatePrimaryKey"  parameterType="com.ydzbinfo.emis.trainRepair.bill.querymodel.checklist.ChecklistDetail">
+        update XZY_M_CHECKLISTDETAIL a set a.S_VALUE = #{value}, a.S_CODE = #{code},a.S_LASTFILLWORKCODE = #{lastFillWorkCode} ,
+        a.S_LASTFILLWORKNAME =  #{lastFillWorkName},a.S_LASTIPADDRESS =#{lastIpAddress},a.S_LASTHOSTNAME = #{lastHostName}
+        where a.S_ID = #{id} and a.S_CHECKLISTSUMMARYID = #{checklistSummaryId}
+    </update>
+
+    <delete id="deleteByPrimaryKey"  parameterType="com.ydzbinfo.emis.trainRepair.bill.querymodel.checklist.ChecklistDetail">
+        delete  from XZY_M_CHECKLISTDETAIL a where a.S_ID = #{id} and a.S_CHECKLISTSUMMARYID = #{checklistSummaryId}
+    </delete>
+</mapper>

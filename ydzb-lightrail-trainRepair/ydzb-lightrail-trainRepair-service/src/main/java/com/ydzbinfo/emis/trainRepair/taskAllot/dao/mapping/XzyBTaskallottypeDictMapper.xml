@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.taskAllot.dao.XzyBTaskallottypeDictMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyBTaskallottypeDict">
+        <id column="S_ITEMTYPECODE" property="sTaskallottypecode" />
+        <result column="S_TITEMTYPENAME" property="sTaskallottypename" />
+        <result column="S_REMARK" property="sRemark" />
+        <result column="C_FLAG" property="cFlag" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+		S_ITEMTYPECODE AS sTaskallottypecode,
+		S_TITEMTYPENAME AS sTaskallottypename,
+		S_REMARK AS sRemark,
+		C_FLAG AS cFlag
+	</sql>
+
+    <select id="getTaskAllotTypeDict" resultMap="BaseResultMap">
+        select *
+        from TI_B_ITEMTYPE_DICT
+        where
+        C_FLAG = '1'
+    </select>
+
+    <select id="getTaskAllotTypeByCode" resultMap="BaseResultMap">
+        select *
+        from TI_B_ITEMTYPE_DICT
+        where
+        C_FLAG = '1'
+        and
+        S_ITEMTYPECODE = #{code}
+    </select>
+
+</mapper>

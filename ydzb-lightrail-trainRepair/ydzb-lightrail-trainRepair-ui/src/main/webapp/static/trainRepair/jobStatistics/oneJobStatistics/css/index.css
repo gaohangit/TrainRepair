@@ -1,0 +1,372 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+[v-cloak] {
+  display: none;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+#app {
+  height: 100%;
+}
+
+.el-card {
+  height: calc(100vh - 2px);
+}
+
+.el-card__header {
+  position: relative;
+  height: 42px;
+  line-height: 42px;
+  padding: 0 0 0 32px;
+}
+
+.adorn {
+  position: absolute;
+  left: 20px;
+  top: 9px;
+  width: 5px;
+  height: 25px;
+  background-color: #4e86fe;
+}
+
+.el-card__body {
+  height: calc(100vh - 42px);
+  padding: 0;
+}
+
+.text-l {
+  text-align: left;
+}
+.text-r {
+  text-align: right;
+}
+
+.el-select {
+  width: 100%;
+}
+.el-input {
+  width: 100%;
+}
+.el-select__tags {
+  overflow: hidden;
+  flex-wrap: nowrap;
+}
+
+.el-container {
+  height: 100%;
+  padding: 10px 0;
+}
+.el-header {
+  height: unset !important;
+}
+.el-main {
+  height: 100%;
+  padding: 0 20px;
+  overflow: hidden;
+  flex: 1;
+}
+.main-table {
+  height: 100%;
+}
+.el-footer {
+  height: unset !important;
+}
+.center-dialog {
+  display: flex;
+}
+.center-dialog .el-dialog {
+  margin: auto;
+}
+
+.page-title {
+  position: relative;
+  padding: 0 0 10px 7px;
+  border-bottom: 1px solid #c0c4cc;
+  line-height: 18px;
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+
+.page-title::before {
+  display: block;
+  content: '';
+  position: absolute;
+  left: -7px;
+  width: 7px;
+  height: 18px;
+  background-color: #409eff;
+}
+
+.el-tooltip__popper {
+  max-width: 1000px;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  width: 6px;
+  /* background: rgba(144,147,153, 0.1); */
+  -webkit-border-radius: 2em;
+  -moz-border-radius: 2em;
+  border-radius: 2em;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(144, 147, 153, 0.5);
+  background-clip: padding-box;
+  min-height: 28px;
+  -webkit-border-radius: 2em;
+  -moz-border-radius: 2em;
+  border-radius: 2em;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(144, 147, 153, 1);
+}
+
+.form-left {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.form-left .el-form-item {
+  width: 25%;
+}
+/* .el-form-item__content > div {
+  width: 100% !important;
+} */
+.el-buttons {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+.el-buttons .el-form-item__content {
+  margin-left: 0 !important;
+}
+
+.bb-form .el-form-item__label {
+  padding: 0;
+}
+.bb-form .el-form-item {
+  margin-right: 0px;
+}
+.bb-form .el-date-editor {
+  width: 95px !important;
+}
+.bb-form .el-date-editor .el-icon-date {
+  display: none;
+}
+.bb-form .el-date-editor .el-input__inner {
+  padding: 0 15px;
+}
+.bb-form .el-select {
+  width: 150px;
+}
+.bb-form .el-input {
+  width: 150px;
+}
+.el-tabs__nav-wrap::after {
+  background-color: unset;
+}
+
+.el-tabs {
+  height: 100%;
+}
+.el-tabs__content {
+  height: calc(100% - 55px);
+}
+.el-tab-pane {
+  height: 100%;
+}
+.tab {
+  display: flex;
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
+}
+.tab-left {
+  width: calc(100% - 820px);
+  height: 100%;
+  box-sizing: border-box;
+  border: 1px solid #c0c4cc;
+  margin-right: 20px;
+}
+.tab-left > div {
+  height: 50%;
+}
+.tab-right {
+  width: 800px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.work-show {
+  flex: none;
+  box-sizing: border-box;
+  border: 1px solid #c0c4cc;
+  margin-bottom: 20px;
+  padding: 15px 20px;
+  font-size: 16px;
+}
+.show-title {
+  text-align: center;
+}
+.clocks {
+  height: 100px;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+.clock-item {
+  width: 50%;
+  border: 1px solid #c0c4cc;
+  box-shadow: 5px 5px 5px #c0c4cc;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.clock-item:first-child {
+  margin-right: 10px;
+}
+.clock-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+.clock-title.danger {
+  color: #d54441;
+}
+.clock-title.safe {
+  color: #65c724;
+}
+.clock {
+  font-size: 12px;
+  width: 86px;
+  height: 86px;
+  background-image: url(../img/clock.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  text-align: center;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.show-board {
+  overflow: auto;
+  height: 100px;
+  background-color: #f5f5f5;
+  padding: 15px;
+  font-size: 14px;
+}
+.board-list {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.board-list:first-child .board-item:first-child {
+  margin-top: 0px;
+}
+.board-list:first-child .board-item:last-child {
+  margin-bottom: 0px;
+}
+.board-list.p {
+  justify-content: flex-start;
+}
+.board-list.p .board-item {
+  width: 100%;
+}
+.board-item {
+  margin: 10px 0 0;
+}
+.board-item span {
+  margin-right: 20px;
+}
+.show-board p {
+  line-height: 20px;
+}
+.show-table {
+  flex: 1;
+}
+.show-table-pagination {
+  flex: none;
+  height: 32px;
+}
+
+.self-icon {
+  display: inline-block;
+  vertical-align: bottom;
+  margin-right: 5px;
+  width: 14px;
+  height: 14px;
+  -webkit-filter: invert(45%) sepia(77%) saturate(561%) hue-rotate(176deg) brightness(109%) contrast(101%);
+  filter: invert(45%) sepia(77%) saturate(561%) hue-rotate(176deg) brightness(109%) contrast(101%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+.self-icon.view {
+  background-image: url('../img/view.png');
+}
+
+.el-button--primary.is-plain:focus .self-icon,
+.el-button--primary.is-plain:hover .self-icon {
+  -webkit-filter: brightness(0) invert(1);
+  filter: brightness(0) invert(1);
+}
+
+.warning {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.warning-charts {
+  display: flex;
+  margin-bottom: 20px;
+  height: 250px;
+  border: 1px solid #c0c4cc;
+}
+.warning-charts > div {
+  width: 50%;
+}
+.warning-table {
+  flex: 1;
+}
+.mar-10 {
+  margin-top: 10px;
+}
+
+.detail-dialog .el-dialog__body {
+  padding-top: 0px;
+}
+.detail-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+}
+.detail-title span {
+  font-weight: bold;
+  font-size: 16px;
+  margin-right: 20px;
+}
+.detail-title span:last-child {
+  margin-right: 0;
+}
+.el-tabs {
+  min-height: 567px;
+}
+.el-tabs--border-card > .el-tabs__content {
+  padding-bottom: 0px;
+}
+
+tr th .cell {
+  height: 34px;
+  line-height: 32px !important;
+}

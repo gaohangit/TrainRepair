@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>作业综合监控</title>
+
+    <script src="${publicStaticPath}/IE/babel-browser.min.js"></script>
+    <link rel="stylesheet" href="${publicStaticPath}/elementUI/index.css" />
+    <script src="${publicStaticPath}/jquery/jquery-1.10.2.min.js"></script>
+    <script src="${publicStaticPath}/vue/vue.js"></script>
+    <script src="${ctxPath}/static/lib/vue-seamless-scroll.min.js"></script>
+    <script src="${publicStaticPath}/elementUI/index.js"></script>
+    <script src="${ctxPath}/static/lib/day/day.js"></script>
+    <script src="${publicStaticPath}/vue/axios.min.js"></script>
+
+    <link
+      rel="stylesheet"
+      href="${ctxPath}/static/trainRepair/workComposite/workCompositeMonitor/css/workCompositeMonitor.css"
+    />
+    <script>
+      const ctxPath = '${ctxPath}';
+    </script>
+
+    <script src="${ctxPath}/static/lib/wangEditor.min.js"></script>
+    <link rel="stylesheet" href="${ctxPath}/static/components/flowLeftShow/flowLeftShow.css" />
+    <script src="${ctxPath}/static/lib/Sortable.min.js"></script>
+    <script src="${ctxPath}/static/lib/vuedraggable.umd.min.js"></script>
+    <link rel="stylesheet" href="${ctxPath}/static/components/columnDraggable/columnDraggable.css" />
+    <script src="${ctxPath}/static/components/columnDraggable/columnDraggable.js"></script>
+
+    <script src="${ctxPath}/static/components/flowLeftShow/flowItem.js"></script>
+    <script src="${ctxPath}/static/components/flowLeftShow/flowContainer.js"></script>
+    <script src="${ctxPath}/static/components/wangEditor/wangEditor.js"></script>
+    <script src="${ctxPath}/static/components/track/getTrainUrls.js"></script>
+    <!-- input全局指令 -->
+    <script  src="${ctxPath}/static/utils/InputNumberDirective.js"></script>
+  </head>
+  <body>
+    <div id="main" v-cloak>
+      <div class="header">
+        <span class="title">{{unitName}}作业综合监控</span>
+        <span class="title_time" id="time" ref="time"></span>
+        <div class="headerbtn">
+          <div class="monitorConfig" \@click="openMonitorDialog">
+            <img :src="baseImgPath+'/top_ico3.png'" alt="" />
+            <span style="margin: 0 5px; color: rgb(36, 129, 196)">配置</span>
+          </div>
+          <img
+            :src="baseImgPath+'/top_ico4.png'"
+            alt=""
+            \@click="fullscreenClick"
+            v-if="!isFullScreen"
+            style="cursor: pointer"
+          />
+          <img :src="baseImgPath+'/top_ico4-1.png'" alt="" \@click="fullscreenClick" v-else style="cursor: pointer" />
+        </div>
+      </div>
+
+      <div class="body" style="height: calc(100% - 12.9vh); margin-bottom: 6.5px">
+        <div class="content" v-for="item in nowPageTrackPositions" :key="item" style="color: #fff">
+          <train-details class="trainDetails" :track-detail="trackDetails[item]">
+            <template slot="header">
+              <div class="repairProject">
+                <div
+                  class="train-icon"
+                  v-if="trackPositionTraiSetMap[item] && trainsetIdRepairTaskList[trackPositionTraiSetMap[item].trainsetId] && !trainsetIdRepairTaskList[trackPositionTraiSetMap[item].trainsetId].oneNumBer && !trainsetIdRepairTaskList[trackPositionTraiSetMap[item].trainsetId].twoNumber && trainsetIdRepairTaskList[trackPositionTraiSetMap[item].trainsetId].hostLingNumber > 0"
+                >
+                  <div>任务:</div>
+                  <div
+                    class="ico"
+                    :class="{ico_red: trackPositionTraiSetMap[item] && trainsetIdRepairTaskList[trackPositionTraiSetMap[item].trainsetId]&&trainsetIdRepairTaskList[trackPositionTraiSetMap[item].trainsetId].dayPlan == false}"
+                    \@click="lookupNodeDealInfoBtn(hostLingFlowRunInfoMap[trackPositionTraiSetMap[item].trainsetId].nodeList)"
+                  >
+                    <span> 整 </span>
+                  </div>
+                </div>
+              </div>
+            </template>
+
+            <template :slot="index == 0 ? 'flow' : 'fault'" v-for="(showContent, index) in showFlowFault">
+              <div class="flow" v-if="showContent.code == 'oneOrTwoFlow' && showContent.isShow">
+                <div
+                  v-if="trackPositionTraiSetMap[item]&&showFlowRunList(trackPositionTraiSetMap[item].trainsetId).showHeadLine"
+                >
+                  <img src="${ctxPath}/static/trainRepair/projection/workRepairmonitor/img/line1.png" alt="" />
+                </div>
+                <ul>
+                  <li
+                    v-for="node in showFlowRunList(trackPositionTraiSetMap[item]&&trackPositionTraiSetMap[item].trainsetId).nodeShowList"
+                    :key="node.id"
+                  >
+                    <el-tooltip class="item" effect="dark" :content="node.name" placement="top">
+                      <div
+                        class="flowName"
+                        :class="{'state_1':state_1(node),'state_2':state_2(node),'state_3':state_3(node),'state_4':state_4(node), not_started: !showFlowRunList(trackPositionTraiSetMap[item].trainsetId).flowId}"
+                        \@click="nodeClick(trackPositionTraiSetMap[item]&&trackPositionTraiSetMap[item].trainsetId)"
+                      >
+                        <span>{{node.name}}</span>
+                      </div>
+                    </el-tooltip>
+                    <div>
+                      <img src="${ctxPath}/static/trainRepair/projection/workRepairmonitor/img/line2.png" alt="" />
+                    </div>
+                  </li>
+                </ul>
+                <div
+                  v-if="trackPositionTraiSetMap[item]&&showFlowRunList(trackPositionTraiSetMap[item].trainsetId).showFootLine"
+                >
+                  <img src="${ctxPath}/static/trainRepair/projection/workRepairmonitor/img/line3.png" alt="" />
+                </div>
+              </div>
+
+              <div
+                class="fault"
+                v-if="showContent.code == 'fault' && showContent.isShow && trackDetails[item] && trackDetails[item].queryProcessMonitorPlaList[0].faultData"
+              >
+                <div class="faultName">故障:</div>
+                <ul class="faultPosition">
+                  <li
+                    v-for="val in trackDetails[item].queryProcessMonitorPlaList[0].faultData.faultStateList"
+                    :key="val.carNo"
+                  >
+                    <div :class="{isLong: trackDetails[item].isLong == '1'}">{{val.carNo}}</div>
+                    <img :src="val.faultState | malfunction" alt="" />
+                  </li>
+                </ul>
+                <div class="faultComplete">
+                  <span>
+                    总计：{{trackDetails[item].queryProcessMonitorPlaList[0].faultData.faultDealCount}} /
+                    {{trackDetails[item].queryProcessMonitorPlaList[0].faultData.faultTotalCount}}
+                  </span>
+                </div>
+              </div>
+            </template>
+
+            <template slot="content">
+              <template v-if="trackPositionTraiSetMap[item]">
+                <!-- 一级修作业过程 -->
+                <div
+                  class="left"
+                  v-if="showNextPageContent[0].code == 'oneWork' && showNextPageContent[0].isShow && oneWorkerList[item]"
+                >
+                  <ul class="firstRepair">
+                    <li
+                      class="people"
+                      v-for="val in oneWorkerList[item][trackPositionPageMap[item].oneWorkerPage]"
+                      :key="val.workerId"
+                    >
+                      <div class="PeopleName">
+                        <span>{{val.workerName}}</span>
+                      </div>
+                      <ul class="work">
+                        <li class="workDetails" v-for="items in val.oneItemList" :key="items.oneItemCode">
+                          <div class="workName">
+                            <img :src="workNameURL.icoPackage" alt="" />
+                            <span :class="{overTime: items.oneItemState == 1, over: items.oneItemState == 2}"
+                              >{{items.oneItemName}}</span
+                            >
+                          </div>
+                          <ul class="quantity">
+                            <li
+                              :class="{completed: obj.carNoState == 2, under: obj.carNoState == 1}"
+                              v-for="obj in items.oneItemCarNoStateList"
+                              :key="obj.carNo"
+                            >
+                              {{obj.carNo}}
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </div>
+                <!-- 一级修作业过程 -->
+
+                <!-- 二级修作业过程 -->
+                <div
+                  class="left"
+                  v-if="showNextPageContent[0].code == 'twoWork' && showNextPageContent[0].isShow && workPacketList[item]"
+                >
+                  <ul class="secondRepair">
+                    <li
+                      class="work"
+                      v-for="val in workPacketList[item][trackPositionPageMap[item].workPacketPage]"
+                      :key="val.packetCode"
+                    >
+                      <div class="workName">{{val.packetName}}</div>
+                      <div class="percent">{{getWidth(val.packetEndCount,val.packetTotalCount)}}</div>
+                      <div class="progress" id="progress">
+                        <div id="percent" :style="{width:getWidth(val.packetEndCount,val.packetTotalCount)}">
+                          <span></span>
+                        </div>
+                      </div>
+                      <div class="percentage">{{val.packetEndCount}} / {{val.packetTotalCount}}</div>
+                    </li>
+                  </ul>
+                </div>
+                <!-- 二级修作业过程 -->
+
+                <!-- 关键作业 -->
+                <div
+                  ref="mainTable"
+                  class="main-table left"
+                  v-if="showNextPageContent[0].code == 'keyWork' && showNextPageContent[0].isShow && trainsetIdFlowIdDataMap[trackPositionTraiSetMap[item].trainsetId]"
+                >
+                  <template
+                    v-for="(val, flowId, i) in trainsetIdFlowIdDataMap[trackPositionTraiSetMap[item].trainsetId]"
+                  >
+                    <el-table
+                      :key="flowId"
+                      :data="trainsetIdFlowIdDataMap[trackPositionTraiSetMap[item].trainsetId][flowId]"
+                      class="keyWork-table"
+                      header-row-class-name="table-header"
+                      :row-class-name="tableRowClassName"
+                      :height="getTableHeight(trainsetIdFlowIdDataMap[trackPositionTraiSetMap[item].trainsetId])"
+                    >
+                      <el-table-column type="index" label="序号" width="50" fixed></el-table-column>
+                      <el-table-column
+                        v-for="column in localConfig.keyWorkFlowConfig[flowId].rightList"
+                        :key="column.key"
+                        :label="column.label"
+                        :fixed="column.fixed"
+                        :min-width="column.width||150"
+                      >
+                        <template v-slot="{row}">
+                          <span v-if="column.type=='static'">
+                            <span v-if="column.key=='TRAINSETID'">{{trainsetIdNameMap[row.trainsetId]}} </span>
+                            <span v-else-if="column.key=='STATE'">{{flowState[row.state]}} </span>
+                            <span v-else>{{row[column.property]}}</span>
+                          </span>
+                          <span
+                            v-else-if="column.type=='node'"
+                            v-html="flowRunNodeIdRecordsMap[row.id][column.property]"
+                          >
+                            {{ flowRunNodeIdRecordsMap[row.id][column.property] }}
+                          </span>
+                          <span v-else>
+                            <span v-if="column.type==='text'"> {{row[column.property]}} </span>
+                            <span v-else-if="!column.simpleOption"> {{ getColumnLabel(row,column)}} </span>
+                            <span v-else-if="column.key==='CAR'">
+                              {{row[column.property].length===0?'全列':row[column.property].toString()}}
+                            </span>
+                            <span v-else> {{row[column.property].toString()}} </span>
+                          </span>
+                        </template>
+                      </el-table-column>
+                    </el-table>
+                  </template>
+                </div>
+                <!-- 关键作业 -->
+
+                <!-- 临修作业流程 -->
+                <div
+                  class="data-container"
+                  v-if="showNextPageContent[0].code == 'temporary' && showNextPageContent[0].isShow && trainsetIdTemporaryMap[trackPositionTraiSetMap[item].trainsetId]"
+                >
+                  <div class="flow-show" ref="flowShow">
+                    <el-scrollbar style="height: 100%">
+                      <flow-container>
+                        <flow-item
+                          v-for="(node,nodeIdx) in trainsetIdTemporaryMap[trackPositionTraiSetMap[item].trainsetId]"
+                          :key="node.id"
+                          :node="node"
+                          :id="'node-'+node.id"
+                          :is-arrow-show="nodeIdx !== 0"
+                          :is-focus="foucsNodeId == node.id"
+                          \@node-click="nodeChange(trackPositionTraiSetMap[item].trainsetId, $event)"
+                        >
+                          <template v-slot="{data}">
+                            <subflow-item
+                              :id="'node-'+subNode.id"
+                              v-for="(subNode,subNodeIdx) in node.children"
+                              :key="subNode.id"
+                              :sub-node="subNode"
+                              :is-arrow-show="subNodeIdx !== 0"
+                              :class="{'show-children': data}"
+                              :is-focus="foucsNodeId == subNode.id"
+                              \@node-click="nodeChange(trackPositionTraiSetMap[item].trainsetId, $event)"
+                            ></subflow-item>
+                          </template>
+                        </flow-item>
+                      </flow-container>
+                    </el-scrollbar>
+                  </div>
+
+                  <div class="detail-show">
+                    <el-scrollbar style="height: 100%">
+                      <div class="table-show" ref="tableShow">
+                        <el-table
+                          :data="nodeRecordList(trainsetIdTemporaryMap[trackPositionTraiSetMap[item].trainsetId])"
+                          header-row-class-name="table-header"
+                          :row-class-name="tableRowClassName"
+                          class="flow-table"
+                        >
+                          <el-table-column type="index" label="序号" width="50"></el-table-column>
+                          <el-table-column label="处理节点" show-overflow-tooltip>
+                            <template v-slot="{row}"> {{nodeIdNameMap[trackPositionTraiSetMap[item].trainsetId][row.nodeId]}} </template>
+                          </el-table-column>
+                          <el-table-column label="处理人" prop="workerName"></el-table-column>
+                          <el-table-column label="处理时间" prop="recordTime" show-overflow-tooltip></el-table-column>
+                          <el-table-column label="所属班组" prop="teamName"></el-table-column>
+                        </el-table>
+                      </div>
+                      <div class="node-detail">
+                        <wang-editor
+                          ref="wangEditor"
+                          :content="nodeRecord[trackPositionTraiSetMap[item].trainsetId]"
+                          :able="false"
+                        ></wang-editor>
+                      </div>
+                    </el-scrollbar>
+                  </div>
+                </div>
+                <!-- 临修作业流程 -->
+              </template>
+            </template>
+
+            <template slot="right">
+              <div class="right">
+                <ul v-if="integrationList[item]">
+                  <li
+                    v-for="val in integrationList[item][trackPositionPageMap[item].integrationPage]"
+                    :key="val.integrationName"
+                  >
+                    <span>{{val.integrationName}}</span>
+                    <div :class="{finish: val.integrationState==1}"></div>
+                  </li>
+                </ul>
+              </div>
+            </template>
+          </train-details>
+        </div>
+
+        <div class="trainDetails trackPositionShow" v-if="showNextPageContent[1] && nowPageTrackPositions[0]">
+          <div class="task" v-if="trackPositionTraiSetMap[nowPageTrackPositions[0]]">
+            <!-- 一级修作业过程 -->
+            <div
+              class="left"
+              v-if="showNextPageContent[1].code == 'oneWork' && showNextPageContent[1].isShow && oneWorkerList[nowPageTrackPositions[0]][trackPositionPageMap[nowPageTrackPositions[0]].oneWorkerPage]"
+            >
+              <ul class="firstRepair">
+                <li
+                  class="people"
+                  v-for="val in oneWorkerList[nowPageTrackPositions[0]][trackPositionPageMap[nowPageTrackPositions[0]].oneWorkerPage]"
+                  :key="val.workerId"
+                >
+                  <div class="PeopleName">
+                    <span>{{val.workerName}}</span>
+                  </div>
+                  <ul class="work">
+                    <li class="workDetails" v-for="items in val.oneItemList" :key="items.oneItemCode">
+                      <div class="workName">
+                        <img :src="workNameURL.icoPackage" alt="" />
+                        <span :class="{overTime: items.oneItemState == 1, over: items.oneItemState == 2}"
+                          >{{items.oneItemName}}</span
+                        >
+                      </div>
+                      <ul class="quantity">
+                        <li
+                          :class="{completed: obj.carNoState == 2, under: obj.carNoState == 1}"
+                          v-for="obj in items.oneItemCarNoStateList"
+                          :key="obj.carNo"
+                        >
+                          {{obj.carNo}}
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+            <!-- 一级修作业过程 -->
+
+            <!-- 二级修作业过程 -->
+            <div
+              class="left"
+              v-if="showNextPageContent[1].code == 'twoWork' && showNextPageContent[1].isShow && workPacketList[nowPageTrackPositions[0]][trackPositionPageMap[nowPageTrackPositions[0]].workPacketPage]"
+            >
+              <ul class="secondRepair">
+                <li
+                  class="work"
+                  v-for="val in workPacketList[nowPageTrackPositions[0]][trackPositionPageMap[nowPageTrackPositions[0]].workPacketPage]"
+                  :key="val.packetCode"
+                >
+                  <div class="workName">{{val.packetName}}</div>
+                  <div class="percent">{{getWidth(val.packetEndCount,val.packetTotalCount)}}</div>
+                  <div class="progress" id="progress">
+                    <div id="percent" :style="{width:getWidth(val.packetEndCount,val.packetTotalCount)}">
+                      <span></span>
+                    </div>
+                  </div>
+                  <div
+                    class="percentage"
+                    \@click="taskDetailsList(trackPositionTraiSetMap[nowPageTrackPositions[0]].trainsetName, trackPositionTraiSetMap[nowPageTrackPositions[0]].trainsetId,val.packetCode, val.packetName)"
+                  >
+                    {{val.packetEndCount}} / {{val.packetTotalCount}}
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <!-- 二级修作业过程 -->
+
+            <!-- 关键作业 -->
+            <div
+              ref="mainTable"
+              class="main-table left"
+              v-if="showNextPageContent[1].code == 'keyWork' && showNextPageContent[1].isShow && trainsetIdFlowIdDataMap[trackPositionTraiSetMap[nowPageTrackPositions[0]].trainsetId]"
+            >
+              <template
+                v-for="(val, flowId, i) in trainsetIdFlowIdDataMap[trackPositionTraiSetMap[nowPageTrackPositions[0]].trainsetId]"
+              >
+                <el-table
+                  :key="flowId"
+                  :data="trainsetIdFlowIdDataMap[trackPositionTraiSetMap[nowPageTrackPositions[0]].trainsetId][flowId]"
+                  class="keyWork-table"
+                  header-row-class-name="table-header"
+                  :row-class-name="tableRowClassName"
+                  :height="getTableHeight(trainsetIdFlowIdDataMap[trackPositionTraiSetMap[nowPageTrackPositions[0]].trainsetId])"
+                >
+                  <el-table-column type="index" label="序号" width="50" fixed></el-table-column>
+                  <el-table-column
+                    v-for="column in localConfig.keyWorkFlowConfig[flowId].rightList"
+                    :key="column.key"
+                    :label="column.label"
+                    :fixed="column.fixed"
+                    :min-width="column.width||150"
+                  >
+                    <template v-slot="{row}">
+                      <span v-if="column.type=='static'">
+                        <span v-if="column.key=='TRAINSETID'">{{trainsetIdNameMap[row.trainsetId]}} </span>
+                        <span v-else-if="column.key=='STATE'">{{flowState[row.state]}} </span>
+                        <span v-else>{{row[column.property]}}</span>
+                      </span>
+                      <span v-else-if="column.type=='node'" v-html="flowRunNodeIdRecordsMap[row.id][column.property]">
+                        {{ flowRunNodeIdRecordsMap[row.id][column.property] }}
+                      </span>
+                      <span v-else>
+                        <span v-if="column.type==='text'"> {{row[column.property]}} </span>
+                        <span v-else-if="!column.simpleOption"> {{ getColumnLabel(row,column)}} </span>
+                        <span v-else-if="column.key==='CAR'">
+                          {{row[column.property].length===0?'全列':row[column.property].toString()}}
+                        </span>
+                        <span v-else> {{row[column.property].toString()}} </span>
+                      </span>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </template>
+            </div>
+            <!-- 关键作业 -->
+
+            <!-- 临修作业流程 -->
+            <div
+              class="data-container"
+              v-if="showNextPageContent[1].code == 'temporary' && showNextPageContent[1].isShow && trainsetIdTemporaryMap[trackPositionTraiSetMap[nowPageTrackPositions[0]].trainsetId]"
+            >
+              <div class="flow-show" ref="flowShow">
+                <el-scrollbar style="height: 100%">
+                  <flow-container>
+                    <flow-item
+                      v-for="(node,nodeIdx) in trainsetIdTemporaryMap[trackPositionTraiSetMap[nowPageTrackPositions[0]].trainsetId]"
+                      :key="node.id"
+                      :node="node"
+                      :id="'node-'+node.id"
+                      :is-arrow-show="nodeIdx !== 0"
+                      :is-focus="foucsNodeId == node.id"
+                      \@node-click="nodeChange(trackPositionTraiSetMap[nowPageTrackPositions[0]].trainsetId, $event)"
+                    >
+                      <template v-slot="{data}">
+                        <subflow-item
+                          :id="'node-'+subNode.id"
+                          v-for="(subNode,subNodeIdx) in node.children"
+                          :key="subNode.id"
+                          :sub-node="subNode"
+                          :is-arrow-show="subNodeIdx !== 0"
+                          :class="{'show-children': data}"
+                          :is-focus="foucsNodeId == subNode.id"
+                          \@node-click="nodeChange(trackPositionTraiSetMap[nowPageTrackPositions[0]].trainsetId, $event)"
+                        ></subflow-item>
+                      </template>
+                    </flow-item>
+                  </flow-container>
+                </el-scrollbar>
+              </div>
+              <div class="detail-show">
+                <div class="table-show" ref="tableShow">
+                  <el-table
+                    :data="nodeRecordList(trainsetIdTemporaryMap[trackPositionTraiSetMap[nowPageTrackPositions[0]].trainsetId])"
+                    header-row-class-name="table-header"
+                    :row-class-name="tableRowClassName"
+                    height="100%"
+                    class="flow-table"
+                  >
+                    <el-table-column type="index" label="序号" width="50"></el-table-column>
+                    <el-table-column label="处理节点" show-overflow-tooltip>
+                      <template v-slot="{row}"> {{nodeIdNameMap[trackPositionTraiSetMap[nowPageTrackPositions[0]].trainsetId][row.nodeId]}} </template>
+                    </el-table-column>
+                    <el-table-column label="处理人" prop="workerName"></el-table-column>
+                    <el-table-column label="处理时间" prop="recordTime" show-overflow-tooltip></el-table-column>
+                    <el-table-column label="所属班组" prop="teamName"></el-table-column>
+                  </el-table>
+                </div>
+                <div class="node-detail">
+                  <wang-editor
+                    ref="wangEditor"
+                    :content="nodeRecord[trackPositionTraiSetMap[nowPageTrackPositions[0]].trainsetId]"
+                    :able="false"
+                  ></wang-editor>
+                </div>
+              </div>
+            </div>
+            <!-- 临修作业流程 -->
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="left">
+          <div class="legend">图例</div>
+          <div class="completed">
+            <span></span>
+            已完成
+          </div>
+          <div class="incomplete">
+            <span></span>
+            未完成
+          </div>
+          <div class="partially">
+            <span></span>
+            部分完成
+          </div>
+        </div>
+        <div class="center">
+          <img src="${ctxPath}/static/trainRepair/projection/workRepairmonitor/img/danwei.png" alt="" />
+        </div>
+      </div>
+
+      <!-- 基础配置弹框 -->
+      <el-dialog
+        :visible.sync="monitorConfig.visible"
+        width="50%"
+        :modal="false"
+        center
+        :close-on-click-modal="false"
+        custom-class="monitor-dialog"
+        top="7vh"
+        destroy-on-close
+      >
+        <div slot="title">
+          <span class="little-title el-dialog__title">监控配置</span>
+        </div>
+        <div class="dialog-title-text dialog-title-select">
+          <span>线区股道配置</span>
+          <div>
+            <label>显示方式：</label>
+            <el-select v-model="monitorConfig.showMode" size="mini" placeholder="请选择显示方式">
+              <el-option label="按股道" value="1"></el-option>
+              <el-option label="按列位" value="2"></el-option>
+            </el-select>
+          </div>
+        </div>
+        <el-table
+          :data="lineTableData"
+          border
+          header-row-class-name="table-header"
+          class="base-table"
+          :height="300"
+          :span-method="spanMethod"
+        >
+          <el-table-column prop="trackAreaName" label="线区" align="center">
+            <template slot-scope="scope">
+              <div style="display: flex">
+                <span><el-checkbox :value="isShowAlltrackArea[scope.$index]" \@change="setTrackAreaShow($event, scope.$index)"></el-checkbox></span>
+                <span style="flex: 1; text-align: center">{{scope.row.trackAreaName}}</span>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="trackName" label="股道" align="center"></el-table-column>
+          <el-table-column
+            prop="trackPostionName"
+            label="列位"
+            align="center"
+            v-if="monitorConfig.showMode == 2"
+          ></el-table-column>
+          <el-table-column align="center">
+            <template slot="header" slot-scope="scope">
+              <el-checkbox v-model="isShowAllTrack" class="all-track-checkbox"></el-checkbox>
+              是否显示
+            </template>
+            <template slot-scope="scope">
+              <el-checkbox
+                v-if="monitorConfig.showMode == 1"
+                :value="getTrackShow(scope.row.trackCode)"
+                \@change="setTrackShow(scope.row.trackCode, $event)"
+              ></el-checkbox>
+              <el-checkbox
+                v-else
+                :value="getTrackPostionShow(scope.row.trackPositionCode)"
+                \@change="setTrackPostionShow(scope.row.trackPositionCode, $event)"
+              ></el-checkbox>
+            </template>
+          </el-table-column>
+
+          <div slot="empty" class="emptyBg">
+            <p>暂无数据</p>
+          </div>
+        </el-table>
+
+        <div class="dialog-title-text">
+          <span>显示内容配置</span>
+        </div>
+        <el-table
+          :data="showContentConfigData"
+          border
+          header-row-class-name="table-header"
+          class="base-table"
+          :height="200"
+        >
+          <el-table-column prop="name" label="显示内容" align="center"> </el-table-column>
+          <el-table-column class-name="showSelect" prop="trackName" label="显示样式" align="center">
+            <template slot-scope="scope">
+              <el-select
+                v-model="monitorConfig.showContentType[scope.row.code]"
+                size="mini"
+                placeholder="请选择显示方式"
+              >
+                <el-option label="样式1" value="1"></el-option>
+              </el-select>
+              <a style="cursor: pointer" \@click.stop.prevent="getShowContentImg(scope.row.code)">查看</a>
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="是否显示">
+            <template slot-scope="scope">
+              <el-checkbox :value="scope.row.isShow" \@change="changeIsShow(scope.row.code, $event)"></el-checkbox>
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="配置">
+            <template slot-scope="scope" v-if="scope.row.code == 'keyWork'">
+              <el-button type="primary" size="mini" \@click="openKeyWorkMonitorDialog">配置</el-button>
+            </template>
+          </el-table-column>
+          <el-table-column prop="trackPostionName" label="显示顺序" align="center">
+            <template slot-scope="{row, $index}">
+              <el-button
+                :type="$index===0 || $index===2?'info':'primary'"
+                :disabled="$index===0 || $index===2"
+                icon="el-icon-top"
+                size="mini"
+                \@click="sortChange('up', row.code)"
+              ></el-button>
+              <el-button
+                :type="$index===1 || $index===lastIndex?'info':'primary'"
+                :disabled="$index===1 || $index === lastIndex"
+                icon="el-icon-bottom"
+                size="mini"
+                \@click="sortChange('down', row.code)"
+              ></el-button>
+            </template>
+          </el-table-column>
+
+          <div slot="empty" class="emptyBg">
+            <p>暂无数据</p>
+          </div>
+        </el-table>
+
+        <el-form :model="monitorConfig" ref="monitorConfig" :rules="monitorConfigRules">
+          <div class="dialog-title-text" v-if="taskRefreshTimeShow">
+            <el-form-item prop="taskRefreshTime">
+              任务切换时间：<el-input size="mini" v-number-input="{ min: 0, integer: 9, decimal: 0 }" v-model.trim="monitorConfig.taskRefreshTime"></el-input>
+              秒
+            </el-form-item>
+          </div>
+
+          <div class="dialog-title-text" v-if="trackRefreshTimeShow">
+            <el-form-item prop="trackRefreshTime">
+              股道切换时间：<el-input size="mini" v-number-input="{ min: 0, integer: 9, decimal: 0 }" v-model.trim="monitorConfig.trackRefreshTime"></el-input>
+              秒
+            </el-form-item>
+          </div>
+
+          <div class="dialog-title-text">
+            是否显示无车组的股道信息：
+            <div class="switch">
+              <el-switch active-color="#22395b" inactive-color="#22395b" v-model="monitorConfig.ShowNoTrainsetTrack">
+              </el-switch>
+              <div class="switch-choose">
+                <div>是</div>
+                <div>否</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dialog-title-text">
+            是否显示上一班次任务：
+            <div class="switch">
+              <el-switch v-model="monitorConfig.ShowLastRepairTask" active-color="#22395b" inactive-color="#22395b">
+              </el-switch>
+              <div class="switch-choose">
+                <div>是</div>
+                <div>否</div>
+              </div>
+            </div>
+          </div>
+        </el-form>
+
+        <div class="dialog-footer">
+          <el-button type="primary" size="mini" class="config-button" \@click="updMonitorConfigBtn('monitorConfig')"
+            >保 存</el-button
+          >
+          <el-button type="primary" size="mini" class="config-button" \@click="updMonitorCancel('monitorConfig')"
+            >取 消</el-button
+          >
+        </div>
+      </el-dialog>
+
+      <!-- 关键作业配置弹框 -->
+      <el-dialog
+        :visible.sync="keyWorkMonitorDialog.visible"
+        width="50%"
+        :modal="false"
+        center
+        :close-on-click-modal="false"
+        custom-class="monitor-dialog"
+        top="7vh"
+        destroy-on-close
+        v-if="keyWorkMonitorDialog.visible"
+      >
+        <div slot="title">
+          <span class="little-title el-dialog__title">关键作业配置</span>
+        </div>
+
+        <div class="dialog-title-text">
+          流程：<el-select size="mini" v-model="keyWorkMonitorDialog.flowId" popper-class="popper-down">
+            <el-option v-for="item in planlessKeyList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+          </el-select>
+        </div>
+
+        <div class="draggable-scroll">
+          <column-draggable
+            :left-list="monitorConfig.keyWorkFlowConfig[keyWorkMonitorDialog.flowId].leftList"
+            :right-list="monitorConfig.keyWorkFlowConfig[keyWorkMonitorDialog.flowId].rightList"
+            \@column-change="columnChange"
+          >
+          </column-draggable>
+        </div>
+
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" size="mini" class="config-button" \@click="keyWorkConfigBtn">保 存</el-button>
+          <el-button type="primary" size="mini" class="config-button" \@click="keyWorkConfigCancel">取 消 </el-button>
+        </span>
+      </el-dialog>
+
+      <!-- 节点处理情况查看 -->
+      <el-dialog
+        title="节点处理情况查看"
+        width="80%"
+        :visible.sync="lookupNodeDealInfoDialog.visible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        :modal="false"
+        center
+        custom-class="reconnect-dialog"
+        class="center-dialog"
+        top="50px"
+      >
+        <el-table
+          :data="nodeDealData"
+          height="500px"
+          :cell-style="cellStyle"
+          border
+          header-row-class-name="table-header"
+          stripe
+          class="reconnect-table"
+        >
+          <el-table-column
+            width="200"
+            show-overflow-tooltip
+            prop="node"
+            label="流程节点"
+            align="center"
+            v-if="nodeDealData.length > 0"
+          ></el-table-column>
+          <el-table-column prop="node" align="center" v-else></el-table-column>
+          <el-table-column
+            min-width="200"
+            v-for="column in nodeColumns"
+            :key="column.key"
+            :prop="column.prop"
+            :label="column.label"
+            align="center"
+          >
+            <template v-slot="{row}">
+              <el-tooltip placement="top">
+                <div slot="content">{{getDetail(row.roleWorkerDetails[column.prop])}}</div>
+
+                <span class="hander" \@click="cellClick(row,column.prop)">{{row[column.prop]}}</span>
+              </el-tooltip>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-dialog>
+    </div>
+
+    <script src="${ctxPath}/static/trainRepair/projection/workRepairmonitor/components/trainDetails.js"></script>
+    <script src="${ctxPath}/static/trainRepair/workComposite/workCompositeMonitor/js/workCompositeMonitor.js"></script>
+  </body>
+</html>

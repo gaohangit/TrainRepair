@@ -1,0 +1,18 @@
+.train-container{
+  
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 140px;
+  position: relative;
+  background-color: rgba(20, 70, 121, 0.33);
+  width: 100%;
+  border-radius: 5px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  margin-bottom: 13px;
+}
+.trainset-body{
+  width: 100%;
+}

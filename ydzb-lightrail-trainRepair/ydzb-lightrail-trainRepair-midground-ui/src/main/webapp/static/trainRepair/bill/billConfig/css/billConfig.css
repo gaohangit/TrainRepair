@@ -1,0 +1,107 @@
+[v-cloak] {
+    display: none !important;
+}
+
+#billConfig>.el-card {
+    height: calc(100vh - 2px);
+}
+
+#billConfig>.el-card>.el-card__header {
+    position: relative;
+    height: 42px;
+    line-height: 42px;
+    padding: 0 0 0 32px;
+}
+
+#billConfig>.el-card>.el-card__header h2 {
+    font-size: 21px;
+}
+
+#billConfig>.el-card>.el-card__body {
+    height: calc(100vh - 82px);
+    padding: 20px 20px 5px 20px;
+}
+
+.adorn {
+    position: absolute;
+    left: 20px;
+    top: 9px;
+    width: 5px;
+    height: 25px;
+    background-color: #4e86fe;
+}
+
+.noMarginForm .el-form-item {
+    margin-bottom: 0;
+}
+
+.el-table .selectable-table-row {
+    cursor: pointer
+}
+
+.el-form-item__label:before {
+    float: right
+}
+
+
+/* .el-table--border {
+    overflow: auto;
+}
+.el-table__body-wrapper{
+    overflow-y:scroll;
+    height: calc(100% - 75px);
+} */
+/* .el-table__body-wrapper{
+    overflow: auto;
+    height: 100%;
+} */
+.el-table__empty-text {
+    font-size: 22px
+}
+
+
+.indexForm .el-form-item__label {
+    padding: 0
+}
+
+.indexForm .el-row .el-form-item .el-select {
+    width: 100%;
+}
+
+.indexForm .el-row .el-form-item .el-input {
+    width: 90%;
+}
+
+.el-row .el-form-item .el-select,
+.el-row .el-form-item .el-input {
+    width: 100%;
+}
+
+#item-select-card .item-select-card-body{
+    height: calc(98vh - 192px);
+    display: flex;
+    flex-direction: column;
+}
+
+.el-dialog.bill-editor-dialog .el-dialog__header{
+    display: none;
+}
+
+.el-dialog.bill-editor-dialog .el-dialog__body{
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.el-dialog.bill-editor-dialog .el-dialog__body iframe{
+    width: 100%;
+    height: 100%;
+}
+
+.el-table .selectable-table-row.selected-row{
+    background: oldlace;
+}
+
+.el-tooltip__popper{
+    max-width: 90vw;
+}

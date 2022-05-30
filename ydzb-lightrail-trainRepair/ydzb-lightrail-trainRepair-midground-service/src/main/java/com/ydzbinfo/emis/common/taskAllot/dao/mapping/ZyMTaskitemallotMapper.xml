@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.common.taskAllot.dao.ZyMTaskitemallotMapper">
+
+    <!--通用查询映射结果-->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.ZyMTaskitemallot">
+        <id column="S_TASKITEMALLOTID" property="taskitemallotid"/>
+        <result column="S_DAYPLANID" property="dayplanid"/>
+        <result column="S_TRAINSETID" property="trainsetid"/>
+        <result column="S_DEPTCODE" property="deptcode"/>
+        <result column="S_ITEMAGGREGATIONNAME" property="itemaggregationname"/>
+        <result column="S_ITEMAGGREGATIONCODE" property="itemaggregationcode"/>
+        <result column="S_ITEMAGGREGATIONTYPE" property="itemaggregationtype"/>
+        <result column="S_ALLOTTASKMODE" property="allottaskmode"/>
+        <result column="S_MAINCYC" property="maincyc"/>
+        <result column="S_DISTINCTCARS" property="distinctcars"/>
+        <result column="S_SPLPACKETITEMCODE" property="splpacketitemcode"/>
+        <result column="S_SPLPACKETITEMNAME" property="splpacketitemname"/>
+        <result column="S_PACKETTYPECODE" property="packettypecode"/>
+        <result column="S_SPPACKETCODE" property="sppacketcode"/>
+        <result column="S_SPPACKETNAME" property="sppacketname"/>
+        <result column="C_BRANCHTYPE" property="branchtype"/>
+        <result column="S_PUBLISHCODE" property="publishcode"/>
+        <result column="C_CARNOFLAG" property="carnoflag"/>
+        <result column="I_ASSIGNTASKSTATE" property="assigntaskstate"/>
+        <result column="S_SYNCFLAG" property="syncflag"/>
+        <result column="S_REMARK" property="remark"/>
+        <result column="D_TASKALLOTTIME" property="taskallottime"/>
+    </resultMap>
+
+    <delete id="deleteByParam"  parameterType="String">
+        delete ZY_M_TASKITEMALLOT t
+        where t.c_branchtype = '0'
+        and t.s_dayplanid = #{dayPlanId}
+        and t.s_trainsetid = #{trainSetId}
+         and t.s_deptcode = #{deptCode}
+        <if test="packetCode != null and packetCode != ''">
+            and t.s_sppacketcode = #{packetCode}
+        </if>
+        <if test="itemCode != null and itemCode != ''">
+        and t.s_splpacketitemcode = #{itemCode}
+        </if>
+    </delete>
+
+    <select id="selectByCondition" parameterType="String" resultMap="BaseResultMap">
+        select S_TASKITEMALLOTID,
+S_DAYPLANID,
+S_TRAINSETID,
+S_DEPTCODE,
+S_ITEMAGGREGATIONNAME,
+S_ITEMAGGREGATIONCODE,
+S_ITEMAGGREGATIONTYPE,
+S_ALLOTTASKMODE,
+S_MAINCYC,
+S_DISTINCTCARS,
+S_SPLPACKETITEMCODE,
+S_SPLPACKETITEMNAME,
+S_PACKETTYPECODE,
+S_SPPACKETCODE,
+S_SPPACKETNAME,
+NVL(C_BRANCHTYPE, '0') as C_BRANCHTYPE,
+S_PUBLISHCODE,
+C_CARNOFLAG,
+I_ASSIGNTASKSTATE,
+S_SYNCFLAG,
+S_REMARK,
+D_TASKALLOTTIME
+  from zy_m_taskitemallot where S_DAYPLANID = #{dayPlanId} and S_DEPTCODE = #{deptCode}
+    </select>
+</mapper>

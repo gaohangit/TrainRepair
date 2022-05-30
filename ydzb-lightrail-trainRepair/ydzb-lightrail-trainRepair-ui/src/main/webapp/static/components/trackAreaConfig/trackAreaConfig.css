@@ -1,0 +1,61 @@
+.dialog-title-text {
+  color: #799cf0;
+  margin: 20px 0;
+}
+
+.base-table.el-table {
+  height: 100%;
+  color: #799cf0;
+  border-radius: 5px;
+  background-color: #335078;
+  
+}
+.el-table td,
+.el-table th.is-leaf,
+.el-table--border,
+.el-table--group {
+  border-color: #22395b;
+}
+.el-table--border::after,
+.el-table--group::after,
+.el-table::before {
+  background-color: #22395b;
+}
+.base-table .table-header{
+  background-color: unset;
+}
+.base-table.el-table tr{
+  background-color: unset;
+}
+.base-table.el-table--border th.gutter:last-of-type{
+  border-bottom: none;
+}
+.base-table .table-header th {
+  color: #799cf0;
+  background-color: #22395b !important;
+}
+.base-table .el-table__row td {
+  background-color: #142841;
+}
+.base-table.el-table--enable-row-hover .el-table__body tr:hover > td {
+  background-color: #142841;
+}
+.el-table--striped .el-table__body tr.el-table__row--striped td {
+  background: #335078;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #142841;
+  border-radius: 4px;
+}
+.el-checkbox__inner {
+  background-color: #22395b;
+  border: 1px solid #22395b;
+}
+
+.all-track-checkbox .el-checkbox__inner{
+  border-color: #409EFF;
+}

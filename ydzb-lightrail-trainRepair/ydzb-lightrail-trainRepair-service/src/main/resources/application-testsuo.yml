@@ -1,0 +1,79 @@
+##########################################################
+###################  开发环境的profile  ###################
+##########################################################
+spring:
+  redis:
+    host: redis.jxdinfo.com
+    port: 6379
+    password:
+    jedis:
+      pool:
+        max-active: 3 # 连接池最大连接数（使用负值表示没有限制）
+        max-wait: -1 # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-idle: 3 # 连接池中的最大空闲连接
+        min-idle: 0 # 连接池中的最小空闲连接
+    timeout: 0      # 连接超时时间（毫秒）
+  ###################  oracle配置  ###################
+  datasource:
+    url: jdbc:oracle:thin:@172.20.104.141:1521:tsmcis
+    username: ENC(ki0kaiolsIKXSpRiWgA5kg==)
+    password: ENC(qPVTcR7s+BHSOOtq/BRZKlv6PZ8raRVKZcapGHC9FUk=)
+    db-name: tsmcis
+    filters: log4j,wall,mergeStat
+    driverClassName: oracle.jdbc.OracleDriver
+    validation-query: select 1 from dual
+
+#logging:
+#  level:
+#    com.ydzbinfo.emis.trainRepair: debug
+
+ydzb:
+  unit-code: "018"
+  deploy-level: department
+  stream:
+    enable-receive-cloud-data: false
+    enable-send-cloud-data: false
+    enable-receive-modules:
+      - repair_workflow_config
+      - task_allot_config
+      - work_criterion
+  services:
+    list:
+      - id: resumemidgroundservice #履历中心服务
+        path: http://172.20.104.161:9108/resume
+      - id: repairfaultservice #故障中台
+        path: http://${properties.application-service-host}/apiTrainFault
+      - id: repairtaskservice #计划任务服务
+        path: http://${properties.application-service-host}/apiTrainUse
+      - id: repairitemservice
+        path: http://172.20.104.178:8088/apiTrainIetm
+      - id: trainrepairmidgroundservice
+        path: http://${properties.application-service-host}/apiTrainRepairMidGround
+      - id: configurationservice #构型服务
+        path: http://${properties.application-service-host}/apiTrainConfiguration
+
+# 复核任务服务配置
+recheck-task-properties:
+  base-ip: 172.20.104.141 # 仅在yml配置文件生效
+  get-token-url: http://${recheck-task-properties.base-ip}/DeviceIntf/webapi/gettoken.ashx
+  refresh-token-url: http://${recheck-task-properties.base-ip}/DeviceIntf/webapi/RefreshToken.ashx
+  xml-public-key: <RSAKeyValue><Modulus>rHESyuI3ny4MLsqDBalW9ySaodCL0e6Bsrl01Q5G1qm2wjUoGULazZSNqZY+JQNjU92tW3Snk5RPIkv+wDj+uOT9LTUjQImltHnzqMvbt06GipVXDOyBLTa7G/zRIe/CrjyJ+XEYX2xIhpe5ayowl3HHUpZ71jRNioyxaVVZ8S0=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>
+  account: 8C99AC82-8FFE-4DE2-B902-75C88F91342C
+  password: 7358d50p
+  ly-get-over-run-record-url: http://${recheck-task-properties.base-ip}/DeviceIntf/webapi/LY/GetOverRunRecordList.ashx
+  sj-get-over-run-record-url: http://${recheck-task-properties.base-ip}/DeviceIntf/webapi/SJ/GetOverRunRecordList.ashx
+  wheel-get-device-record-url: http://${recheck-task-properties.base-ip}/DeviceIntf/webapi/Ulathe/GetDataList.ashx
+  axle-get-device-record-url: http://${recheck-task-properties.base-ip}/DeviceIntf/webapi/Axle/GetDataList.ashx
+  lu-get-device-record-url: http://${recheck-task-properties.base-ip}/DeviceIntf/webapi/LU/GetDataList.ashx
+
+# 高级修服务配置
+high-level-repair-properties:
+  wsdl-url: http://172.21.8.85/DepotWebService/EMISRepairService/HighLevelRepair.asmx?wsdl
+  xmlns-url: http://tempuri.org/
+  method-name: GetTrainHRepairInfo
+
+# properties配置仅在yml配置文件中生效，服务程序不读取
+properties:
+  base-service-root-path: 172.20.104.141:8089 #systemservice根路径配置
+  user-service-root-path: 172.20.104.141:8098/authserver #authserver根路径配置
+  application-service-host: 172.20.104.141:8100 #其他依赖应用服务容器域名(因为目前大部分应用都是部署在同一服务容器下，所以统一配置)

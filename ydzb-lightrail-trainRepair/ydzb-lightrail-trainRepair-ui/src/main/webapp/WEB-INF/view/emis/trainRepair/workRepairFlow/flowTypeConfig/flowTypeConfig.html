@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="${publicStaticPath}/IE/babel-browser.min.js"></script>
+
+    <link rel="stylesheet" href="${publicStaticPath}/elementUI/index.css" />
+    <script src="${publicStaticPath}/vue/vue.js"></script>
+    <script src="${publicStaticPath}/elementUI/index.js"></script>
+    <script src="${ctxPath}/static/lib/day/day.js"></script>
+    <script src="${publicStaticPath}/vue/axios.min.js"></script>
+
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/flowTypeConfig/config/index.js"></script>
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/flowTypeConfig/api/apiTrainRepair/flowTypeRequest.js"></script>
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/flowTypeConfig/api/apiTrainRepair/commonRequest.js"></script>
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/flowTypeConfig/api/apiTrainRepair/extraFlowTypePacketRequest.js"></script>
+    <script src="${ctxPath}/static/utils/GeneralUtil.js"></script>
+
+    <link rel="stylesheet" href="${publicStaticPath}/common/base.css" />
+    <link rel="stylesheet" href="${ctxPath}/static/trainRepair/workRepairFlow/flowTypeConfig/css/index.css" />
+    <script>
+      Vue.config.devtools = false;
+      Vue.config.productionTip = false;
+      const unitCode = '${thirdOrganCode}'; //所编码
+    </script>
+  </head>
+  <body>
+    <div id="flowTypeConfig" v-cloak>
+      <el-card class="box-card">
+        <div slot="header">
+          <span class="adorn"></span>
+          <h2>{{pageTitle}}</h2>
+        </div>
+
+        <div class="main-table" ref="mainTable">
+          <el-table :data="home.typeConfigMainTableData" border :height="home.mainTableHeight" row-key="code">
+            <el-table-column type="index" label="序号" width="50" show-overflow-tooltip></el-table-column>
+            <el-table-column label="名称" prop="name" width="100" show-overflow-tooltip></el-table-column>
+            <el-table-column label="描述" prop="comment" show-overflow-tooltip> </el-table-column>
+            <el-table-column label="作业包" width="200" show-overflow-tooltip>
+              <template slot-scope="{row}">
+                <span v-if="row.packetCodes"
+                  >{{row.packetCodes.reduce((prev, packCode)=> {
+                    if(packetCodeNameMap[packCode]) {
+                      prev.push(packetCodeNameMap[packCode])
+                    }
+                    return prev
+                  }, []).toString()}}</span
+                >
+                <span v-else></span>
+              </template>
+            </el-table-column>
+            @if(shiro.hasPermission("extraFlowTypePacket:edit")){
+            <el-table-column label="操作" width="100">
+              <template slot-scope="{row}">
+                <el-button type="primary" size="mini" v-if="row.parentFlowTypeCode" \@click="configPackageBtn(row)"
+                  >配置</el-button
+                >
+              </template>
+            </el-table-column>
+            @}
+          </el-table>
+        </div>
+        <el-pagination
+          \@size-change="typeConfigMainTablePageSizeChange"
+          \@current-change="typeConfigMainTablePageNumChange"
+          :current-page="home.typeConfigMainTablePageNum"
+          :page-sizes="[10, 20, 50,100]"
+          :page-size="home.typeConfigMainTablePageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="home.typeConfigMainTablePageTotal"
+        >
+        </el-pagination>
+      </el-card>
+      <el-dialog
+        title="流程类型配置-检修作业包配置"
+        width="80%"
+        :visible.sync="workPackageDialog.workPackageDialogVisible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        \@close="workPackageDialogClose"
+        class="center-dialog"
+        top="auto"
+      >
+        <el-form
+          ref="workPackageDialogFormRef"
+          :model="workPackageDialog.workPackageDialogFormData"
+          :rules="workPackageDialog.workPackageDialogFormRules"
+          label-width="70px"
+        >
+          <el-row>
+            <el-col :span="6">
+              <el-form-item label="包名称：" prop="name">
+                <el-input
+                  v-model.trim="workPackageDialog.workPackageDialogFormData.name"
+                  autofocus
+                  type="text"
+                  name="name"
+                  autocomplete="on"
+                  clearable
+                ></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="车型：" prop="trainType">
+                <el-select
+                  v-model="workPackageDialog.workPackageDialogFormData.trainType"
+                  \@change="trainTypeChange"
+                  filterable
+                  clearable
+                >
+                  <el-option
+                    v-for="item in trainTypeList"
+                    :key="item.id"
+                    :value="item.value"
+                    :label="item.label"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <!-- <el-col :span="6">
+              <el-form-item label="批次：" prop="batch">
+                <el-select
+                  v-model="workPackageDialog.workPackageDialogFormData.batch"
+                  \@change="batchChange"
+                  filterable
+                  clearable
+                >
+                  <el-option
+                    v-for="item in batchList"
+                    :key="item.id"
+                    :value="item.value"
+                    :label="item.label"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col> -->
+          </el-row>
+        </el-form>
+        <el-table
+          :data="toSelectWorkPackageTableShowData"
+          \@selection-change="toSelectWorkPackage"
+          border
+          height="200px"
+        >
+          <el-table-column type="selection"></el-table-column>
+          <el-table-column type="index" label="序号" width="50px"></el-table-column>
+          <el-table-column label="包名称" prop="packetName" show-overflow-tooltip></el-table-column>
+          <el-table-column label="适用车型" prop="suitModel" show-overflow-tooltip></el-table-column>
+          <el-table-column label="适用批次" prop="suitBatch" show-overflow-tooltip></el-table-column>
+          <el-table-column label="修程" prop="packetCodeName" show-overflow-tooltip></el-table-column>
+        </el-table>
+        <el-row style="margin: 10px 0px">
+          <el-col class="text-r">
+            <el-button type="primary" size="mini" \@click="addSelectWorkPackageToTable">添加</el-button>
+            <el-button type="primary" size="mini" \@click="removeSelectedWorkPackage">移除</el-button>
+          </el-col>
+        </el-row>
+        <el-table
+          :data="workPackageDialog.selectedWorkPackageTableData"
+          \@selection-change="selectedWorkPackage"
+          border
+          height="200px"
+        >
+          <el-table-column type="selection"></el-table-column>
+          <el-table-column type="index" label="序号" width="50px"></el-table-column>
+          <el-table-column label="包名称" prop="packetName" show-overflow-tooltip></el-table-column>
+          <el-table-column label="适用车型" prop="suitModel" show-overflow-tooltip></el-table-column>
+          <el-table-column label="适用批次" prop="suitBatch" show-overflow-tooltip></el-table-column>
+          <el-table-column label="修程" prop="packetCodeName" show-overflow-tooltip></el-table-column>
+        </el-table>
+        <el-row style="margin: 10px 0px 0">
+          <el-col class="text-r">
+            <el-button type="primary" size="mini" \@click="setExtraFlowTypePacketBtn">确定</el-button>
+            <el-button type="primary" size="mini" \@click="cancelConfigPackageBtn">取消</el-button>
+          </el-col>
+        </el-row>
+      </el-dialog>
+    </div>
+    <script type="text/babel" src="${ctxPath}/static/trainRepair/workRepairFlow/flowTypeConfig/js/index.js"></script>
+  </body>
+</html>

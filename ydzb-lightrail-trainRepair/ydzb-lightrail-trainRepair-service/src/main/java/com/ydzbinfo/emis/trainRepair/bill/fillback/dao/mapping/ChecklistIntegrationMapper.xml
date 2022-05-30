@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.bill.fillback.dao.ChecklistIntegrationMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ${tableAlias}S_CHECKLISTSUMMARYID as "${columnPrefix}checklistSummaryId",
+        ${tableAlias}S_TRAINSETID as "${columnPrefix}trainsetId",
+        ${tableAlias}S_DEPTCODE as "${columnPrefix}deptCode",
+        ${tableAlias}S_DEPTNAME as "${columnPrefix}deptName",
+        ${tableAlias}S_STUFFID as "${columnPrefix}stuffid",
+        ${tableAlias}S_STUFFNAME as "${columnPrefix}stuffname",
+        ${tableAlias}S_UNITNAME as "${columnPrefix}unitName",
+        ${tableAlias}S_UNITCODE as "${columnPrefix}unitCode",
+        ${tableAlias}S_TEMPLATEID as "${columnPrefix}templateId",
+        ${tableAlias}S_TEMPLATENO as "${columnPrefix}templateNo",
+        ${tableAlias}S_TEMPLATETYPE as "${columnPrefix}templateType",
+        ${tableAlias}S_DISPATCHSIGN as "${columnPrefix}dispatchSign",
+        ${tableAlias}S_TECHNIQUESIGN as "${columnPrefix}techniqueSign",
+        ${tableAlias}S_DIRECTORSIGN as "${columnPrefix}directorSign",
+        ${tableAlias}S_FINISHWORKPERSONSIGN as "${columnPrefix}finishWorkPersonSign",
+        ${tableAlias}S_FINISHDISPATCHSIGN as "${columnPrefix}finishDispatchSign",
+        ${tableAlias}D_LASTFILLTIME as "${columnPrefix}lastFillTime",
+        ${tableAlias}S_LASTFILLWORKCODE as "${columnPrefix}lastFillWorkCode",
+        ${tableAlias}S_LASTFILLWORKNAME as "${columnPrefix}lastFillWorkName",
+        ${tableAlias}S_LASTIPADDRESS as "${columnPrefix}lastIpAddress",
+        ${tableAlias}S_LASTHOSTNAME as "${columnPrefix}lastHostName",
+        ${tableAlias}S_APPLYBEGINTIME as "${columnPrefix}applybegintime",
+        ${tableAlias}S_APPLYENDTIME as "${columnPrefix}applyendtime"
+    </sql>
+
+</mapper>

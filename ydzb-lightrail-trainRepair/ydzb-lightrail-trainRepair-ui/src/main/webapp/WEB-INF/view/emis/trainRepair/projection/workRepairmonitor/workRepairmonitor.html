@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>一、二级修作业监控</title>
+    <script src="${publicStaticPath}/IE/babel-browser.min.js"></script>
+    <link rel="stylesheet" href="${publicStaticPath}/elementUI/index.css" />
+    <script src="${publicStaticPath}/jquery/jquery-1.10.2.min.js"></script>
+    <script src="${publicStaticPath}/vue/vue.js"></script>
+    <script src="${ctxPath}/static/lib/vue-seamless-scroll.min.js"></script>
+    <script src="${publicStaticPath}/elementUI/index.js"></script>
+    <script src="${ctxPath}/static/lib/day/day.js"></script>
+    <script src="${publicStaticPath}/vue/axios.min.js"></script>
+    <script src="${ctxPath}/static/trainRepair/projection/workRepairmonitor/utils/index.js"></script>
+    <link
+      rel="stylesheet"
+      href="${ctxPath}/static/trainRepair/projection/workRepairmonitor/css/workRepairmonitor.css"
+    />
+    <link rel="stylesheet" href="${ctxPath}/static/trainRepair/projection/workRepairmonitor/css/trackDetails.css" />
+    <link rel="stylesheet" href="${ctxPath}/static/trainRepair/projection/workRepairmonitor/css/trainDetails.css" />
+    <script>
+      const ctxPath = '${ctxPath}';
+      const thirdOrganCode = '${thirdOrganCode}'; //所编码
+      // console.log(thirdOrganCode);
+      const thirdOrganName = '${thirdOrganName}'; //所名称
+      // console.log(thirdOrganName);
+      const departMentCode = '${departMentCode}'; //用户当前单位编码
+      const departMentName = '${departMentName}'; //用户当前单位名称
+    </script>
+    <script src="${ctxPath}/static/components/track/getTrainUrls.js"></script>
+    <!-- input全局指令 -->
+    <script  src="${ctxPath}/static/utils/InputNumberDirective.js"></script>
+  </head>
+
+  <body>
+    <div v-loading="loading" id="app" ref="app" :class="{'appFull' : fullscreen}" \@contextmenu.prevent="openMemu($event)" v-cloak>
+      <div class="header" v-if="jurisdiction">
+        <span class="title">{{unitName}}作业过程监控</span>
+        <span class="title_time" id="time" ref="time"></span>
+      </div>
+      <!-- 第三方调用网页 -->
+      <div id="main" v-if="dayPlanId && trainsetName && status">
+        <train-details
+          class="top trainMain"
+          v-for="(item, index) in pagedTrackDetails"
+          :key="item.trackCode"
+          :status="status"
+          \@fault-list="openFaultList"
+          \@task-details-list="openTaskDetailsList"
+          \@node-click="nodeClick"
+          :track-detail="item"
+          :process-show="processShow"
+        >
+        </train-details>
+      </div>
+      <!-- 第三方调用网页 -->
+
+      <!-- 正常方式打开网页 -->
+      <div class="body" v-else>
+        <track-details
+          class="top"
+          v-for="(item, index) in pagedTrackDetails"
+          :key="item.trackCode"
+          \@train-repair-cut="trainRepairCut(index,$event)"
+          \@node-click="nodeClick"
+          \@fault-list="openFaultList"
+          \@task-details-list="openTaskDetailsList"
+          :jurisdiction="jurisdiction"
+          :track-detail="item"
+          :fullscreen="fullscreen"
+          :show-task="dialog.showTask"
+        >
+        </track-details>
+      </div>
+      <!-- 正常方式打开网页 -->
+
+      <!-- v-if="jurisdiction == 1 || dialog.showTask == 1" -->
+      <div class="footer" v-if="jurisdiction == 1 || dialog.showTask == 1">
+        <div class="left">
+          <div class="legend">图例</div>
+          <div class="completed">
+            <span></span>
+            已完成
+          </div>
+          <div class="incomplete">
+            <span></span>
+            未完成
+          </div>
+          <div class="partially">
+            <span></span>
+            部分完成
+          </div>
+        </div>
+        <div class="center">
+          <img
+            v-if="fullscreen"
+            src="${ctxPath}/static/trainRepair/projection/workRepairmonitor/img/danwei.png"
+            alt=""
+          />
+        </div>
+        <div class="right">
+          <el-pagination
+            :key="paginationKey"
+            \@current-change="handleCurrentChange"
+            background
+            :current-page="currentPage"
+            :page-size="2"
+            layout="total, prev, pager, next"
+            :total="showTrackList.length"
+          >
+          </el-pagination>
+        </div>
+      </div>
+      <!-- v-else-if="jurisdiction =='all' && dialog.showTask == 3 && currentScreenState" -->
+      <div class="footer" v-if="jurisdiction =='all' && dialog.showTask == 3 && currentScreenState">
+        <div class="left">
+          <div class="legend">图例</div>
+          <div class="completed">
+            <span></span>
+            已完成
+          </div>
+          <div class="incomplete">
+            <span></span>
+            未完成
+          </div>
+          <div class="partially">
+            <span></span>
+            部分完成
+          </div>
+        </div>
+        <div class="center">
+          <img
+            v-if="fullscreen"
+            src="${ctxPath}/static/trainRepair/projection/workRepairmonitor/img/danwei.png"
+            alt=""
+          />
+        </div>
+        <div class="right">
+          <el-pagination
+            :key="paginationKey"
+            \@current-change="handleCurrentChange"
+            background
+            :current-page="currentPage"
+            :page-size="2"
+            layout="total, prev, pager, next"
+            :total="showTrackList.length"
+          >
+          </el-pagination>
+        </div>
+      </div>
+      <!-- v-else-if="jurisdiction == 2 || dialog.showTask == 2" -->
+      <div class="footer" v-if="jurisdiction == 2 || dialog.showTask == 2">
+        <div class="left">
+          <div class="legend">图例</div>
+          <div class="normal">
+            <span></span>
+            正常
+          </div>
+          <div class="malfunction">
+            <span></span>
+            故障
+          </div>
+        </div>
+        <div class="center">
+          <img
+            v-if="fullscreen"
+            src="${ctxPath}/static/trainRepair/projection/workRepairmonitor/img/danwei.png"
+            alt=""
+          />
+        </div>
+        <div class="right">
+          <el-pagination
+            :key="paginationKey"
+            \@current-change="handleCurrentChange"
+            background
+            :current-page="currentPage"
+            :page-size="2"
+            layout="total, prev, pager, next"
+            :total="showTrackList.length"
+          >
+          </el-pagination>
+        </div>
+      </div>
+      <!-- v-else-if="dialog.showTask == 3 && !currentScreenState" -->
+      <div class="footer" v-if="jurisdiction =='all' && dialog.showTask == 3 && !currentScreenState">
+        <div class="left">
+          <div class="legend">图例</div>
+          <div class="normal">
+            <span></span>
+            正常
+          </div>
+          <div class="malfunction">
+            <span></span>
+            故障
+          </div>
+        </div>
+        <div class="center">
+          <img
+            v-if="fullscreen"
+            src="${ctxPath}/static/trainRepair/projection/workRepairmonitor/img/danwei.png"
+            alt=""
+          />
+        </div>
+        <div class="right">
+          <el-pagination
+            :key="paginationKey"
+            \@current-change="handleCurrentChange"
+            background
+            :current-page="currentPage"
+            :page-size="2"
+            layout="total, prev, pager, next"
+            :total="showTrackList.length"
+          >
+          </el-pagination>
+        </div>
+      </div>
+
+      <!-- 右键菜单 -->
+      <ul id="list">
+        <li \@click="configuration">
+          <div class="option">配置</div>
+        </li>
+        <li \@click="screen">
+          <div class="option">{{fullscreen ? '退出全屏' : '全屏'}}</div>
+        </li>
+      </ul>
+
+      <!-- 大屏配置 -->
+      <el-dialog
+        :visible.sync="dialog.dialogconfig"
+        width="520px"
+        top="4vh"
+        max-height="70%"
+        :close-on-click-modal="false"
+        title="检修过程作业监控配置"
+        \@close=""
+      >
+        <div class="dialog-body">
+          <table class="table">
+            <tbody>
+              <tr>
+                <td><label>显示运用所：</label><span>{{unitName}}</span></td>
+                <td></td>
+              </tr>
+              <tr v-if="jurisdiction == 'all'">
+                <td>
+                  <label><span class="requiredSpan">*</span>显示任务：</label>
+                  <el-select v-model="dialog.showTask" placeholder="请选择" size="mini">
+                    <el-option v-for="item in dialog.showTaskList" :key="item.id" :label="item.name" :value="item.id">
+                    </el-option>
+                  </el-select>
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>
+                  <label>股道轮播时间(分)：</label>
+                  <el-input
+                    placeholder="请输入股道轮播时间"
+                    v-model.trim="dialog.trackWarningTime"
+                    v-number-input="{ min: 0, integer: 9, decimal: 0 }"
+                    clearable
+                    size="mini"
+                  >
+                  </el-input>
+                </td>
+                <td></td>
+              </tr>
+              <tr v-if="jurisdiction == 'all' && dialog.showTask == 3">
+                <td>
+                  <label>任务轮播时间(分)：</label>
+                  <el-input
+                    placeholder="请输入任务轮播时间"
+                    v-model.trim="dialog.taskWarningTime"
+                    v-number-input="{ min: 0, integer: 9, decimal: 0 }"
+                    clearable
+                    size="mini"
+                  >
+                  </el-input>
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>
+                  <label>页面全屏显示：</label>
+                  <el-checkbox v-model="dialog.whetherFull" style="text-align: left"></el-checkbox>
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>
+                  <label>股道位置切换：</label>
+                  <div class="switch">
+                    <el-switch v-model="dialog.TrackPositionChange" active-text="是" inactive-text="否"></el-switch>
+                  </div>
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>
+                  <label>是否显示无车组的股道信息：</label>
+                  <div class="switch">
+                    <el-switch v-model="dialog.ShowNoTrainsetTrack" active-text="是" inactive-text="否"></el-switch>
+                  </div>
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>
+                  <h4>显示股道线区配置</h4>
+                </td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <table class="track" align="center" cellspacing="0" cellpadding="0" style="margin-top: 20px">
+            <thead>
+              <tr>
+                <th>线区</th>
+                <th>股道</th>
+                <th>
+                  <div class="checkTrack">
+                    <el-checkbox v-model="isShowAlltrack"></el-checkbox>
+                    <span class="checkTrack_title">是否显示</span>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr align="center" v-for="(item, index) in dialog.trackAreas" :key="item.trackAreaCode">
+                <td>
+                  <div class="checkTrack">
+                    <el-checkbox  :value="isShowAlltrackArea[index]" \@change="setTrackAreaShow($event, index)"></el-checkbox>
+                    <span class="checkTrack_title">{{item.trackAreaName}}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="tableTrackName" v-for="value in item.lstTrackInfo" :key="value.trackName">
+                    {{value.trackName}}
+                  </div>
+                </td>
+                <td>
+                  <el-checkbox-group v-model="dialog.trackList">
+                    <el-checkbox
+                      class="tableTrackName"
+                      v-for="data in item.lstTrackInfo"
+                      :key="data.trackName"
+                      style="text-align: center; margin: 0"
+                      :label="data.trackCode"
+                    >
+                    </el-checkbox>
+                  </el-checkbox-group>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="textCenter saveBtnBox" style="text-align: center">
+          <!-- <el-button type="primary" size="small" v-on:click.stop="onCopy">复制</el-button> -->
+          <el-button type="primary" size="mini" v-on:click.stop="updateWorkProcessMonitorConfigList">确定</el-button>
+          <el-button type="primary" size="mini" v-on:click.stop="cancel">取消</el-button>
+        </div>
+      </el-dialog>
+
+      <!-- 故障列表弹窗 -->
+      <el-dialog
+        class="FaultList"
+        v-loading="fault.loading"
+        :visible.sync="fault.FaultProject"
+        width="80%"
+        top="4vh"
+        height="80%"
+        :close-on-click-modal="false"
+        title="故障列表"
+        \@close="fault.FaultProject = false"
+      >
+        <div class="dialog-body">
+          <el-table
+            :data="fault.FaultList"
+            style="width: 100%"
+            :header-cell-style="{background:'#335078',color:'#FFF'}"
+            :row-class-name="tableRowClassName"
+            height="100%"
+          >
+            <el-table-column align="center" label="序号" width="80">
+              <template slot-scope="scope"> {{scope.$index + 1}} </template>
+            </el-table-column>
+            <el-table-column align="center" prop="trainsetName" label="车组号" width="180 show-overflow-tooltip">
+            </el-table-column>
+            <el-table-column align="center" prop="faultCarNo" label="故障辆序" width="100" show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column align="center" prop="faultDescription" label="故障描述" show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              align="center"
+              prop="dealWithDesc"
+              label="故障状态"
+              show-overflow-tooltip
+            ></el-table-column>
+            <el-table-column align="center" prop="findFaultTime" width="100">
+              <template slot="header">
+                <div>故障发生</div>
+                <div>时间</div>
+              </template>
+            </el-table-column>
+            <el-table-column align="center" prop="findFaultMan" label="发现人" show-overflow-tooltip> </el-table-column>
+            <el-table-column align="center" prop="dealDate" width="100">
+              <template slot="header">
+                <div>故障处理</div>
+                <div>时间</div>
+              </template>
+            </el-table-column>
+            <el-table-column align="center" prop="dealFaultMan" label="处理人" show-overflow-tooltip> </el-table-column>
+          </el-table>
+        </div>
+      </el-dialog>
+
+      <!-- 二级修作业详情 -->
+      <el-dialog
+        class="FaultList"
+        v-loading="TaskDetails.loading"
+        :visible.sync="TaskDetails.TaskDetailsProject"
+        width="80%"
+        top="4vh"
+        max-height="70%"
+        :close-on-click-modal="false"
+        title="作业详情"
+        \@close="TaskDetails.TaskDetailsProject = false"
+      >
+        <div class="dialog-body">
+          <el-table
+            :data="TaskDetails.TaskDetailsList"
+            style="width: 100%"
+            height="100%"
+            :header-cell-style="{background:'#335078',color:'#FFF'}"
+            :row-class-name="tableRowClassName"
+          >
+            <el-table-column align="center" label="序号" width="100">
+              <template slot-scope="scope"> {{scope.$index + 1}} </template>
+            </el-table-column>
+            <el-table-column align="center" prop="trainsetName" label="车组号" width="200"> </el-table-column>
+            <el-table-column align="center" prop="twoPacketName" label="作业包"> </el-table-column>
+            <el-table-column align="center" prop="twoItemName" label="作业项目"> </el-table-column>
+            <el-table-column align="center" prop="twoItemPerson" label="作业人员">
+              <template slot-scope="scope"> {{scope.row.twoItemPerson.join(',')}} </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </el-dialog>
+
+      <!-- 节点处理情况查看 -->
+      <el-dialog
+        class="FaultList"
+        title="节点处理情况查看"
+        width="80%"
+        :visible.sync="lookupNodeDealInfoDialog.visible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        :modal="false"
+        center
+        custom-class="reconnect-dialog"
+        class="center-dialog"
+        top="10vh"
+      >
+        <el-table
+          :data="nodeDealData"
+          style="width: 100%"
+          height="100%"
+          :cell-style="cellStyle"
+          border
+          :header-cell-style="{background:'#335078',color:'#FFF'}"
+          :row-class-name="tableRowClassName"
+        >
+          <el-table-column
+            width="200"
+            show-overflow-tooltip
+            prop="node"
+            label="流程节点"
+            align="center"
+          ></el-table-column>
+          <el-table-column
+            min-width="200"
+            v-for="column in nodeColumns"
+            :key="column.key"
+            :prop="column.prop"
+            :label="column.label"
+            align="center"
+          >
+            <template v-slot="{row}">
+              <el-tooltip placement="top">
+                <div slot="content">{{getDetail(row.roleWorkerDetails[column.prop])}}</div>
+
+                <span class="hander" style="cursor: pointer" \@click="cellClick(row,column.prop)"
+                  >{{row[column.prop]}}</span
+                >
+              </el-tooltip>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-dialog>
+
+      <!-- 节点详细处理记录 -->
+      <el-dialog
+        class="FaultList"
+        title="节点详细处理记录"
+        width="75%"
+        :visible.sync="nodeDealDetailDialog.visible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        :modal="false"
+        center
+        custom-class="reconnect-dialog"
+        class="center-dialog"
+        top="10vh"
+      >
+        <el-card style="max-height: 500px; overflow: scroll">
+          <div v-for="workerId in Object.keys(workerPicMap)" :key="workerId">
+            <el-row style="color: #ffffff">{{workerDetail[workerId]}}</el-row>
+            <el-row class="before-img">
+              <el-upload action="#" :auto-upload="false" list-type="picture-card" :file-list="workerPicMap[workerId]">
+                <i class="el-icon-plus"></i>
+                <template v-slot:file="{file}">
+                  <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
+                  <span class="el-upload-list__item-actions">
+                    <span class="el-upload-list__item-preview" \@click="previewPicture(file,workerPicMap[workerId])">
+                      <i class="el-icon-zoom-in"></i>
+                    </span>
+                  </span>
+                </template>
+              </el-upload>
+            </el-row>
+          </div>
+        </el-card>
+      </el-dialog>
+
+      <el-image ref="myImg" :src="imgUrl" :preview-src-list="prePics"></el-image>
+    </div>
+
+    <script src="${ctxPath}/static/trainRepair/projection/workRepairmonitor/components/trackDetails.js"></script>
+    <script src="${ctxPath}/static/trainRepair/projection/workRepairmonitor/components/trainDetails.js"></script>
+    <script src="${ctxPath}/static/trainRepair/projection/workRepairmonitor/js/workRepairmonitor.js"></script>
+    <!-- <script type="text/babel" src="${ctxPath}/static/trainRepair/projection/workRepairmonitor/js/workRepairmonitor.js"></script> -->
+  </body>
+</html>

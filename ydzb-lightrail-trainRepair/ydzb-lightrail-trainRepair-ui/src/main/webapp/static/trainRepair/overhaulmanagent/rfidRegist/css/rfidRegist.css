@@ -1,0 +1,177 @@
+.el-card {
+  height: calc(100vh - 2px);
+}
+
+.el-card__header {
+  position: relative;
+  height: 42px;
+  line-height: 42px;
+  padding: 0 0 0 32px;
+}
+
+.adorn {
+  position: absolute;
+  left: 20px;
+  top: 9px;
+  width: 5px;
+  height: 25px;
+  background-color: #4e86fe;
+}
+
+.el-card__body {
+  padding: 0px;
+  height: calc(100vh - 42px);
+}
+
+.body>.pane {
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 0;
+}
+
+.body>.pane:nth-child(1) {
+  margin-top: 0;
+}
+
+.container {
+  padding: 0;
+}
+
+.table.form-table tbody td {
+  text-align: left;
+  padding-left: 30px;
+}
+
+.searchBtnBox {
+  text-align: right;
+}
+
+.searchList {
+  padding: 5px 20px;
+}
+
+.searchList .el-row--flex {
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.header .el-input {
+  max-width: 180px;
+}
+
+.formData .el-input {
+  max-width: 235px;
+}
+
+.el-input-number .el-input__inner {
+  text-align: left;
+}
+
+.dialog-body label {
+  display: inline-block;
+  width: 80px;
+}
+
+.el-dialog__wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.el-dialog__wrapper .el-dialog {
+  flex-grow: 0;
+  height: min-content;
+  margin: 0px !important;
+}
+
+.positionNumber input {
+  padding: 0 !important;
+}
+
+.el-dialog__body .changeState span .singleRegister {
+  width: 200px;
+  height: 150px;
+  background: url(../img/rfid.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.el-dialog__body .changeState span .seriesRegister {
+  width: 200px;
+  height: 150px;
+  background: url(../img/rfid1.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.el-dialog__title {
+  position: absolute;
+}
+
+.el-col-lg-5 {
+  width: 20% !important;
+}
+
+.el-radio {
+  margin-right: 10px;
+}
+
+.el-dialog__header {
+  display: flex;
+  align-items: center;
+}
+
+td.left {
+  padding: 5px 0 5px 20px;
+}
+
+td.right {
+  padding: 5px 0 5px 70px;
+}
+
+td.right.track {
+  padding-left: 83px;
+}
+
+td.track {
+  padding-left: 47px;
+}
+
+.el-message-box__btns {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+}
+
+.el-message-box__btns button:nth-child(1) {
+  color: #fff;
+  background-color: #409eff;
+  border-color: #409eff;
+}
+
+.el-message-box__btns button:nth-child(1):focus,
+.el-message-box__btns button:nth-child(1):hover {
+  color: rgb(255, 255, 255);
+  background: rgb(102, 177, 255);
+  border-color: rgb(102, 177, 255);
+}
+
+.el-message-box__btns button:nth-child(2) {
+  margin-right: 10px;
+}
+
+.left span {
+  /* position: relative; */
+}
+
+.question-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: -21px;
+  color: #1c5dba;
+  font-size: 18px;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}

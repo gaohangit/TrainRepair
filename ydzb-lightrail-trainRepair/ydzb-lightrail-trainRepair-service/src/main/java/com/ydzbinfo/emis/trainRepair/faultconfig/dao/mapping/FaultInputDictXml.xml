@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.faultconfig.dao.FaultInputDictMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.faultconfig.querymodel.FaultInputDict">
+        <id column="S_FAULTINPUTID" property="faultInputId" />
+        <result column="S_KEY" property="key" />
+        <result column="S_FUNCTIONTYPECODE" property="functionTypeCode" />
+        <result column="S_FUNCTIONTYPENAME" property="functionTypeName" />
+        <result column="S_PARTCODE" property="partCode" />
+        <result column="S_PARTNAME" property="partName" />
+        <result column="S_PARTPOSTION" property="partPostion" />
+        <result column="S_PARTTYPE" property="partType" />
+        <result column="S_FAULTLEVELCDOE" property="faultLevelCdoe" />
+        <result column="S_FAULTLEVELNAME" property="faultLevelName" />
+        <result column="S_FAULTMODECODE" property="faultModeCode" />
+        <result column="S_FAULTMODENAME" property="faultModeName" />
+        <result column="S_RECORDTIME" property="recordTime" />
+        <result column="S_RECORDERNAME" property="recorderName" />
+        <result column="S_RECORDERCODE" property="recorderCode" />
+        <result column="C_FLAG" property="flag" />
+        <result column="D_DELTIME" property="delTime" />
+        <result column="S_DELUSERCODE" property="delUserCode" />
+        <result column="S_DELUSERNAME" property="delUserName" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_FAULTINPUTID, S_KEY, S_FUNCTIONTYPECODE, S_FUNCTIONTYPENAME, S_PARTCODE, S_PARTNAME, S_PARTPOSTION, S_PARTTYPE, S_FAULTLEVELCDOE, S_FAULTLEVELNAME, S_FAULTMODECODE, S_FAULTMODENAME, S_RECORDTIME, S_RECORDERNAME, S_RECORDERCODE, C_FLAG, D_DELTIME, S_DELUSERCODE, S_DELUSERNAME
+    </sql>
+
+</mapper>

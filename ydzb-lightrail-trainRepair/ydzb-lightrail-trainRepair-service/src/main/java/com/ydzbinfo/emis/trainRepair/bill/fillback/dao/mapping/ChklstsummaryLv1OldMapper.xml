@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.bill.fillback.dao.ChklstsummaryLv1OldMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ${tableAlias}S_CHECKLISTSUMMARYID as "${columnPrefix}checklistSummaryId",
+        ${tableAlias}S_DAYPLANID as "${columnPrefix}dayPlanId",
+        ${tableAlias}S_TRAINSETID as "${columnPrefix}trainsetId",
+        ${tableAlias}S_INTRAINNO as "${columnPrefix}intrainno",
+        ${tableAlias}S_OUTTRAINNO as "${columnPrefix}outtrainno",
+        ${tableAlias}S_SPPACKETCODE as "${columnPrefix}sppacketcode",
+        ${tableAlias}S_SPPACKETNAME as "${columnPrefix}sppacketname",
+        ${tableAlias}S_DOCITEMID as "${columnPrefix}docItemId",
+        ${tableAlias}S_DOCCODE as "${columnPrefix}docCode",
+        ${tableAlias}S_DOCTYPE as "${columnPrefix}doctype",
+        ${tableAlias}S_MAINTCYCCODE as "${columnPrefix}mainCycCode",
+        ${tableAlias}I_REPAIRACCUMILE as "${columnPrefix}repairaccumile",
+        ${tableAlias}I_CARNOFLAG as "${columnPrefix}carnoflag",
+        ${tableAlias}S_CHECKLISTNO as "${columnPrefix}checklistno",
+        ${tableAlias}S_REPAIRDEPTNAMES as "${columnPrefix}repairdeptnames",
+        ${tableAlias}S_REPAIRSTAFFNAMES as "${columnPrefix}repairstaffnames",
+        ${tableAlias}C_PRINTSTATE as "${columnPrefix}printstate",
+        ${tableAlias}D_REPAIRTIME as "${columnPrefix}repairtime",
+        ${tableAlias}C_BACKFILLSTATE as "${columnPrefix}backfillstate",
+        ${tableAlias}S_INSPECTORSIGNCODES as "${columnPrefix}inspectorsigncodes",
+        ${tableAlias}S_INSPECTORSIGNNAMES as "${columnPrefix}inspectorsignnames",
+        ${tableAlias}D_INSPECTORSIGNTIME as "${columnPrefix}inspectorsigntime",
+        ${tableAlias}S_FOREMANSIGNCODES as "${columnPrefix}foremansigncodes",
+        ${tableAlias}S_FOREMANSIGNNAMES as "${columnPrefix}foremansignnames",
+        ${tableAlias}D_FOREMANSIGNTIME as "${columnPrefix}foremansigntime",
+        ${tableAlias}I_CHECKLISTFLAG as "${columnPrefix}checklistflag",
+        ${tableAlias}S_BATCHNO as "${columnPrefix}batchno",
+        ${tableAlias}S_FILEPATH as "${columnPrefix}filepath",
+        ${tableAlias}S_FILENAME as "${columnPrefix}filename",
+        ${tableAlias}I_UPLOADSUCCESS as "${columnPrefix}uploadsuccess",
+        ${tableAlias}S_REMARK as "${columnPrefix}remark",
+        ${tableAlias}D_LOCKTIME as "${columnPrefix}locktime"
+    </sql>
+
+</mapper>

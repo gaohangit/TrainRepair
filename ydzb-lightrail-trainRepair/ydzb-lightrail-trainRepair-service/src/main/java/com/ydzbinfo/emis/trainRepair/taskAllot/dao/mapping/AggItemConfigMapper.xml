@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.taskAllot.dao.AggItemConfigMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.AggItemConfig">
+        <id column="S_PACKETID" property="packetId" />
+        <result column="S_TRAINTYPE" property="trainType" />
+        <result column="S_STAGEID" property="stageId" />
+        <result column="S_TASKTYPE" property="taskType" />
+        <result column="S_AGGPACKETCODE" property="aggPacketCode" />
+        <result column="S_AGGPACKETNAME" property="aggPacketName" />
+        <result column="S_AGGPACKETCAR" property="aggPacketCar" />
+        <result column="S_SORT" property="sort" />
+        <result column="S_CREATEUSERNAME" property="createUserName" />
+        <result column="D_CREATETIME" property="createTime" />
+        <result column="S_CREATEUSERCODE" property="createUserCode" />
+        <result column="S_UNITCODE" property="unitCode" />
+        <result column="S_UNITNAME" property="unitName" />
+        <result column="S_VERSIONID" property="versionId" />
+        <result column="C_FLAG" property="flag" />
+        <result column="S_DEPTCODE" property="deptCode" />
+        <result column="S_DEPTNAME" property="deptName" />
+    </resultMap>
+
+
+    <resultMap id="BaseResultMap2" type="com.ydzbinfo.emis.trainRepair.taskAllot.model.AggItemConfigModel">
+        <id column="S_PACKETID" property="packetId" />
+        <result column="S_TRAINTYPE" property="trainType" />
+        <result column="S_STAGEID" property="stageId" />
+        <result column="S_TASKTYPE" property="taskType" />
+        <result column="S_AGGPACKETCODE" property="aggPacketCode" />
+        <result column="S_AGGPACKETNAME" property="aggPacketName" />
+        <result column="S_AGGPACKETCAR" property="aggPacketCar" />
+        <result column="S_SORT" property="sort" />
+        <result column="S_CREATEUSERNAME" property="createUserName" />
+        <result column="D_CREATETIME" property="createTime" />
+        <result column="S_CREATEUSERCODE" property="createUserCode" />
+        <result column="S_UNITCODE" property="unitCode" />
+        <result column="S_UNITNAME" property="unitName" />
+        <result column="S_VERSIONID" property="versionId" />
+        <result column="C_FLAG" property="flag" />
+        <result column="S_DEPTCODE" property="deptCode" />
+        <result column="S_DEPTNAME" property="deptName" />
+        <collection property="aggItemConfigItems" ofType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.AggItemConfigItem">
+            <id column="S_PITEMID" property="pitemId" />
+            <result column="S_PACKETID" property="packetId" />
+            <result column="S_ITEMCODE" property="itemCode" />
+            <result column="S_ITEMNAME" property="itemName" />
+            <result column="C_FLAG" property="flag" />
+        </collection>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_PACKETID, S_TRAINTYPE, S_STAGEID, S_TASKTYPE, S_AGGPACKETCODE, S_AGGPACKETNAME, S_AGGPACKETCAR, S_SORT, S_CREATEUSERNAME, D_CREATETIME, S_CREATEUSERCODE, S_UNITCODE, S_UNITNAME, S_VERSIONID, C_FLAG, S_DEPTCODE, S_DEPTNAME
+    </sql>
+    <select id="getAggItemConfigList" resultMap="BaseResultMap2" parameterType="com.ydzbinfo.emis.trainRepair.taskAllot.model.AggItemConfigModel">
+        select *
+        from
+        XZY_C_AGGITEMCONFIG a
+        LEFT join XZY_C_AGGITEMCONFIG_ITEM b on a.S_PACKETID=b.S_PACKETID
+        where a.C_FLAG='0' and  b.C_FLAG='0'
+        <if test="trainType!=null and trainType!=''">
+            and a.S_TRAINTYPE=#{trainType}
+        </if>
+        <if test="stageId!=null and stageId!=''">
+            and a.S_STAGEID=#{stageId}
+        </if>
+        <if test="aggPacketName!=null and aggPacketName!=''">
+            and UPPER(a.S_AGGPACKETNAME) like CONCAT(CONCAT('%',UPPER(#{aggPacketName})),'%') escape '\'
+        </if>
+        <if test="itemName!=null and itemName!=''">
+            and UPPER(b.S_ITEMNAME) like CONCAT(CONCAT('%',UPPER(#{itemName})),'%') escape '\'
+        </if>
+        <if test="itemCode !=null and itemCode!=''">
+            and b.S_ITEMCODE=#{itemCode}
+        </if>
+    </select>
+
+</mapper>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.taskAllot.dao.XzyCOneallotTemplateMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyCOneallotTemplate">
+        <id column="S_TEMPLATEID" property="sTemplateid" />
+        <result column="S_MARSHALNUM" property="sMarshalnum" />
+        <result column="S_CARNOLIST" property="sCarnolist" />
+        <result column="I_SORT" property="iSort" />
+        <result column="S_GROUPID" property="sGroupid" />
+        <result column="S_GROUPSORT" property="sGroupsort" />
+        <result column="S_DEFAULT" property="sDefault" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+      S_TEMPLATEID AS sTemplateid,
+      S_MARSHALNUM AS sMarshalnum,
+      S_CARNOLIST AS sCarnolist,
+      I_SORT AS iSort,
+      S_GROUPID AS sGroupid,
+      S_GROUPSORT AS sGroupsort,
+      S_DEFAULT AS sDefault
+    </sql>
+
+    <select id="getTemplateListByParam" parameterType="Map" resultType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyCOneallotTemplate">
+        select <include refid="Base_Column_List"></include>
+        from XZY_C_ONEALLOT_TEMPLATE
+        where 1 = 1
+        <if test="groupId != null and groupId != ''">
+            and S_GROUPID = #{groupId}
+        </if>
+        <if test="marshalNum != null and marshalNum != ''">
+            and S_MARSHALNUM = #{marshalNum}
+        </if>
+        <if test="default != null and default != ''">
+            and S_DEFAULT = #{default}
+        </if>
+    </select>
+</mapper>

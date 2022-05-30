@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.common.taskAllot.dao.ZyMRepairpersonallotCurMapper.">
+
+    <!--通用查询映射结果-->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.ZyMRepairpersonallotCur">
+        <result column="S_REPAIRPERSONALLOTCURID" property="repairpersonallotcurid"/>
+        <result column="S_DEPTCODE" property="deptcode"/>
+        <result column="S_DEPTNAME" property="deptname"/>
+        <result column="S_BRANCHCODE" property="branchcode"/>
+        <result column="S_BRANCHNAME" property="branchname"/>
+        <result column="S_ROLECODE" property="rolecode"/>
+        <result column="S_ROLENAME" property="rolename"/>
+        <result column="S_POSTID" property="postid"/>
+        <result column="S_POSTNAME" property="postname"/>
+        <result column="I_BRANCH_TYPE" property="branch_type"/>
+        <result column="S_STUFFCODE" property="stuffcode"/>
+        <result column="S_STUFFNAME" property="stuffname"/>
+        <result column="D_ALLOTDATE" property="allotdate"/>
+        <result column="C_BRANCHTYPE" property="branchtype"/>
+    </resultMap>
+
+    <select id="selectByDeptCode"  parameterType="String"  resultMap="BaseResultMap">
+          select
+            S_REPAIRPERSONALLOTCURID,
+            S_DEPTCODE,
+            S_DEPTNAME,
+            S_BRANCHCODE,
+            S_BRANCHNAME,
+            S_ROLECODE,
+            S_ROLENAME,
+            S_POSTID,
+            S_POSTNAME,
+            I_BRANCH_TYPE,
+            S_STUFFCODE,
+            S_STUFFNAME,
+            D_ALLOTDATE,
+            NVL(C_BRANCHTYPE, '0') as C_BRANCHTYPE
+          from ZY_M_REPAIRPERSONALLOT_CUR where S_POSTID not in ('11', '21') and S_DEPTCODE = #{deptcode}
+    </select>
+
+</mapper>

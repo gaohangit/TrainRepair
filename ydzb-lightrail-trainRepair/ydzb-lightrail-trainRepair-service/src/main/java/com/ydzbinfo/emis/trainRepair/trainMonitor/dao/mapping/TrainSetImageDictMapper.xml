@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.trainMonitor.dao.TrainsetImageDictMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.TrainsetImageDict">
+        <result column="S_TRAINSETTYPE" property="trainsetType" />
+        <result column="S_IMAGENAME" property="imageName" />
+        <result column="S_STATE" property="state" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_TRAINSETTYPE, S_IMAGENAME,S_STATE
+    </sql>
+
+    <select id="getTrainsetImageDictList" resultMap="BaseResultMap" >
+        select
+        <include refid="Base_Column_List"></include>
+        from XZY_B_TRAINSETIMAGE_DICT
+        where 1=1
+        <if test="trainType !=null and trainType !=''">
+            and S_TRAINSETTYPE=#{trainType}
+        </if>
+
+    </select>
+
+    <select id="getTrainsetImageDict" resultMap="BaseResultMap" parameterType="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.TrainsetImageDict">
+        select
+        <include refid="Base_Column_List"></include>
+        from XZY_B_TRAINSETIMAGE_DICT
+        where 1=1
+        <if test="trainsetType !=null and trainsetType !=''">
+            and S_TRAINSETTYPE=#{trainsetType}
+        </if>
+    </select>
+
+    <insert id="addTrainsetImageDict" parameterType="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.TrainsetImageDict">
+        insert into XZY_B_TRAINSETIMAGE_DICT
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="trainsetType !=null and trainsetType !=''">
+                S_TRAINSETTYPE,
+            </if>
+            <if test="imageName !=null and imageName !=''">
+                S_IMAGENAME,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="trainsetType !=null and trainsetType !=''">
+                #{trainsetType},
+            </if>
+            <if test="imageName !=null and imageName !=''">
+                #{imageName},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updTrainsetImageDict" parameterType="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.TrainsetImageDict">
+        update XZY_B_TRAINSETIMAGE_DICT
+        <set>
+            <if test="imageName !=null and imageName !=''">
+              S_IMAGENAME=#{imageName}
+            </if>
+        </set>
+        where S_TRAINSETTYPE=#{trainsetType}
+    </update>
+    <delete id="delTrainsetImageDict" parameterType="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.TrainsetImageDict">
+        delete from XZY_B_TRAINSETIMAGE_DICT
+        where S_TRAINSETTYPE=#{trainsetType}
+    </delete>
+
+</mapper>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.repairworkflow.dao.ConditionMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.repairworkflow.querymodel.Condition">
+        <id column="S_ID" property="id" />
+        <result column="S_TYPE" property="type" />
+        <result column="C_DELETED" property="deleted" />
+        <result column="S_UNITCODE" property="unitCode" />
+        <result column="C_SYNFLAG" property="synFlag" />
+        <result column="D_SYNDATE" property="synDate" />
+    </resultMap>
+
+    <resultMap id="ConditionResultMap" type="com.ydzbinfo.emis.trainRepair.repairworkflow.querymodel.extend.ConditionWithValues">
+        <id column="S_ID" property="id" />
+        <result column="S_TYPE" property="type" />
+        <result column="C_DELETED" property="deleted" />
+        <result column="S_UNITCODE" property="unitCode" />
+        <result column="C_SYNFLAG" property="synFlag" />
+        <result column="D_SYNDATE" property="synDate" />
+        <collection property="conditionValues" ofType="com.ydzbinfo.emis.trainRepair.repairworkflow.querymodel.ConditionValue">
+            <result column="S_CONDITIONID" property="conditionId" />
+            <result column="S_VALUE" property="value" />
+            <result column="C_TYPE" property="type" />
+            <result column="C_SYNFLAG" property="synFlag" />
+            <result column="C_SYNDATE" property="synDate" />
+        </collection>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_ID, S_TYPE, C_DELETED, S_UNITCODE, C_SYNFLAG, D_SYNDATE
+    </sql>
+
+    <select id="getConditionInfo" resultMap="ConditionResultMap" parameterType="java.util.List">
+        select  c.S_ID, c.S_TYPE, c.C_DELETED, c.S_UNITCODE, c.C_SYNFLAG, c.D_SYNDATE,
+        cv.S_CONDITIONID, cv.S_VALUE, cv.S_TYPE as C_TYPE, cv.C_SYNFLAG, cv.D_SYNDATE as C_SYNDATE from XZY_C_CONDITION c
+    LEFT JOIN  XZY_C_CONDITIONVALUE cv on c.S_ID = cv.S_CONDITIONID
+    where c.S_ID in
+        <foreach collection="valueList" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+</mapper>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.base.dao.YdzbBaseMapper">
+    <!-- And_Simple_Conditions仅支持参数对象里的被mybatis-plus里的TableField或者TableId注解的属性 -->
+    <!-- bind参数：paramEntity, likeProperties -->
+    <!-- property参数：tableAlias -->
+    <sql id="And_Simple_Conditions">
+        <foreach collection="@com.ydzbinfo.emis.utils.MybatisOgnlUtils@getSimpleConditions(paramEntity, likeProperties)"
+                 item="condition">
+            and ${tableAlias}${condition.columnName} ${condition.operator} #{condition.value}${condition.extraTail}
+        </foreach>
+    </sql>
+
+    <!-- bind参数：paramEntity, likeProperties -->
+    <!-- property参数：tableAlias -->
+    <sql id="Or_Simple_Conditions">
+        <foreach collection="@com.ydzbinfo.emis.utils.MybatisOgnlUtils@getSimpleConditions(paramEntity, likeProperties)"
+                 item="condition">
+            or ${tableAlias}${condition.columnName} ${condition.operator} #{condition.value}${condition.extraTail}
+        </foreach>
+    </sql>
+
+
+    <!-- bind参数：values -->
+    <!-- property参数：column -->
+    <sql id="And_Huge_Size_In">
+        and (
+        <trim prefixOverrides="or">
+            <foreach collection="@com.ydzbinfo.emis.utils.MybatisOgnlUtils@splitValuesForHugeSizeIn(values)"
+                     item="subValues">
+                or ${column} in
+                <foreach collection="subValues" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </foreach>
+        </trim>
+        )
+    </sql>
+
+</mapper>

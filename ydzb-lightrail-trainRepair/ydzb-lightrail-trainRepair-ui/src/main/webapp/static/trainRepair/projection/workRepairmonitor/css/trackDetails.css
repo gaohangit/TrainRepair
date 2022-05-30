@@ -1,0 +1,775 @@
+.top  {
+  height: 42.5vh;
+  margin-bottom: 1.4vh;
+  /* background: url(../img/monitor-box1.png) no-repeat; */
+  background-color: rgb(192, 192, 192, 0.1);
+  background-size: 100% 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.top .title, .bottom .title {
+  height: 10%;
+  display: flex;
+  justify-content: space-between;
+  color: #fff;
+}
+
+.top .title .title_Left {
+  display: flex;
+  align-items: center;
+  height: 1.8rem;
+  font-size: 0.75rem;
+  margin: 0.2rem;
+  width: 10rem;
+  background: url(../img/monitor-box1-left.png) no-repeat;
+  background-size: 100% 100%;
+  
+}
+.top .title .title_Right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 1.8rem;
+  font-size: 0.75rem;
+  margin: 0.2rem;
+  width: 10rem;
+  background: url(../img/monitor-box1-right.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.top .title .title_Left div,
+.top .title .title_Right div  {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.top .title .title_Left div {
+  margin-left: 0.75rem;
+}
+
+.top .title .title_Right div {
+  margin-right: 0.75rem;
+  margin-top: 0.2rem;
+}
+
+.top .title .title_Left>div:first-child,
+.top .title .title_Right {
+  font-weight: bold;
+}
+
+.top .title_Left .isElectric,
+.top .title_Right .isElectric,
+.top .title_Left .chu,
+.top .title_Right .chu {
+  width: 1rem;
+  height: 1rem;
+}
+
+.top .title_Left .isElectric,
+.top .title_Right .isElectric{
+  /* color: #FD0202;
+  border: 1px solid #FD0202; */
+  color: #fff;
+  background: url(../img/ico_danger.png) no-repeat;
+  background-size: 100% 100%;
+  border-radius: 4px;
+}
+
+.top .title_Right .noElectric,
+.top .title_Left .noElectric {
+  /* color: #0AD101;
+  border: 1px solid #0AD101; */
+  width: 1rem;
+  height: 1rem;
+  color: #fff;
+  background: url(../img/ico_safe.png) no-repeat;
+  background-size: 100% 100%;
+  border-radius: 4px;
+}
+
+.top .title_Left .chu,
+.top .title_Right .chu {
+  /* color: #fff;
+  border: 1px solid #00e1fa; */
+  color: #4e80f8;
+  border: 1px solid #fff;
+  background-color: #fff;
+  border-radius: 2px;
+}
+
+.top .title_Left .chu,
+.top .title_Right .chu {
+  box-shadow: 0 0 6px #00e1fa;
+}
+
+.top .content {
+  flex-grow: 1;
+}
+
+.top .content .contentBox {
+  height: 100%;
+  display: flex;
+  padding: 0 3rem;
+}
+
+/* 显示车辆左 */
+.top .seamless-wrap {
+  overflow: hidden;
+  height: 100%;
+}
+
+.top .content li.left {
+  width: 50%;
+  padding:0 1rem 0 0;
+}
+
+.top .content li.trainlength {
+  width: 100%;
+}
+
+.top .content li .repairProject {
+  overflow: hidden;
+  font-size: 2vh;
+  height: 1.3rem;
+  color: #00b0d2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.top .content li .repairProject li {
+  height: 1.3rem;
+}
+
+.top .one,
+.top .two {
+  position: relative;
+  top: -0.2vh;
+  width: 1.4rem;
+  height: 1.4rem;
+}
+
+.top .train {
+  display: flex;
+  justify-content: center;
+}
+
+.top .train div {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.top .train .trainsetName {
+  position: absolute;
+  top: .55rem;
+  left: 50%;
+  width: 100%;
+  text-align: center;
+  font-size: 2vh;
+  color: #fff;
+  transform: translate(-50%) scale(.65);
+}
+
+.train .left {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.train .right {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.train .left,
+.train .right {
+  width: 1rem;
+  height: 1rem;
+}
+
+.train .car {
+  width: 100%;
+  height: 2.6rem;
+}
+
+.train .car img {
+  height: 40px;
+}
+
+.train .trainUrl_1,
+.train .trainUrl_3 {
+  width: 130px;
+}
+
+.train .trainUrl_2 {
+  flex: 1;
+}
+
+/* 流程 */
+.top .flow {
+  display: flex;
+  justify-content: center;
+  height: 1.5rem;
+  margin-bottom: 0.1rem;
+}
+
+.top .flow div {
+  display: flex;
+  align-items: center;
+}
+
+/* 未完成 */
+.top .flow .flowName {
+  cursor: pointer;
+  width: 13vh;
+  border-radius: 1vh;
+  font-size: 2vh;
+  margin: 0.4vh 5px;
+  border: 2px solid #0be2ff;
+  background-color: rgba(0, 0, 0, 0);
+}
+
+.top .flow .state_1{
+  /* box-shadow: 0 0 5px #729efd, inset 0 0 5px #729efd;
+  background-color:#729efd;
+  border-color: #729efd; */
+  box-shadow: 0 0 5px #0da376, inset 0 0 5px #0da376;
+  background-color: rgba(33, 255, 117, 0.32);
+  border-color: rgba(17, 179, 133, 0.9);
+}
+.top .flow .state_2{
+  box-shadow: 0 0 5px #0da376, inset 0 0 5px #0da376;
+  background-color: rgba(33, 255, 117, 0.32);
+  border-color: rgba(17, 179, 133, 0.9);
+}
+.top .flow  .state_3{    
+  box-shadow: 0 0 5px #ebe20f, inset 0 0 5px #ebe20f;
+  background: rgba(178, 185, 35, 0.4);
+  border-color: #ffff00;
+  font-weight: bolder;
+}
+.top .flow .state_4{
+  /* box-shadow: 0 0 5px #729efd, inset 0 0 5px #d8d8d8;
+  background: #d8d8d8;
+  border-color: #d8d8d8;
+  font-weight: bolder; */
+}
+
+.top .flow .not_started {
+  color: #054882;
+  border: 2px solid #054882;
+  background: none;
+  box-shadow: none;
+}
+
+/* 已完成 */
+.top .flow .completed {
+  border: 2px solid rgba(43, 156, 86);
+  background: #84c545;
+}
+
+/* 增在施工 */
+.top .flow .progress {
+  border-color: #f7d020;
+  background: #f7d020;
+  font-weight: bolder;
+}
+
+.top .flow .flowName span {
+  width: 98%;
+  text-align: center;
+  transform: scale(.7);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.top .flow ul,
+.top .flow ul li{
+  display: flex;
+}
+
+.top .flow ul li:last-child img {
+  display: none;
+}
+
+/* 详情 */
+.top .details {
+  background: url(../img/monitor_work-bg-2.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+/* 故障 */
+.top .fault {
+  display: flex;
+  align-items: center;
+  height: 1.2rem;
+  text-align: center;
+  margin-bottom: 0.15rem;
+}
+
+.top .fault .faultName {
+  width: 9.6rem;
+  height: 100%;
+  text-align: left;
+  transform: scale(.8);
+}
+
+.top .fault .faultPosition {
+  display: flex;
+  justify-content: space-around;
+  flex: 1;
+  height: 100%;
+  padding-right: .97rem;
+}
+
+/* 当股道上是量长编
+.fault .longCar {
+  padding: 0 .9rem 0 0.4rem;
+} */
+
+.top .fault .faultPosition li {
+  position: relative;
+  flex: 1;
+}
+
+.top .fault .faultPosition li  div {
+  position: absolute;
+  top: 65%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(.5);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.top .fault .faultPosition li img {
+  height: 100%;
+}
+
+.top .fault .faultComplete {
+  width: 25.3%;
+  height: 100%;
+  transform: scale(.8);
+}
+
+.twoWorkPacket {
+  cursor: pointer;
+}
+
+.top .fault .faultComplete span,
+.top .secondRepair .percentage {
+  cursor: pointer;
+  text-align: center;
+  width: 10vh;
+}
+
+/* 作业项目 */
+.top .task {
+  display: flex;
+  height: 9.7rem;
+}
+
+.top .task .left,
+.top .task .right {
+  height: 9.3rem;
+}
+
+.top .task .left {
+  position: relative;
+  flex: 1;
+  padding: 0.3rem;
+  /* background-color: rgb(228, 123, 141); */
+}
+
+.top .task .left .firstRepair {
+  padding: .4rem .4rem .4rem 0;
+}
+
+.top .task .left .people {
+  position: relative;
+}
+
+.top .task .left .PeopleName {
+  position: absolute;
+  left: .5rem;
+  width: 3rem;
+  height: 1rem;
+  background: url(../img/nameTag-1.png) no-repeat;
+  background-size: 100% 100%;
+  background-position: center center;
+  color: #fff;
+}
+
+.top .task .left .PeopleName span {
+    position: absolute;
+    left: .1rem;
+    width: 4rem;
+    height: 100%;
+    line-height: 100%;
+    font-size: 2vh;
+    transform: scale(.5);
+}
+
+.top .task .left .people .work {
+  margin-bottom: 0.2rem;
+}
+
+.top .task .left .people .workDetails {
+  display: flex;
+  height: .95rem;
+  margin: .1rem 0;
+  border-radius: .5rem;
+  margin-left: 4rem;
+  margin-right: .2rem;
+  background-color: #e3e3e3;
+}
+
+.top .task .left .people .workDetails .workName {
+  display: flex;
+  align-items: center;
+  width: 5.3rem;
+  height: 100%;
+}
+
+.top .task .left .people .workDetails .workName img {
+  margin: 0rem -0.4rem 0 .2rem;
+  height: .7rem;
+  width: .7rem;
+}
+
+.top .task .left .people .workDetails .workName span {
+  font-size: .8rem;
+  line-height: 100%;
+  margin-left: .8rem;
+  -webkit-transform-origin-x: 0;
+  zoom: 0.7;
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.top .task .left .people .workDetails .workName .over {
+  color: #ffff00;
+}
+
+.top .task .left .people .workDetails .workName .overTime {
+  color: rgb(207, 7, 7);
+}
+
+.top .task .left .people .workDetails .quantity {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.top .task .left .people .workDetails .quantity li {
+  flex: 1;
+  transform: scale(.58, 0.5);
+  text-align: center;
+  background-color: #b8b9b7;
+  border-radius: 1rem;
+  font-weight: 700;
+}
+
+.top .task .left .people .workDetails .quantity .completed {
+  background-color: #43e766;
+}
+
+.top .task .left .people .workDetails .quantity .under {
+  background-color: #8b93fd;
+}
+
+.top .task .right {
+  width: 25.3%;
+}
+
+.top .task .right ul {
+  display: flex;
+  height: 100%;
+  padding-top: .4rem;
+  flex-direction: column;
+}
+
+.top .task .right ul li {
+  height: 19%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.top .task .right ul li span {
+  margin-left: 15%;
+  font-size: 12px;
+  transform: scale(.9);
+}
+
+.top .task .right ul li div {
+  margin-right: 15%;
+  width: 1rem;
+  height: 1rem;
+  border-radius: .3rem;
+  background-color: #ededef;
+}
+
+.top .task .right ul li .finish {
+  background: url(../img/checked-1.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+/* 二级修 */
+/* 故障 */
+.top .twoFault .faultName {
+  width: 4.4rem;
+  height: 100%;
+  text-align: center;
+  transform: scale(.8);
+}
+
+.top .twoFault .faultPosition {
+  padding-right: 5rem;
+}
+
+/* 显示进度条 */
+.top .task .left .secondRepair {
+  height: 9.3rem;
+}
+
+.top .task .left .secondRepair .work{
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 20%;
+  font-size: 1vh;
+}
+
+.top .task .left .secondRepair .work .workName {
+  width: 4rem;
+  height: 100%;
+  line-height: 200%;
+  text-align: center;
+  transform: scale(.8);
+}
+
+.top .task .left .secondRepair .work .percent {
+  position: absolute;
+  left: 50%;
+  top: -.1rem;
+  font-size: 1vh;
+  transform: translate(-50%) scale(.9);
+}
+
+.top .task .left .secondRepair .work .progress {
+  flex: 1;
+  height: .2rem;
+  border-radius: .1rem;
+  margin: 0 0 0 .1rem;
+  background-color: #e8e8e8;
+}
+
+.top .task .left .secondRepair .work .progress div {
+  width: 50%;
+  height: 100%;
+  border-radius: .1rem;
+  background-color: #1cbbbc;
+}
+
+.top.task .left .secondRepair .work .percentage {
+  width: 3.5rem;
+  height: 100%;
+  line-height: 200%;
+  transform: scale(.8);
+}
+
+.top .task .left .personnel {
+  height: 1.5rem;
+  font-size: 12px;
+  transform: scale(.8);
+  position: absolute;
+  left: -.6rem;
+}
+
+.top .task .left .personnel ul {
+  display: flex;
+}
+
+.top .task .left .personnel ul li {
+  margin-right: .5rem;
+}
+
+/* 显示车辆右 */
+.top .content li.right {
+  width: 50%;
+  padding:0 0 0 1rem;
+}
+
+/* 全屏模式 */
+/* 图表上半部分 */
+.appFull .top  {
+  background: url(../img/monitor-box2.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.appFull .title_Left .isElectric,
+.appFull .title_Right  .isElectric {
+  background: url(../img/ico_danger.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.appFull .title_Left .noElectric,
+.appFull .title_Right  .noElectric {
+  background: url(../img/ico_safe.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.appFull .top .title_Right div {
+  margin-top: 0;
+}
+
+.appFull .title_Left .chu,
+.appFull .title_Right  .chu {
+  color: #fff;
+  border: 1px solid #00e1fa;
+  background-color: rgba(0, 0, 0, 0);
+  border-radius: 0;
+}
+
+.appFull .content li .repairProject {
+  color: #07d5fd;
+}
+
+.appFull .train .left {
+  left: 0;
+}
+
+.appFull .train .right {
+  right: 0;
+}
+
+.appFull .train .car img {
+  width: 12vh;
+  height: 2rem;
+}
+
+.appFull .flow .flowName {
+  color: #fff;
+}
+
+.appFull .flow .progress {
+  color: #000;
+}
+
+/* 详情 */
+.appFull .details {
+  background: url(../img/monitor_work-bg.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+/* 故障 */
+.appFull .fault {
+  background-color: rgba(16, 65, 130, 0.3);
+  color: #fff;
+}
+
+/* 当股道上是量长编
+.appFull .fault .longCar {
+  padding: 0 .9rem 0 1.15rem;
+} */
+
+.appFull .fault .faultPosition li  div {
+  top: 12%;
+  transform: translate(-50%) scale(.6);
+  color: #000;
+}
+
+/* 作业项目 */
+.appFull .task .left .people .workDetails {
+  background-color: rgba(78, 80, 177, .2);
+}
+
+.appFull .task .left .people .workDetails .workName span {
+  color: #fff;
+}
+
+.appFull .task .right ul li {
+  color: #fff;
+}
+
+.appFull .task .right ul li div {
+  background-color: rgba(118, 119, 169, .2);
+}
+
+.appFull .task .right ul li .finish {
+  background: url(../img/checked.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+/* 图表下半部分 */
+.appFull .bottom {
+  background: url(../img/monitor-box2.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+/* .appFull .footer {
+  background-color: #122955;
+} */
+
+.appFull .footer .left {
+  color: #7b8498;
+}
+
+.appFull .footer .left .legend {
+  color: #fff;
+}
+
+/* 二级修 */
+.appFull .task .left .secondRepair .work .workName,
+.appFull .task .left .secondRepair .work .percentage {
+  line-height: 220%;
+  color: #fff;
+}
+
+.appFull .task .left .secondRepair .work .percentage {
+  width: 7vh;
+}
+
+.appFull .task .left .secondRepair .work .progress div {
+  position: relative;
+  background: linear-gradient(to right, #69fbfe, #3aaaff);
+}
+
+.appFull .task .left .secondRepair .work .progress span {
+  position: absolute;
+  top: -35%;
+  right: 0;
+  width: .6rem;
+  height: 150%;
+  border-radius: 50%;
+  background-color: #fafefd;
+  background: radial-gradient(circle at 12px 1px, #fafefd, #59e5fe, #53ebfe);
+  box-shadow: 1px -1px 19px 3px #5268f6;
+}
+
+.appFull .task .left .personnel,
+.appFull .task .left .secondRepair .work .percent {
+  color: #fff;
+}
+
+.appFull .top .twoFault .faultPosition {
+  padding-right: 4rem;
+}
+
+.appFull .top .train .trainsetName {
+  border-radius: 2vh;
+  background-color: #081943;
+}
+
+.appFull .top .flow .flowName {
+  width: 12vh;
+}

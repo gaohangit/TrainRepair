@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.bill.fillback.dao.AxleWheelDataCurMapper">
+
+    <!--通用查询映射结果-->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.bill.querymodel.checklist.AxleWheelDataCur">
+        <id column="S_ID" property="id"/>
+        <result column="S_CHECKLISTSUMMARYID" property="checkListSummaryId"/>
+        <result column="S_DAYPLANID" property="dayPlanId"/>
+        <result column="S_TRAINSETID" property="trainSetId"/>
+        <result column="S_TRAINSETNAME" property="trainSetName"/>
+        <result column="S_DEVICEID" property="deviceId"/>
+        <result column="S_CARNO" property="carNo"/>
+        <result column="S_AXLELOCATION" property="axleLocation"/>
+        <result column="S_PARTLOCATION" property="partLocation"/>
+        <result column="S_SIDE" property="side"/>
+        <result column="S_AXLERUMILES" property="axleRumiles"/>
+        <result column="S_EDDYSTAFFCODE" property="eddyStatffCode"/>
+        <result column="S_EDDYSTAFFNAME" property="eddyStatffName"/>
+        <result column="S_INSPECTORSTAFFCODE" property="inspectorStaffCode"/>
+        <result column="S_INSPECTORSTAFFNAME" property="inspectorStaffName"/>
+        <result column="S_XQ" property="xq"/>
+        <result column="S_XH" property="xh"/>
+        <result column="D_CREATTIME" property="createTime"/>
+    </resultMap>
+
+    <delete id="del" parameterType="com.ydzbinfo.emis.trainRepair.bill.querymodel.checklist.AxleWheelDataCur">
+        delete ZY_M_AXLE_CUR_DATA where S_TRAINSETID = #{trainSetId} and S_CARNO = #{carNo} and S_AXLELOCATION = #{axleLocation} and S_PARTLOCATION = #{partLocation}
+    </delete>
+</mapper>

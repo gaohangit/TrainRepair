@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>检修预警管理</title>
+
+    <script src="${publicStaticPath}/IE/babel-browser.min.js"></script>
+    <link rel="stylesheet" href="${publicStaticPath}/elementUI/index.css" />
+    <script src="${publicStaticPath}/vue/vue.js"></script>
+    <script src="${publicStaticPath}/elementUI/index.js"></script>
+    <script src="${ctxPath}/static/lib/day/day.js"></script>
+    <script src="${publicStaticPath}/vue/axios.min.js"></script>
+    <script src="${ctxPath}/static/config/index.js"></script>
+    <script src="${ctxPath}/static/utils/GeneralUtil.js"></script>
+    <!-- <script src="${ctxPath}/static/trainRepair/workRepairFlow/keyWorkFlowMonitor/utils/index.js"></script> -->
+
+    <script src="${ctxPath}/static/trainRepair/repairWarning/repairWarningManage/api/apiTrainRepair/repairWarningRequest.js?"></script>
+
+    <script>
+      Vue.config.devtools = false;
+      Vue.config.productionTip = false;
+      const ctxPath = '${ctxPath}';
+
+      const unitCode = '${thirdOrganCode}'; //所编码
+    </script>
+
+    <link rel="stylesheet" href="${publicStaticPath}/common/base.css" />
+    <link rel="stylesheet" href="${ctxPath}/static/trainRepair/repairWarning/repairWarningManage/css/index.css" />
+  </head>
+  <body>
+    <div id="repairWarningManage" v-cloak>
+      <el-card class="box-card">
+        <div slot="header">
+          <span class="adorn"></span>
+          <h2>{{pageTitle}}</h2>
+        </div>
+
+        <el-form
+          ref="headerFormRef"
+          :model="headerFormData"
+          :rules="headerFormRules"
+          label-width="100px"
+          class="mb-10-form"
+        >
+          <el-row>
+            <el-col :span="4">
+              <el-form-item label="开始时间：" prop="startTime">
+                <el-date-picker
+                  v-model="headerFormData.startTime"
+                  value-format="yyyy-MM-dd"
+                  type="date"
+                  placeholder="请选择"
+                ></el-date-picker>
+              </el-form-item>
+            </el-col>
+            <el-col :span="4">
+              <el-form-item label="结束时间：" prop="endTime">
+                <el-date-picker
+                  v-model="headerFormData.endTime"
+                  value-format="yyyy-MM-dd"
+                  type="date"
+                  placeholder="请选择"
+                ></el-date-picker>
+              </el-form-item>
+            </el-col>
+            <el-col :span="4">
+              <el-form-item label="车型：" prop="trainsetType">
+                <el-select
+                  v-model="headerFormData.trainsetType"
+                  \@focus="getTraintypeList"
+                  \@change="trainTypeChange"
+                  clearable
+                  filterable
+                  placeholder="请选择"
+                >
+                  <el-option
+                    v-for="trainType in traintypeList"
+                    :key="trainType"
+                    :label="trainType"
+                    :value="trainType"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="4">
+              <el-form-item label="车组：" prop="trainsetName">
+                <el-select
+                  ref="trainsetRef"
+                  v-model="headerFormData.trainsetName"
+                  \@focus="getTrainsetList"
+                  \@change="trainsetChange"
+                  clearable
+                  filterable
+                  placeholder="请选择"
+                >
+                  <el-option
+                    v-for="trainset in trainsetList"
+                    :key="trainset.trainsetid"
+                    :label="trainset.trainsetname"
+                    :value="trainset.trainsetname"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="4">
+              <el-form-item label="状态：" prop="effectState">
+                <el-select v-model="headerFormData.effectState" placeholder="请选择">
+                  <el-option
+                    v-for="item in effectStateList"
+                    :key="item.id"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="4" class="text-r">
+              <el-button type="primary" size="mini" \@click="getWorkWorningList">查询</el-button>
+              <el-button type="primary" size="mini" \@click="resetHeaderForm">重置</el-button>
+            </el-col>
+          </el-row>
+        </el-form>
+        <!-- :default-sort="{prop:'createTime',order:'descending'}" -->
+        <div class="main-table" ref="mainTable">
+          <el-table :data="mainTableData" border row-id="id" :height="mainTableHeight">
+            <el-table-column
+              label="运用所"
+              prop="unitName"
+              :sort-by="['unitName','createTime']"
+              sortable
+              show-overflow-tooltip
+            ></el-table-column>
+            <el-table-column
+              label="车型"
+              prop="trainsetType"
+              :sort-by="['trainsetType','createTime']"
+              sortable
+              show-overflow-tooltip
+            ></el-table-column>
+            <el-table-column
+              label="车组"
+              prop="trainsetName"
+              :sort-by="['trainsetName','createTime']"
+              sortable
+              show-overflow-tooltip
+            ></el-table-column>
+            <el-table-column label="作业班组" prop="deptName" show-overflow-tooltip></el-table-column>
+            <el-table-column label="作业人员" prop="workerName" show-overflow-tooltip></el-table-column>
+            <el-table-column label="作业内容" prop="workContent" show-overflow-tooltip></el-table-column>
+            <el-table-column
+              label="预警时间"
+              prop="createTime"
+              :formatter="createTimeFormatter"
+              sortable
+              show-overflow-tooltip
+            >
+            </el-table-column>
+            <el-table-column label="预警信息" prop="worningContent" show-overflow-tooltip></el-table-column>
+            <el-table-column
+              label="状态"
+              prop="effectState"
+              :formatter="effectStateFormatter"
+              sortable
+              show-overflow-tooltip
+            >
+            </el-table-column>
+            <el-table-column label="处理人" prop="effectStuffName" show-overflow-tooltip></el-table-column>
+            <el-table-column
+              label="处理时间"
+              prop="effectTime"
+              :formatter="effectTimeFormatter"
+              sortable
+              show-overflow-tooltip
+            >
+            </el-table-column>
+            <el-table-column label="操作">
+              <template v-slot="{row}">
+                <i class="el-icon-edit-outline" \@click="openWarningDialog(row)"></i>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+        <el-pagination
+          \@size-change="mainTablePageSizeChange"
+          \@current-change="mainTablePageNumChange"
+          :current-page="mainTablePageNum"
+          :page-sizes="[10, 20, 50,100]"
+          :page-size="mainTablePageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="mainTablePageTotal"
+        >
+        </el-pagination>
+      </el-card>
+      <el-dialog
+        title="确认"
+        :visible.sync="confirmWarningDialog.visible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        \@close="confirmWarningDialogClose"
+        class="center-dialog"
+        top="auto"
+      >
+        <el-row>
+          <el-col :span="8">
+            <div class="warning-info">
+              <div class="info-title">运用所：</div>
+              <div class="info-content">{{confirmWarningDialog.warningInfo.unitName}}</div>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="warning-info">
+              <div class="info-title">车型：</div>
+              <div class="info-content">{{confirmWarningDialog.warningInfo.trainsetType}}</div>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="warning-info">
+              <div class="info-title">车组：</div>
+              <div class="info-content">{{confirmWarningDialog.warningInfo.trainsetName}}</div>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <div class="warning-info">
+              <div class="info-title">作业班组：</div>
+              <div class="info-content">{{confirmWarningDialog.warningInfo.deptName}}</div>
+            </div>
+          </el-col>
+          <el-col :span="16">
+            <div class="warning-info">
+              <div class="info-title">作业人：</div>
+              <div class="info-content">{{confirmWarningDialog.warningInfo.workerName}}</div>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <div class="warning-info">
+              <div class="info-title">作业内容：</div>
+              <div class="info-content">{{confirmWarningDialog.warningInfo.workContent}}</div>
+            </div>
+          </el-col>
+          <el-col :span="16">
+            <div class="warning-info">
+              <div class="info-title">预警时间：</div>
+              <div class="info-content">{{confirmWarningDialog.warningInfo.createTime | timeFormat}}</div>
+            </div>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="8">
+            <div class="warning-info">
+              <div class="info-title">预警信息：</div>
+              <div class="info-content">
+                <el-tooltip :content="confirmWarningDialog.warningInfo.worningContent" effect="dark draw_share_atoolti" placement="top">
+                  <span style="width: 120px;" class="hide-display">{{confirmWarningDialog.warningInfo.worningContent}}123123</span>
+                </el-tooltip>
+              </div>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="warning-info">
+              <div class="info-title">状态：</div>
+              <div class="info-content">{{confirmWarningDialog.warningInfo.effectState | effectStateFormat}}</div>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="warning-info">
+              <div class="info-title">处理人：</div>
+              <div class="info-content">{{confirmWarningDialog.warningInfo.effectStuffName}}</div>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col>
+            <div class="column-info">
+              <div class="info-title">失效说明：</div>
+              <el-input
+                type="textarea"
+                maxlength="200"
+                show-word-limit
+                v-model.trim="confirmWarningDialog.warningInfo.remark"
+                :rows="3"
+              ></el-input>
+          </el-col>
+            </div>
+        </el-row>
+
+        <template #footer>
+          <el-row type="flex" justify="center">
+            <el-col :span="6">
+              @if(shiro.hasPermission('effectWorkWorning:confirm')){
+              <el-button type="primary" size="mini" \@click="effectWorkWorning">确定</el-button>
+              @}
+              <el-button type="primary" size="mini" \@click="cancelConfirmWarning">取消</el-button>
+            </el-col>
+          </el-row>
+        </template>
+      </el-dialog>
+    </div>
+    <script
+      type="text/babel"
+      src="${ctxPath}/static/trainRepair/repairWarning/repairWarningManage/js/index.js"
+    ></script>
+  </body>
+</html>

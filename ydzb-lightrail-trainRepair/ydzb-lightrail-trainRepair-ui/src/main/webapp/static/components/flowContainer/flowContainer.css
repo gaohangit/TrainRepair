@@ -1,0 +1,102 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.flow-graph-container {
+  background-color: rgb(249, 249, 249);
+  overflow: auto;
+  position: relative;
+  padding: 10px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.flow-wrapper {
+  position: relative;
+  width: 1200px;
+  height: 900px;
+  margin: 0;
+}
+
+.node-wrapper {
+  position: absolute;
+  /* width: 200px; */
+  /* height: 80px; */
+  border: 2px solid rgb(78, 134, 255);
+  border-radius: 30px;
+  /* text-align: center; */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.node-wrapper-children {
+  height: 100%;
+}
+
+.node-base-show {
+  height: 100%;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+}
+
+.node-wrapper p {
+  cursor: context-menu;
+  color: rgb(78, 134, 255);
+  font-weight: 700;
+}
+
+.node-wrapper span {
+  cursor: context-menu;
+  padding: 5px 10px;
+  font-weight: 700;
+  overflow: hidden;
+}
+
+.node-wrapper.start-end-point {
+  /* width: 80px;
+  line-height: 80px; */
+  border-radius: 50%;
+}
+
+.trunk-flow {
+  left: 50% !important;
+  transform: translateX(-50%);
+}
+
+.handle_node.state_1 {
+  /* background-color: #729dff; */
+  background-color: #84c545;
+
+}
+
+.handle_node.state_2 {
+  background-color: #84c545;
+}
+
+.handle_node.state_3 {
+  background-color: #ffda52;
+}
+
+.handle_node.state_4 {
+  background-color: #d5d5d5;
+
+}
+
+.handle_node.state_5 {
+  background-color: #fc0000;
+
+}
+
+.handle_node.state_4 p {
+  color: rgb(78, 134, 255);
+}
+
+.handle_node p {
+  color: #ffffff;
+}

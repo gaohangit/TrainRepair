@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.common.taskAllot.dao.ZyMReviewtaskdetailMapper">
+
+    <!--通用查询映射结果-->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.ZyMReviewtaskdetail">
+        <result column="S_REVIEWTASKDETAILID" property="reviewtaskdetailid"/>
+        <result column="S_REVIEWTASKSUMMARYID" property="reviewtasksummaryid"/>
+        <result column="S_REVIEWTASKITEMID" property="reviewtaskitemid"/>
+        <result column="S_ANALYSEID" property="analyseid"/>
+        <result column="S_DAYPLANID" property="dayplanid"/>
+        <result column="S_TRAINSETNAME" property="trainsetname"/>
+        <result column="C_TYPE" property="type"/>
+        <result column="C_SUBTYPE" property="subtype"/>
+        <result column="S_CARNAME" property="carname"/>
+        <result column="S_ITEMNAME" property="itemname"/>
+        <result column="S_POSITION" property="position"/>
+        <result column="S_CHECKVALUE" property="checkvalue"/>
+        <result column="S_VALUE" property="value"/>
+        <result column="I_ROWINDEX" property="rowindex"/>
+        <result column="I_COLINDEX" property="colindex"/>
+        <result column="S_REVIEWERCODE" property="reviewercode"/>
+        <result column="S_REVIEWERNAME" property="reviewername"/>
+        <result column="D_REVIEWDATE" property="reviewdate"/>
+        <result column="S_ERRORANALYSIS" property="erroranalysis"/>
+        <result column="S_HANDLEINFO" property="handleinfo"/>
+        <result column="S_HANDLESTAFFCODE" property="handlestaffcode"/>
+        <result column="S_HANDLESTAFFNAME" property="handlestaffname"/>
+        <result column="D_HANDLEDATE" property="handledate"/>
+        <result column="D_CREATETIME" property="createtime"/>
+        <result column="S_PUBLISHCODE" property="publishcode"/>
+        <result column="S_REMARKS" property="remarks"/>
+        <result column="S_WHEELPOSITION" property="wheelposition"/>
+    </resultMap>
+
+</mapper>

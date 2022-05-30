@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.common.taskAllot.dao.TaskAllotPacketHisMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.taskAllot.model.TaskAllotPacketHis">
+        <id column="S_TASKALLOTPACKETID" property="taskAllotPacketId" />
+        <result column="S_PACKETCODE" property="packetCode" />
+        <result column="S_PACKETNAME" property="packetName" />
+        <result column="S_PACKETTYPE" property="packetType" />
+        <result column="S_TASKID" property="taskId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_TASKALLOTPACKETID, S_PACKETCODE, S_PACKETNAME, S_PACKETTYPE, S_TASKID
+    </sql>
+
+</mapper>

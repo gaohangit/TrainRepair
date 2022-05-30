@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.bill.fillback.dao.ImportDetailMapper">
+
+    <!--通用查询映射结果-->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.bill.querymodel.checklist.ImportDetail">
+        <id column="S_ID" property="id"/>
+        <result column="S_IMPORT_RECORDID" property="importRecordId"/>
+        <result column="S_CHECKLISTSUMMARYID" property="checkListSummaryId"/>
+        <result column="S_TRAINSETID" property="trainSetId"/>
+        <result column="S_CARNO" property="carNo"/>
+        <result column="S_AXLEPOSITION" property="axlePosition"/>
+        <result column="S_DEVICEDATAID" property="deviceDataId"/>
+        <result column="D_IMPORTIME" property="ImportTime"/>
+        <result column="S_REMARKS" property="remarks"/>
+    </resultMap>
+
+    <delete id="del" parameterType="com.ydzbinfo.emis.trainRepair.bill.querymodel.checklist.ImportDetail">
+        delete XZY_M_IMPORT_DETAIL where S_CHECKLISTSUMMARYID = #{checkListSummaryId} and S_TRAINSETID = #{trainSetId} and S_CARNO = #{carNo} and S_AXLEPOSITION = #{axlePosition}
+    </delete>
+</mapper>

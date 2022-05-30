@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.common.taskAllot.dao.TaskCarPartHisMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.taskAllot.model.TaskCarPartHis">
+        <id column="S_PROCESSID" property="processId" />
+        <result column="S_TASKALLOTPACKETID" property="taskAllotPacketId" />
+        <result column="S_TASKALLOTDEPTID" property="taskAllotDeptId" />
+        <result column="S_DAYPLANID" property="dayPlanId" />
+        <result column="S_TRAINSETNAME" property="trainsetName" />
+        <result column="S_TRAINSETID" property="trainsetId" />
+        <result column="S_UNITCODE" property="unitCode" />
+        <result column="S_UNITNAME" property="unitName" />
+        <result column="S_ITEMCODE" property="itemCode" />
+        <result column="S_ITEMNAME" property="itemName" />
+        <result column="S_REPAIRTYPE" property="repairType" />
+        <result column="S_ARRAGETYPE" property="arrageType" />
+        <result column="S_CARNO" property="carNo" />
+        <result column="S_TRAINSETTYPE" property="trainsetType" />
+        <result column="S_TASKITEMID" property="taskItemId" />
+        <result column="S_MAINCYC" property="mainCyc" />
+        <result column="S_PARTPOSITION" property="partPosition" />
+        <result column="S_PARTNAME" property="partName" />
+        <result column="S_DATASOURCE" property="dataSource" />
+        <result column="S_PARTTYPE" property="partType" />
+        <result column="S_REMARK" property="remark" />
+        <result column="S_REPAIRMODE" property="repairMode" />
+        <result column="S_RECORDTIME" property="recordTime" />
+        <result column="S_RECORDERNAME" property="recorderName" />
+        <result column="S_RECORDERCODE" property="recorderCode" />
+        <result column="S_PUBLISHCODE" property="publishCode" />
+        <result column="S_LOCATIONCODE" property="locationcode" />
+        <result column="S_LOCATIONNAME" property="locationname" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_PROCESSID, S_TASKALLOTPACKETID, S_TASKALLOTDEPTID, S_DAYPLANID, S_TRAINSETNAME, S_TRAINSETID, S_UNITCODE, S_UNITNAME, S_ITEMCODE, S_ITEMNAME, S_REPAIRTYPE, S_ARRAGETYPE, S_CARNO, S_TRAINSETTYPE, S_TASKITEMID, S_MAINCYC, S_PARTPOSITION, S_PARTNAME, S_DATASOURCE, S_PARTTYPE, S_REMARK, S_REPAIRMODE, S_RECORDTIME, S_RECORDERNAME, S_RECORDERCODE, S_PUBLISHCODE, S_LOCATIONCODE, S_LOCATIONNAME
+    </sql>
+
+</mapper>

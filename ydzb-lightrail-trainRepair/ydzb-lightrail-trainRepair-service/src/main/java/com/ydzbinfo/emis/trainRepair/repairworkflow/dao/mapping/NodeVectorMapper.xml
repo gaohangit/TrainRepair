@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.repairworkflow.dao.NodeVectorMapper">
+
+    <resultMap id="NodeVectorResultMap"
+               autoMapping="true"
+               type="com.ydzbinfo.emis.trainRepair.repairworkflow.querymodel.extend.NodeVectorWithExtraInfo">
+        <id column="id" property="id"/>
+        <collection property="nodeVectorExtraInfoList"
+                    columnPrefix="EX_"
+                    autoMapping="true"
+                    ofType="com.ydzbinfo.emis.trainRepair.repairworkflow.querymodel.NodeVectorExtraInfo">
+        </collection>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ${tableAlias}S_ID as "${columnPrefix}id",
+        ${tableAlias}S_FLOWID as "${columnPrefix}flowId",
+        ${tableAlias}S_FROMNODEID as "${columnPrefix}fromNodeId",
+        ${tableAlias}S_TONODEID as "${columnPrefix}toNodeId",
+        ${tableAlias}C_SYNFLAG as "${columnPrefix}synFlag",
+        ${tableAlias}D_SYNDATE as "${columnPrefix}synDate"
+    </sql>
+
+    <select id="getNodeVectorWithInfoList" resultMap="NodeVectorResultMap">
+        select S_ID,
+        <include refid="Base_Column_List">
+            <property name="tableAlias" value="cn."/>
+            <property name="columnPrefix" value=""/>
+        </include>,
+        <include refid="com.ydzbinfo.emis.trainRepair.repairworkflow.dao.NodeVectorExtraInfoMapper.Base_Column_List">
+            <property name="tableAlias" value="c."/>
+            <property name="columnPrefix" value="EX_"/>
+        </include>
+        from XZY_C_NODEVECTOR cn LEFT JOIN XZY_C_NODEVECTOREXTRAINFO c on cn.S_ID = c.S_NODEVECTORID
+        where cn.S_FLOWID = #{flowId}
+    </select>
+</mapper>

@@ -1,0 +1,172 @@
+html,
+body,
+#app,
+.el-container {
+  height: 100%;
+}
+
+.el-card {
+  height: calc(100vh - 2px);
+}
+
+.el-card__header {
+  position: relative;
+  height: 42px;
+  line-height: 42px;
+  padding: 0 0 0 32px;
+}
+
+.adorn {
+  position: absolute;
+  left: 20px;
+  top: 9px;
+  width: 5px;
+  height: 25px;
+  background-color: #4e86fe;
+}
+
+.el-card__body {
+  height: calc(100vh - 82px);
+}
+
+.el-container {
+  padding: 10px;
+  flex-direction: column;
+}
+.el-radio-group {
+  /* height: 32px; */
+}
+.page {
+  height: calc(100% - 13px);
+}
+.titleB {
+  background: url(../img/cardtitle.png) no-repeat 0px center;
+  padding-left: 30px;
+  line-height: 42px;
+  height: 42px;
+  font-size: 14px;
+  color: #013f9a;
+  border-bottom: 1px solid #eaf0f7;
+}
+.head,
+.content {
+  background: #fff;
+  padding: 5px 15px;
+}
+
+.el-row .el-select,
+.el-input {
+  line-height: 26px;
+}
+.el-dialog__body {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.el-dialog__body .content {
+  border: 1px solid #eaf0f7;
+  padding: 15px;
+}
+.radioItem {
+  line-height: 40px;
+}
+.el-table td {
+  padding: 5px 0;
+}
+
+/* /// */
+.el-form-item {
+  margin-bottom: 0px;
+}
+.el-header,
+.el-footer {
+  height: unset !important;
+}
+
+.el-table__body {
+  width: 100% !important;
+}
+
+.part-title {
+  height: 40px;
+  line-height: 40px;
+  font-weight: 700;
+}
+.el-divider--horizontal {
+  margin: 25px 0 0;
+}
+.el-dialog__wrapper {
+  display: flex;
+}
+.el-dialog {
+  margin: auto !important;
+}
+.el-scrollbar .el-scrollbar__wrap {
+  overflow-x: hidden;
+}
+.el-scrollbar .el-select-dropdown__wrap.el-scrollbar__wrap {
+  overflow-x: scroll;
+}
+.el-main-part {
+  width: 49%;
+}
+
+.el-main-part-main {
+  box-sizing: border-box;
+  padding: 5px;
+}
+
+.el-message-box__btns {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+}
+
+.el-message-box__btns button:nth-child(1) {
+  color: #fff;
+  background-color: #409eff;
+  border-color: #409eff;
+}
+
+.el-message-box__btns button:nth-child(1):focus,
+.el-message-box__btns button:nth-child(1):hover {
+  color: rgb(255, 255, 255);
+  background: rgb(102, 177, 255);
+  border-color: rgb(102, 177, 255);
+}
+
+.el-message-box__btns button:nth-child(2) {
+  margin-right: 10px;
+}
+
+.el-col-5 {
+  width: 20%;
+}
+
+.dialogContent .el-form-item__label {
+  width: 121px !important;
+}
+
+.dialogContent .el-form-item__content {
+  margin-left: 121px !important;
+}
+
+/* .el-button {
+  color: #fff;
+  background-color: #409eff;
+  border-color: #409eff;
+}
+
+.el-button:focus, .el-button:hover {
+  background: #66b1ff;
+  border-color: #66b1ff;
+  color: #FFF;
+} */
+
+.el-col-8 {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.el-tooltip__popper {
+  max-width: 80vw;
+}

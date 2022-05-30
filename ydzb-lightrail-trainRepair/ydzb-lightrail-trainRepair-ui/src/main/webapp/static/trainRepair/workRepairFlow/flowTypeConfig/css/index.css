@@ -1,0 +1,87 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+[v-cloak] {
+  display: none;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+#flowTypeConfig {
+  height: 100%;
+}
+
+.el-card__header {
+  position: relative;
+  height: 42px;
+  line-height: 42px;
+  padding: 0 0 0 32px;
+}
+
+.adorn {
+  position: absolute;
+  left: 20px;
+  top: 9px;
+  width: 5px;
+  height: 25px;
+  background-color: #4e86fe;
+}
+
+.el-card__body {
+  padding: 20px;
+  height: calc(100vh - 84px);
+}
+
+.text-l {
+  text-align: left;
+}
+.text-r {
+  text-align: right;
+}
+
+.el-container {
+  height: 100%;
+  padding: 10px 0;
+}
+.el-header {
+  height: unset !important;
+}
+.el-main {
+  height: 100%;
+}
+
+.el-footer {
+  height: unset !important;
+}
+.center-dialog {
+  display: flex;
+}
+.center-dialog .el-dialog {
+  margin: auto;
+}
+
+.page-title {
+  position: relative;
+  padding: 0 0 10px 7px;
+  border-bottom: 1px solid #c0c4cc;
+  line-height: 18px;
+  font-size: 18px;
+}
+
+.page-title::before {
+  display: block;
+  content: '';
+  position: absolute;
+  left: -7px;
+  width: 7px;
+  height: 18px;
+  background-color: #409eff;
+}
+
+.el-tooltip__popper {
+  max-width: 1000px;
+}

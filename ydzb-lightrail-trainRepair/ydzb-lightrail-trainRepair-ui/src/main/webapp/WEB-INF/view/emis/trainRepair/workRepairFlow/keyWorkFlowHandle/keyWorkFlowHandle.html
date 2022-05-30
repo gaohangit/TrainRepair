@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="${publicStaticPath}/IE/babel-browser.min.js"></script>
+
+    <link rel="stylesheet" href="${publicStaticPath}/elementUI/index.css" />
+    <script src="${publicStaticPath}/vue/vue.js"></script>
+    <script src="${publicStaticPath}/elementUI/index.js"></script>
+    <script src="${ctxPath}/static/lib/day/day.js"></script>
+    <script src="${publicStaticPath}/vue/axios.min.js"></script>
+    <script src="${ctxPath}/static/lib/wangEditor.min.js"></script>
+    <script src="${ctxPath}/static/lib/element-resize-detector.min.js"></script>
+    <link rel="stylesheet" href="${ctxPath}/static/lib/input_word_limit.css" />
+
+    <script src="${ctxPath}/static/config/index.js"></script>
+
+    <script>
+      const ctxPath = '${ctxPath}';
+      const unitCode = '${thirdOrganCode}'; //所编码
+
+      let hasPermission = false
+      @if(shiro.hasPermission('setNodeDisposeNotCheck:i')){
+        hasPermission = true
+      @}
+    </script>
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/keyWorkFlowHandle/api/index.js"></script>
+
+    <link rel="stylesheet" href="${ctxPath}/static/components/flowContainer/flowContainer.css" />
+    <script type="text/babel" src="${ctxPath}/static/components/flowContainer/workRepairNodeVector.js"></script>
+    <script type="text/babel" src="${ctxPath}/static/components/flowContainer/workRepairNode.js"></script>
+    <script type="text/babel" src="${ctxPath}/static/components/flowContainer/workRepairPairNodeConnect.js"></script>
+    <script type="text/babel" src="${ctxPath}/static/components/flowContainer/workRepairFlow.js"></script>
+
+    <script src="${ctxPath}/static/components/wangEditor/wangEditor.js"></script>
+
+    <link rel="stylesheet" href="${ctxPath}/static/components/multipleSelect/multipleSelect.css" />
+    <script src="${ctxPath}/static/components/multipleSelect/multipleSelect.js"></script>
+
+    <link rel="stylesheet" href="${publicStaticPath}/common/base.css" />
+    <link rel="stylesheet" href="${ctxPath}/static/trainRepair/workRepairFlow/keyWorkFlowHandle/css/index.css" />
+    <script src="${ctxPath}/static/utils/GeneralUtil.js"></script>
+  </head>
+  <body>
+    <div id="keyWorkFlowHandle" v-cloak>
+      <el-card class="box-card">
+        <div slot="header">
+          <span class="adorn"></span><h2>{{pageTitle}}</h2>
+        </div>
+        
+        <el-form ref="headerForm" :model="headerFormData" :rules="headerFormRules" label-width="130px">
+          <el-row>
+            <el-col :span="6">
+              <el-form-item label="时间范围：" prop="time">
+                <el-date-picker
+                  v-model="headerFormData.time"
+                  type="daterange"
+                  value-format="yyyy-MM-dd"
+                  range-sparator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  :picker-options="pickerOptions"
+                ></el-date-picker>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="车型：" prop="trainType">
+                <el-select
+                  v-model="headerFormData.trainType"
+                  filterable
+                  clearable
+                  \@change="headerFormTrainTypeChange"
+                >
+                  <el-option
+                    v-for="item in queryTrainTypeList"
+                    :key="item.traintype"
+                    :value="item.traintype"
+                    :label="item.traintype"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="批次：" prop="trainTemplate">
+                <el-select
+                  v-model="headerFormData.trainTemplate"
+                  ref="headerFormTrainTemplateRef"
+                  filterable
+                  clearable
+                  \@change="headerFormTrainTemplateChange"
+                >
+                  <el-option
+                    v-for="item in queryTrainTempList"
+                    :key="item.traintempid"
+                    :value="item.traintempid"
+                    :label="item.traintempid"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="车组：" prop="trainsetId">
+                <el-select
+                  v-model="headerFormData.trainsetId"
+                  filterable
+                  clearable
+                  \@change="headerFormTrainsetIdChange"
+                >
+                  <el-option
+                    v-for="item in queryTrainsetList"
+                    :key="item.trainsetid"
+                    :value="item.trainsetid"
+                    :label="item.trainsetname"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row class="form-item-margin">
+            <el-col :span="6">
+              <el-form-item label="流程名称：" prop="flowName">
+                <el-select v-model="headerFormData.flowName" filterable clearable>
+                  <el-option
+                    v-for="item in planlessKeyList"
+                    :key="item.id"
+                    :value="item.name"
+                    :label="item.name"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="流程运行状态：" prop="flowRunState">
+                <el-select v-model="headerFormData.flowRunState" filterable clearable>
+                  <el-option
+                    v-for="item in stateList"
+                    :key="item.id"
+                    :value="item.value"
+                    :label="item.label"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="作业内容：" prop="content">
+                <el-input v-model.trim="headerFormData.content" clearable> </el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6" class="text-r">
+              <el-form-item label="是否显示失效流程：" prop="content" label-width="215px" align="left">
+                <el-switch
+                  v-model="headerFormData.expireFlowShow"
+                  \@change="getFlowTypes"
+                >
+                </el-switch>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24" class="text-r">
+              <el-form-item label-width="0">
+                <el-button type="primary" size="mini" \@click="getKeyWorkFlowRunList">查询</el-button>
+                <el-button type="primary" size="mini" \@click="resetHeaderForm">重置</el-button>
+                @if(shiro.hasPermission('keyWorkFlowHandle:add')){
+                <el-button type="primary" size="mini" \@click="openAddKeyWorkDialog">关键作业录入</el-button>
+                @}
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <div style="height: calc(100% - 235px); overflow-y: auto;">
+          <el-table v-if="mainTable.data.length===0" :data="mainTable.data" border style="height: 100%">
+            <el-table-column label="序号" sortable type="index" width="50"></el-table-column>
+            <el-table-column label="车组" sortable show-overflow-tooltip> </el-table-column>
+            <el-table-column label="作业内容" prop="content" show-overflow-tooltip></el-table-column>
+            <el-table-column label="录入人" sortable prop="startWorkerName" show-overflow-tooltip></el-table-column>
+            <el-table-column label="录入时间" sortable prop="startTime" show-overflow-tooltip></el-table-column>
+            <el-table-column label="流程状态" sortable prop="content" show-overflow-tooltip> </el-table-column>
+            <el-table-column label="详情"> </el-table-column>
+          </el-table>
+          <div v-for="flow in Object.keys(flowIdCurrentPageGroupSortTableDataMap)" :key="flow" class="table-wrapper">
+            <el-table :data="flowIdCurrentPageGroupSortTableDataMap[flow]" border class="keyflowmanage">
+              <el-table-column>
+                <template slot="header">
+                  <el-radio></el-radio><span class="label-title">流程名称：</span
+                  ><span class="label-content">{{flowIdNameMap[flow]}}</span>
+                </template>
+                <el-table-column label="序号" type="index" width="50"></el-table-column>
+                <el-table-column label="车组" sortable :sort-method="sortTrainsetId"  show-overflow-tooltip width="150">
+                  <template v-slot="{row}"> {{trainsetIdNameMap[row.trainsetId]}} </template>
+                </el-table-column>
+                <el-table-column label="作业内容" prop="content" show-overflow-tooltip width="200"></el-table-column>
+                <el-table-column
+                  label="录入人"
+                  sortable
+                  prop="startWorkerName"
+                  show-overflow-tooltip
+                  width="150"
+                ></el-table-column>
+                <el-table-column
+                  label="录入时间"
+                  sortable
+                  prop="startTime"
+                  width="200"
+                  show-overflow-tooltip
+                ></el-table-column>
+                <el-table-column label="流程状态" prop="content" show-overflow-tooltip width="100">
+                  <!-- <template v-slot="{row}"> {{row.flowRunRecordInfo ? '已驳回' : flowState[row.state]}} </template> -->
+                  <template v-slot="{row}"> {{flowState[row.state]}} </template>
+                </el-table-column>
+                <el-table-column
+                  v-for="(column, index) in flowIdNodeWithRecordsMap[flow][0]"
+                  :key="column.id"
+                  :label="column.name"
+                  show-overflow-tooltip
+                  min-width="150"
+                >
+                  <template v-slot="scope">
+                    <el-tooltip placement="top" width="200" trigger="hover" :content="scope.row | filterRejectDetails" :disabled="!(scope.row.flowRunRecordInfo&&scope.row.flowRunRecordInfo.nodeId == column.id)">
+                      <el-button
+                        :class="{'button-blue':!getNodeCouldDispose(scope.row,flowIdNodeWithRecordsMap[flow][scope.$index][index].id)&&getNodeFinished(scope.row,flowIdNodeWithRecordsMap[flow][scope.$index][index].id),'button-yellow':getNodeCouldDispose(scope.row,flowIdNodeWithRecordsMap[flow][scope.$index][index].id)&&!getNodeFinished(scope.row,flowIdNodeWithRecordsMap[flow][scope.$index][index].id),'button-green':getNodeCouldDispose(scope.row,flowIdNodeWithRecordsMap[flow][scope.$index][index].id)&&getNodeFinished(scope.row,flowIdNodeWithRecordsMap[flow][scope.$index][index].id),'button-gray':!getNodeCouldDispose(scope.row,flowIdNodeWithRecordsMap[flow][scope.$index][index].id)&&!getNodeFinished(scope.row,flowIdNodeWithRecordsMap[flow][scope.$index][index].id), 'button-red': scope.row.flowRunRecordInfo&&scope.row.flowRunRecordInfo.nodeId == column.id}"
+                        plain
+                        size="mini"
+                        \@click="openHandleNodeDialog(scope.row, scope.row.nodeWithRecords[index])"
+                        ><i class="self-icon handle"></i>处理</el-button
+                      >
+                    </el-tooltip>
+                  </template>
+                </el-table-column>
+                <el-table-column label="操作" width="200">
+                  <template v-slot="{row}">
+                    <el-button type="primary" size="mini" \@click="openRowDetailDialog(row)">查看</el-button>
+                    <el-button type="primary" size="mini" v-if="row.revoke" \@click="revokeWorkFlow(row)"
+                      >撤回</el-button
+                    >
+                    <el-button
+                      type="primary"
+                      size="mini"
+                      v-if="row.state == 2 || row.state == 3"
+                      \@click="resubmit(row)"
+                      >重新提交</el-button
+                    >
+                  </template>
+                </el-table-column>
+              </el-table-column>
+            </el-table>
+          </div>
+        </div>
+        <el-pagination
+          \@size-change="mainTablePageSizeChange"
+          \@current-change="mainTablePageNumChange"
+          :current-page="mainTable.pageNum"
+          :page-sizes="[10, 20, 50,100]"
+          :page-size="mainTable.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="mainTable.total"
+        >
+        </el-pagination>
+      </el-card>
+
+      <el-image ref="myImg" :src="imgUrl" :preview-src-list="prePics"></el-image>
+      <!-- 关键作业录入 -->
+      <el-dialog
+        title="关键作业录入"
+        :visible.sync="addKeyWorkDialog.visible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        destroy-on-close
+        class="center-dialog"
+        top="auto"
+        \@close="addKeyWorkDialogClose"
+        custom-class="addDialog"
+      >
+        <my-form
+          ref="myForm"
+          :flow-run="flowRun"
+          :trainset-list="trainsetList"
+          :columns="columns"
+          :column-list-map="columnListMap"
+          :propose-img-number="proposeImgNumber"
+          :unit-code="unitCode"
+          :work-team-list="addFormWorkTeams"
+          \@preview-picture="previewPicture"
+          \@on-success="onSuccess"
+          \@on-cancel="onCancel"
+          \@column-list-map-change="columnListMapChange"
+          \@add-form-work-teams="getAddFormWorkTeams"
+        ></my-form>
+      </el-dialog>
+      <!-- 关键作业节点处理 -->
+      <el-dialog
+        title="关键作业节点处理"
+        width="60%"
+        :visible.sync="handleNodeDialog.visible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        class="center-dialog"
+        top="auto"
+        \@close="handleNodeDialogClose"
+      >
+        <el-form
+          :model="handleNodeDialog.formData"
+          :rules="handleNodeDialog.formRules"
+          label-width="100px"
+          label-position="left"
+          class="mb-10-form scroll-form"
+        >
+          <el-row>
+            <el-col :span="8">
+              <el-form-item label="节点名称：" label-width="55">{{handleNodeDialog.formData.nodeName}}</el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="发现者：" label-width="55">{{handleNodeDialog.formData.startWorkerName}}</el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="类型：" label-width="55">{{getKeyWorkType(handleNodeDialog.formData.keyWorkType)}}</el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="8">
+              <el-form-item label="发现班组：" label-width="55">{{handleNodeDialog.formData.teamName}}</el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="发现时间：" label-width="55">{{handleNodeDialog.formData.startTime | timeFilter}}</el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label="辆序：" label-width="55">
+                {{handleNodeDialog.formData.carNoList&&handleNodeDialog.formData.carNoList.length > 0 ?
+                handleNodeDialog.formData.carNoList.join(',') : '全列'}}
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-form-item prop="content" label="作业内容：" label-width="55">
+              <!-- <wang-editor ref="wangEditor" :content="handleNodeDialog.formData.content" :able="false"></wang-editor> -->
+              <div class="content"><p>{{handleNodeDialog.formData.content}}</p></div>
+            </el-form-item>
+          </el-row>
+          <el-row>
+            <el-form-item label="作业前照片：" class="before-img">
+              <el-upload
+                action="#"
+                :auto-upload="false"
+                list-type="picture-card"
+                :file-list="handleNodeDialog.beforeFileList"
+              >
+                <i class="el-icon-plus"></i>
+                <template v-slot:file="{file}">
+                  <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
+                  <span class="el-upload-list__item-actions">
+                    <span
+                      class="el-upload-list__item-preview"
+                      \@click="previewPicture(file,handleNodeDialog.beforeFileList)"
+                    >
+                      <i class="el-icon-zoom-in"></i>
+                    </span>
+                  </span>
+                </template>
+              </el-upload>
+            </el-form-item>
+          </el-row>
+          <el-row>
+            <el-form-item prop="remark" label="刷卡记录：" class="nodeRecords" label-width="82">
+              <el-table
+                :data="handleNodeDialog.nodeRecords"
+                v-show="handleNodeDialog.nodeRecords.length"
+                style="width: 100%"
+                max-height="300px"
+                border
+                :header-cell-style="{background:'#e0ebff', color:'#2d5a9b',}"
+              >
+                <el-table-column label="序号" align="center" width="60">
+                  <template slot-scope="scope">{{ scope.$index + 1 }}</template>
+                </el-table-column>
+                <el-table-column prop="workerName" align="center" label="刷卡人员" width="120" show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column prop="recordTime" align="center" label="刷卡时间" width="180" show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column prop="roleName" align="center" label="刷卡角色" width="150" show-overflow-tooltip>
+                </el-table-column>
+                <el-table-column prop="address" align="center" label="操作" show-overflow-tooltip>
+                  <template slot-scope="scope">
+                    <el-button size="mini" type="primary" \@click="seeNodeRecordPhoto(scope.row)">查看照片</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-row>
+          <el-row v-if="roleDialog.roleFormData.roleId">
+            <el-form-item prop="images" label="作业后照片上传：" class="picture-title">
+              <el-upload
+                action="#"
+                :http-request="uploadFiles"
+                list-type="picture-card"
+                multiple
+                :file-list="handleNodeDialog.fileList"
+                :before-upload="beforeAvatarUploadPdf"
+                :on-success="fileSuccess"
+                :disabled="!node.overruleShow"
+              >
+                <i class="el-icon-plus"></i>
+                <template v-slot:file="{file}">
+                  <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
+                  <span class="el-upload-list__item-actions">
+                    <span class="el-upload-list__item-preview" \@click="previewPicture(file,handleNodeDialog.fileList)">
+                      <i class="el-icon-zoom-in"></i>
+                    </span>
+                    <span class="el-upload-list__item-delete" \@click="handleRemove(file)">
+                      <i class="el-icon-delete"></i>
+                    </span>
+                  </span>
+                </template>
+              </el-upload>
+            </el-form-item>
+          </el-row>
+          <el-row>
+            <el-col class="text-c">
+              <el-button type="primary" size="mini" v-if="roleDialog.roleFormData.roleId" \@click="dealNodeBtn">确定</el-button>
+              <el-button type="primary" size="mini" v-if="node.overruleShow" \@click="overruleKeyWorkFlowRun"
+                >驳回</el-button
+              >
+              <el-button type="primary" size="mini" \@click="handleNodeDialog.visible = false">取消</el-button>
+            </el-col>
+          </el-row>
+        </el-form>
+      </el-dialog>
+
+      <!-- 查看详情 -->
+      <el-dialog
+        title="查看详情"
+        :visible.sync="lookupNodeDealInfoDialog.visible"
+        class="center-dialog"
+        top="auto"
+        width="80%"
+        custom-class="detail-dialog"
+      >
+        <el-tabs>
+          <el-tab-pane label="关键作业查看">
+            <my-form
+              ref="myForms"
+              :trainset-list="trainsetList"
+              :columns="columns"
+              :column-list-map="columnListMap"
+              :unit-code="unitCode"
+              :work-team-list="addFormWorkTeams"
+              \@preview-picture="previewPicture"
+              \@column-list-map-change="columnListMapChange"
+            ></my-form>
+          </el-tab-pane>
+          <el-tab-pane label="节点处理情况查看">
+            <el-table :data="nodeDealData" height="100%" :cell-style="cellStyle" border>
+              <el-table-column min-width="200" show-overflow-tooltip prop="node" label="流程节点"></el-table-column>
+              <el-table-column
+                min-width="200"
+                show-overflow-tooltip
+                v-for="column in nodeColumns"
+                :key="column.key"
+                :label="column.label"
+              >
+                <template v-slot="{row}">
+                  <el-tooltip placement="top">
+                    <div slot="content">{{getDetail(row.roleWorkerDetails[column.prop])}}</div>
+                    <span class="hander" \@click="cellClick(row,column.prop)">{{row[column.prop]}}</span>
+                  </el-tooltip>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-tab-pane>
+          <el-tab-pane label="流程图查看">
+            <work-repair-flow
+              :data="lookupNodeDealInfoDialog.flowData"
+              :now-flow="nowFlow"
+              :rolemap="roleCodeNameMap"
+              handle-status
+              ref="workRepairFlow"
+            ></work-repair-flow>
+          </el-tab-pane>
+        </el-tabs>
+      </el-dialog>
+
+      <!-- 选择打卡班组 -->
+      <el-dialog
+        title="选择打卡班组"
+        :visible.sync="workTeamDialog.visible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        \@closed="workTeamDialogClose"
+        class="center-dialog"
+        top="auto"
+        width="30%"
+      >
+        <el-form
+          ref="workTeamFormRef"
+          :model="workTeamDialog.workTeamFormData"
+          :rules="workTeamDialog.workTeamFormRules"
+          label-width="130px"
+        >
+          <el-form-item label="打卡班组：" prop="selectWorkTeam">
+            <el-select v-model="workTeamDialog.workTeamFormData.selectWorkTeam" value-key="teamCode">
+              <el-option
+                v-for="item in workTeamDialog.selectWorkTeamlist"
+                :key="item.teamCode"
+                :label="item.teamName"
+                :value="item"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <el-row slot="footer">
+          <el-button type="primary" size="mini" \@click="confirmWorkTeam">确定</el-button>
+          <el-button type="primary" size="mini" \@click="workTeamDialogClose">取消</el-button>
+        </el-row>
+      </el-dialog>
+
+      <!-- 选择打卡角色 -->
+      <el-dialog
+        title="选择打卡角色"
+        :visible.sync="roleDialog.visible"
+        class="center-dialog"
+        top="auto"
+        ref="roleDialogRef"
+      >
+        <el-form
+          ref="roleFormRef"
+          :model="roleDialog.roleFormData"
+          :rules="roleDialog.roleFormRules"
+          label-width="130px"
+        >
+          <el-form-item label="打卡角色：" prop="roleId">
+            <el-select v-model="roleDialog.roleFormData.roleId">
+              <el-option
+                v-for="item in roleDialog.selectRolelist"
+                :key="item.roleId"
+                :label="item.roleName"
+                :value="item.roleId"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <el-row slot="footer">
+          <el-button ref="roleDialogConfirmBtnRef" type="primary" size="mini">确定</el-button>
+        </el-row>
+      </el-dialog>
+      <!-- 节点详细处理记录 -->
+      <el-dialog
+        title="节点详细处理记录"
+        width="80%"
+        :visible.sync="nodeDealDetailDialog.visible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        class="center-dialog"
+        top="auto"
+      >
+        <el-card style="max-height: 500px">
+          <div v-for="workerId in Object.keys(workerPicMap)" :key="workerId">
+            <el-row>{{workerDetail[workerId]}}</el-row>
+            <el-row class="before-img">
+              <el-upload action="#" :auto-upload="false" list-type="picture-card" :file-list="workerPicMap[workerId]">
+                <i class="el-icon-plus"></i>
+                <template v-slot:file="{file}">
+                  <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
+                  <span class="el-upload-list__item-actions">
+                    <span class="el-upload-list__item-preview" \@click="previewPicture(file,workerPicMap[workerId])">
+                      <i class="el-icon-zoom-in"></i>
+                    </span>
+                  </span>
+                </template>
+              </el-upload>
+            </el-row>
+          </div>
+        </el-card>
+      </el-dialog>
+
+      <!-- 关键作业驳回 -->
+      <el-dialog
+        title="关键作业驳回"
+        width="50%"
+        :visible.sync="overruleFlowRun.visible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        class="center-dialog"
+        top="auto"
+        \@close="overruleFlowRunClose"
+      >
+        <el-form ref="overruleFlowRun" :model="overruleFlowRun.formData" :rules="overruleFlowRun.formRules">
+          <el-form-item prop="remark" label="备注：">
+            <el-input type="textarea" :maxlength="200" show-word-limit  v-model.trim="overruleFlowRun.formData.remark" :rows="6"></el-input>
+          </el-form-item>
+        </el-form>
+        <el-row class="text-c">
+          <el-button type="primary" size="mini" \@click="overruleFlowRunButton">驳回</el-button>
+        </el-row>
+      </el-dialog>
+
+      <el-dialog
+        title="查看图片"
+        width="80%"
+        :visible.sync="viewPictureDialog.visible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        class="center-dialog"
+        top="auto"
+      >
+        <el-card style="max-height: 500px; overflow: scroll">
+          <el-row>{{viewPictureDialog.detailInfo.title}}</el-row>
+          <el-row class="before-img">
+            <el-upload
+              ref="upload"
+              action="#"
+              :auto-upload="false"
+              list-type="picture-card"
+              :file-list="viewPictureDialog.detailInfo.pics"
+            >
+              <i class="el-icon-plus"></i>
+              <template v-slot:file="{file}">
+                <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
+                <span class="el-upload-list__item-actions">
+                  <span class="el-upload-list__item-preview" \@click="previewPicture(file, viewPictureDialog.detailInfo.pics)">
+                    <i class="el-icon-zoom-in"></i>
+                  </span>
+                </span>
+              </template>
+            </el-upload>
+          </el-row>
+          <el-row class="text-c">
+            <el-button type="primary" size="mini" \@click="viewPictureDialog.visible = false">关闭</el-button>
+          </el-row>
+        </el-card>
+      </el-dialog>
+    </div>
+    <script type="text/babel" src="${ctxPath}/static/trainRepair/workRepairFlow/keyWorkFlowHandle/js/index.js"></script>
+    <!-- <script src="${ctxPath}/static/trainRepair/workRepairFlow/keyWorkFlowHandle/js/index.js"></script> -->
+  </body>
+</html>

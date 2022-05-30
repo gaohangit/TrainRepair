@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.bill.fillback.dao.ChecklistLiveCheckMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ${tableAlias}S_CHECKLISTSUMMARYID as "${columnPrefix}checklistSummaryId",
+        ${tableAlias}S_TEMPLATEID as "${columnPrefix}templateId",
+        ${tableAlias}S_TEMPLATENO as "${columnPrefix}templateNo",
+        ${tableAlias}S_TEMPLATETYPE as "${columnPrefix}templateType",
+        ${tableAlias}D_LASTFILLTIME as "${columnPrefix}lastFillTime",
+        ${tableAlias}S_LASTFILLWORKCODE as "${columnPrefix}lastFillWorkCode",
+        ${tableAlias}S_LASTFILLWORKNAME as "${columnPrefix}lastFillWorkName",
+        ${tableAlias}S_LASTIPADDRESS as "${columnPrefix}lastIpAddress",
+        ${tableAlias}S_LASTHOSTNAME as "${columnPrefix}lastHostName",
+        ${tableAlias}S_TRAINSETID as "${columnPrefix}trainsetId",
+        ${tableAlias}S_TRACK as "${columnPrefix}track",
+        ${tableAlias}D_CONNECTTIME as "${columnPrefix}connectTime",
+        ${tableAlias}S_CREATETIME as "${columnPrefix}createTime",
+        ${tableAlias}S_CREATESTUFFID as "${columnPrefix}createstuffid",
+        ${tableAlias}S_CREATESTUFFNAME as "${columnPrefix}createstuffname",
+        ${tableAlias}S_UNITNAME as "${columnPrefix}unitName",
+        ${tableAlias}S_UNITCODE as "${columnPrefix}unitCode"
+    </sql>
+
+</mapper>

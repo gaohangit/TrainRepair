@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.repairworkflow.dao.KeyWorkTypeMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ${tableAlias}S_ID as "${columnPrefix}id",
+        ${tableAlias}S_NAME as "${columnPrefix}name",
+        ${tableAlias}D_CREATETIME as "${columnPrefix}createTime",
+        ${tableAlias}S_CREATEWORKERID as "${columnPrefix}createWorkerId",
+        ${tableAlias}S_CREATEWORKERNAME as "${columnPrefix}createWorkerName",
+        ${tableAlias}C_DELETED as "${columnPrefix}deleted",
+        ${tableAlias}D_DELETETIME as "${columnPrefix}deleteTime",
+        ${tableAlias}S_DELETEWORKERID as "${columnPrefix}deleteWorkerId",
+        ${tableAlias}S_DELETEWORKERNAME as "${columnPrefix}deleteWorkerName",
+        ${tableAlias}S_UNITCODE as "${columnPrefix}unitCode",
+        ${tableAlias}D_UPDATETIME as "${columnPrefix}updateTime",
+        ${tableAlias}S_UPDATEWORKERID as "${columnPrefix}updateWorkerId",
+        ${tableAlias}S_UPDATEWORKERNAME as "${columnPrefix}updateWorkerName",
+        ${tableAlias}I_SORT as "${columnPrefix}sort"
+    </sql>
+
+</mapper>

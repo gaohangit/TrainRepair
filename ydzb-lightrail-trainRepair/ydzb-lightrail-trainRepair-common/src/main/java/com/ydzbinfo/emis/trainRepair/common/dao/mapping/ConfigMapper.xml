@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.common.dao.ConfigMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.Config">
+        <id column="S_ID" property="id"/>
+        <result column="S_TYPE" property="type"/>
+        <result column="S_PARAMNAME" property="paramName"/>
+        <result column="S_PARAMVALUE" property="paramValue"/>
+        <result column="S_UNITCODE" property="unitCode"/>
+        <result column="S_REMARK" property="remark"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_ID, S_TYPE, S_PARAMNAME, S_PARAMVALUE,S_UNITCODE,S_REMARK
+    </sql>
+    <select id="getConfigList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from XZY_C_CONFIG
+    </select>
+
+    <select id="getConfig" resultMap="BaseResultMap"
+            parameterType="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.Config">
+        select
+        <include refid="Base_Column_List"></include>
+        from XZY_C_CONFIG
+        where 1=1
+        <if test="paramName!=null and paramName !=''">
+            and S_PARAMNAME=#{paramName}
+        </if>
+    </select>
+    <insert id="addConfig" parameterType="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.Config">
+        insert into XZY_C_CONFIG
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            S_ID,
+            <if test="type!=null and type!=''">
+                S_TYPE,
+            </if>
+            <if test="paramName!=null and paramName!=''">
+                S_PARAMNAME,
+            </if>
+            <if test="paramValue!=null and paramValue!=''">
+                S_PARAMVALUE,
+            </if>
+            <if test="unitCode!=null and unitCode!=''">
+                S_UNITCODE,
+            </if>
+            <if test="remark!=null and remark!=''">
+                S_REMARK,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{id},
+            <if test="type!=null and type!=''">
+                #{type},
+            </if>
+            <if test="paramName!=null and paramName!=''">
+                #{paramName},
+            </if>
+            <if test="paramValue!=null and paramValue!=''">
+                #{paramValue},
+            </if>
+            <if test="unitCode!=null and unitCode!=''">
+                #{unitCode},
+            </if>
+            <if test="remark!=null and remark!=''">
+                #{remark},
+            </if>
+        </trim>
+    </insert>
+    <update id="updConfig" parameterType="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.Config">
+        update XZY_C_CONFIG
+        <set>
+            <if test="type!=null and type!=''">
+                S_TYPE= #{type},
+            </if>
+            <if test="paramName!=null and paramName!=''">
+                S_PARAMNAME=#{paramName},
+            </if>
+            <if test="paramValue!=null and paramValue!=''">
+                S_PARAMVALUE=#{paramValue},
+            </if>
+        </set>
+        where 1=1
+        <if test="id!=null and id!=''">
+          and  S_ID=#{id}
+        </if>
+        <if test="paramName!=null and paramName!=''">
+            and S_PARAMNAME=#{paramName}
+        </if>
+
+    </update>
+
+</mapper>

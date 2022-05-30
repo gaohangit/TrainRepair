@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.trainMonitor.dao.TrainsetLocationConfigMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.TrainsetLocationConfig">
+        <result column="S_ID" property="id" />
+        <result column="S_UNITCODE" property="unitCode" />
+        <result column="S_PARAMNAME" property="paramName" />
+        <result column="S_PARAMVALUE" property="paramValue" />
+        <result column="S_UNITNAME" property="unitName" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_ID, S_UNITCODE, S_PARAMNAME, S_PARAMVALUE, S_UNITNAME
+    </sql>
+    <select id="getTrainsetlocationConfigs"  resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from XZY_C_TRAINSETLOCATION_CONFIG
+        where S_UNITCODE=#{unitCode}
+
+    </select>
+
+    <select id="getTrainsetlocationConfig" parameterType="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.TrainsetLocationConfig" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from XZY_C_TRAINSETLOCATION_CONFIG
+        where 1=1
+        <if test="id !=null and id !=''">
+            and S_ID=#{id}
+        </if>
+        <if test="paramName !=null and paramName !=''">
+            and S_PARAMNAME=#{paramName}
+        </if>
+        <if test="unitCode!=null and unitCode !=''">
+            and S_UNITCODE=#{unitCode}
+        </if>
+    </select>
+
+
+    <insert id="addTrainsetlocationConfig" parameterType="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.TrainsetLocationConfig">
+        insert into XZY_C_TRAINSETLOCATION_CONFIG
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+        S_ID,
+        <if test="unitCode !=null and unitCode!=''">
+            S_UNITCODE,
+        </if>
+        <if test="paramName !=null and paramName!=''">
+            S_PARAMNAME,
+        </if>
+        <if test="paramValue !=null and paramValue!=''">
+            S_PARAMVALUE,
+        </if>
+        <if test="unitName !=null and unitName!=''">
+            S_UNITNAME,
+        </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+        #{id},
+        <if test="unitCode !=null and unitCode!=''">
+            #{unitCode},
+        </if>
+        <if test="paramName !=null and paramName!=''">
+            #{paramName},
+        </if>
+        <if test="paramValue !=null and paramValue!=''">
+            #{paramValue},
+        </if>
+        <if test="unitName !=null and unitName!=''">
+            #{unitName},
+        </if>
+      </trim>
+    </insert>
+
+    <delete id="delTrainsetlocationConfig" parameterType="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.TrainsetLocationConfig">
+        delete from XZY_C_TRAINSETLOCATION_CONFIG  where S_ID=#{id}
+    </delete>
+
+    <update id="updTrainsetlocationConfig" parameterType="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.TrainsetLocationConfig">
+        update XZY_C_TRAINSETLOCATION_CONFIG
+        <set>
+            <if test="unitCode !=null and unitCode !=''">
+                S_UNITCODE=#{unitCode},
+            </if>
+            <if test="paramName !=null and paramName !=''">
+                S_PARAMNAME=#{paramName},
+            </if>
+            <if test="paramValue !=null and paramValue !=''">
+                S_PARAMVALUE=#{paramValue},
+            </if>
+            <if test="unitName !=null and unitName !=''">
+                S_UNITNAME=#{unitName},
+            </if>
+        </set>
+        where S_ID=#{id}
+    </update>
+
+
+
+</mapper>

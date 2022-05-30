@@ -1,0 +1,115 @@
+.el-input.fix-count-out .el-input__count,
+.fix-count-out .el-input .el-input__count {
+  position: absolute;
+  width: max-content;
+  margin-left: 5px;
+}
+
+
+
+.el-textarea.fix-count-out .el-input__count,
+.fix-count-out .el-textarea .el-input__count {
+  left: 100%;
+  width: max-content;
+  margin-left: 5px;
+}
+
+
+/* 在el-input上使用fix-count-in时，需要固定el-input的高度，默认是40px，如果输入框错位自行指定一个合适的高度即可 */
+.el-input.fix-count-in:not(.is-disabled),
+.fix-count-in .el-input:not(.is-disabled) {
+  display: inline-flex;
+  flex-direction: row;
+  background-color: white;
+  align-items: center;
+  height: 40px;
+}
+
+.el-input.el-input--mini.fix-count-in:not(.is-disabled),
+.fix-count-in .el-input.el-input--mini:not(.is-disabled) {
+  height: 28px;
+}
+
+.el-input.fix-count-in:not(.is-disabled) .el-input__inner,
+.fix-count-in .el-input:not(.is-disabled) .el-input__inner {
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+  padding-right: 0px;
+  flex-shrink: 1;
+  border-right: none;
+}
+
+.el-input.fix-count-in:not(.is-disabled) .el-input__suffix,
+.fix-count-in .el-input:not(.is-disabled) .el-input__suffix {
+  position: relative;
+  flex-grow: 1;
+  right: auto;
+  padding-right: 5px;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border: 1px solid #DCDFE6;
+  border-left: none;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+}
+
+.el-input.fix-count-in:not(.is-disabled) .el-input__suffix .el-input__suffix-inner,
+.fix-count-in .el-input:not(.is-disabled) .el-input__suffix .el-input__suffix-inner {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.el-input.fix-count-in:not(.is-disabled) .el-input__inner:hover+span.el-input__suffix,
+.fix-count-in .el-input:not(.is-disabled) .el-input__inner:hover+span.el-input__suffix {
+  border-color: #C0C4CC;
+}
+
+.el-input.fix-count-in.is-active:not(.is-disabled) .el-input__inner+span.el-input__suffix,
+.el-input.fix-count-in:not(.is-disabled) .el-input__inner:focus+span.el-input__suffix,
+.fix-count-in .el-input.is-active:not(.is-disabled) .el-input__inner+span.el-input__suffix,
+.fix-count-in .el-input:not(.is-disabled) .el-input__inner:focus+span.el-input__suffix {
+  border-color: #409EFF;
+}
+
+.el-form-item.is-error .el-input.fix-count-in:not(.is-disabled) .el-input__inner+span.el-input__suffix,
+.el-form-item.is-error .fix-count-in .el-input:not(.is-disabled) .el-input__inner+span.el-input__suffix,
+.el-form-item.is-error .el-input.fix-count-in:not(.is-disabled) .el-input__inner:focus+span.el-input__suffix,
+.el-form-item.is-error .fix-count-in .el-input:not(.is-disabled) .el-input__inner:focus+span.el-input__suffix {
+  border-color: #F56C6C;
+}
+
+.el-input.fix-count-in:not(.is-disabled) .el-input__count,
+.fix-count-in .el-input:not(.is-disabled) .el-input__count {
+  padding-left: 5px;
+}
+
+.el-input.fix-count-in:not(.is-disabled) .el-input__suffix .el-input__clear+.el-input__count,
+.fix-count-in .el-input:not(.is-disabled) .el-input__suffix .el-input__clear+.el-input__count {
+  padding-left: 0px;
+}
+
+.el-input.fix-count-in:not(.is-disabled) .el-input__count .el-input__count-inner,
+.fix-count-in .el-input:not(.is-disabled) .el-input__count .el-input__count-inner {
+  padding: 0px;
+  width: max-content;
+}
+
+
+
+.el-textarea.fix-count-in .el-input__count,
+.fix-count-in .el-textarea .el-input__count {
+  line-height: initial;
+}
+
+.fix-height.el-input {
+  height: 34px !important;
+  line-height: 34px !important;
+}
+
+.fix-height.el-input .el-input__inner {
+  height: 34px !important;
+  line-height: 34px !important;
+}

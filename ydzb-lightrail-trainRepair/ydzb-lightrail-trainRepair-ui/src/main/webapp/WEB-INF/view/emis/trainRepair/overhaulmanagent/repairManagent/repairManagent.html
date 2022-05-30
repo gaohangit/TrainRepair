@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>检修作业标准配置</title>
+    <link href="${publicStaticPath}/common/base.css" rel="stylesheet" />
+    <link href="${ctxPath}/static/lib/animate.css" rel="stylesheet" />
+    <!-- <link href="${ctxPath}/static/lib/dragula.css" rel="stylesheet" /> -->
+    <script src="${publicStaticPath}/jquery/jquery-1.10.2.min.js"></script>
+    <script src="${publicStaticPath}/common/common.js"></script>
+    <!--使IE支持Promise-->
+    <script src="${publicStaticPath}/IE/babel-browser.min.js"></script>
+    <!--时间处理工具-->
+    <script src="${publicStaticPath}/moment/moment.min.js"></script>
+    <!--Vue相关-->
+    <script src="${publicStaticPath}/vue/axios.min.js"></script>
+    <script src="${publicStaticPath}/vue/vue.min.js"></script>
+    <!--elementUi-->
+    <link href="${publicStaticPath}/elementUI/index.css" rel="stylesheet" />
+    <script src="${publicStaticPath}/elementUI/index.js"></script>
+    <script src="${ctxPath}/static/lib/elementUI/el-table-fix.js"></script>
+    <script src="${ctxPath}/static/utils/GeneralUtil.js"></script>
+    <link rel="stylesheet" href="${ctxPath}/static/lib/input_word_limit.css" />
+
+    <!-- scope.css -->
+    <link href="${ctxPath}/static/lib/baseWorkProcess.css" rel="stylesheet" />
+    <link
+      href="${ctxPath}/static/trainRepair/overhaulmanagent/repairManagent/css/repairManagent.css"
+      rel="stylesheet"
+    />
+    <!-- <script src="${ctxPath}/static/lib/dragula.min.js"></script> -->
+    <script>
+      var ctxPath = '/apiTrainRepairMidGround';
+    </script>
+  </head>
+
+  <body class="body">
+    <!-- <div class="nowPosition pane">当前位置: 系统管理><span style="font-weight: bold;color: #000;">检修作业标准配置</span></div> -->
+    <div class="container pane" id="MaintenanceOS" v-cloak v-loading="loading">
+      <el-card class="box-card">
+        <div slot="header">
+          <span class="adorn"></span>
+          <h2>{{pageTitle}}</h2>
+        </div>
+
+        <div class="header">
+          <div class="searchList">
+            <el-row :gutter="10">
+              <el-col :sm="6" :md="5" :lg="4">
+                <template>
+                  <label>车型：</label>
+                  <el-select
+                    v-model="search.trainType"
+                    clearable
+                    filterable
+                    placeholder="请选择"
+                    \@change="changTrainType"
+                  >
+                    <el-option v-for="item in search.trainTypeOptions" :key="item" :label="item" :value="item">
+                    </el-option>
+                  </el-select>
+                </template>
+              </el-col>
+              <el-col :sm="6" :md="5" :lg="4">
+                <template>
+                  <label>批次：</label>
+                  <el-select v-model="search.batch" clearable filterable placeholder="请选择">
+                    <el-option v-for="item in search.batchOptions" :key="item" :label="item" :value="item"> </el-option>
+                  </el-select>
+                </template>
+              </el-col>
+              <el-col :sm="6" :md="5" :lg="4">
+                <template>
+                  <label>{{search.xc == 1 ? '作业内容：' : '项目名称：'}}</label>
+                  <el-input placeholder="请输入作业内容" v-model.trim="search.zyxm" class="projectName" clearable>
+                  </el-input>
+                </template>
+              </el-col>
+              <el-col :sm="6" :md="5" :lg="4">
+                <template>
+                  <label>修程：</label>
+                  <el-select v-model="search.xc" placeholder="请选择" \@change="changeXc">
+                    <el-option v-for="item in search.xcOptions" :key="item.id" :label="item.name" :value="item.id">
+                    </el-option>
+                  </el-select>
+                </template>
+              </el-col>
+              <el-col :sm="24" :md="4" :lg="8" class="searchBtnBox" v-if="search.xc == 1">
+                <template>
+                  <el-button type="primary" size="mini" v-on:click.stop="onSearch">查询</el-button>
+                  <el-button type="primary" size="mini" v-on:click.stop="reset">重置</el-button>
+                  @if(shiro.hasPermission("repairManagent:edit")){
+                  <el-button type="primary" size="mini" v-on:click.stop="onAdd">新增</el-button>
+                  <el-button type="primary" size="mini" v-on:click.stop="ondelect">删除</el-button>
+                  @}
+                </template>
+              </el-col>
+              <el-col :sm="6" :md="4" :lg="8" class="searchBtnBox" v-if="search.xc == 2">
+                <template>
+                  <el-button type="primary" size="mini" v-on:click.stop="onSearch">查询</el-button>
+                  <el-button type="primary" size="mini" v-on:click.stop="reset">重置</el-button>
+                </template>
+              </el-col>
+            </el-row>
+          </div>
+        </div>
+        <div class="main" style="width: 100%">
+          <el-table
+            class="listTable"
+            :data="main.tableData"
+            stripe
+            height="calc(100vh - 165px)"
+            :default-sort="{prop: 'faultNo', order: 'descending'}"
+            \@selection-change="onSelectionChange"
+            style="width: 100%"
+            :key="search.xc"
+            align="center"
+          >
+            <el-table-column type="selection" v-if="search.xc == 1" min-width="60"></el-table-column>
+            <el-table-column
+              align="center"
+              sortable
+              prop="sTrainsettype"
+              label="车型"
+              min-width="120"
+              show-overflow-tooltip
+            >
+            </el-table-column>
+            <el-table-column
+              align="center"
+              sortable
+              prop="sTrainsetsubtype"
+              label="批次"
+              min-width="150"
+              show-overflow-tooltip
+            >
+            </el-table-column>
+            <template v-if="search.xc == 1">
+              <el-table-column
+                align="center"
+                sortable
+                prop="sItemname"
+                label="作业内容"
+                min-width="160"
+                show-overflow-tooltip
+              >
+              </el-table-column>
+              <el-table-column
+                align="center"
+                sortable
+                prop="xzyCWorkcritertionPostList"
+                label="岗位"
+                min-width="130"
+                show-overflow-tooltip
+              >
+                <template slot-scope="scope"> {{scope.row.xzyCWorkcritertionPostList | postNameFilter}} </template>
+              </el-table-column>
+              <el-table-column
+                align="center"
+                sortable
+                prop="sPowerstate"
+                label="供断电状态"
+                :formatter="eleFormatter"
+                min-width="80"
+                show-overflow-tooltip
+              >
+              </el-table-column>
+              <el-table-column
+                align="center"
+                sortable
+                prop="iMaxworktime"
+                label="最大检修时长(m)"
+                show-overflow-tooltip
+              >
+              </el-table-column>
+              <el-table-column
+                align="center"
+                sortable
+                prop="iMinworktime"
+                label="最小检修时长(m)"
+                show-overflow-tooltip
+              >
+              </el-table-column>
+              <el-table-column align="center" sortable prop="iPiccount" label="图片数量要求(张)" show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column
+                align="center"
+                sortable
+                prop="sWarningtime"
+                label="提前预警时长(m)"
+                show-overflow-tooltip
+              >
+              </el-table-column>
+              <el-table-column align="center" sortable label="预警角色" min-width="100" show-overflow-tooltip>
+                <template slot-scope="scope"> {{scope.row.xzyCWorkcritertionRoleList | sRolenameFilter}} </template>
+              </el-table-column>
+            </template>
+            <template v-if="search.xc == 2">
+              <el-table-column
+                align="center"
+                sortable
+                prop="sItemname"
+                label="项目名称"
+                min-width="160"
+                show-overflow-tooltip
+              >
+              </el-table-column>
+              <el-table-column align="center" prop="sItemcode" label="项目编码" sortable min-width="150">
+              </el-table-column>
+              <el-table-column align="center" sortable label="非适用车组" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  <div>
+                    <el-popover
+                      placement="top-start"
+                      min-width="200"
+                      trigger="hover"
+                      :content="scope.row.notTrainsetName"
+                    >
+                      <div
+                        slot="reference"
+                        style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap; min-width: 10px"
+                      >
+                        {{scope.row.notTrainsetName}}
+                      </div>
+                    </el-popover>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column align="center" sortable label="适用车组" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  <div>
+                    <el-popover placement="top-start" min-width="200" trigger="hover" :content="scope.row.trainsetName">
+                      <div
+                        slot="reference"
+                        style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap; min-width: 10px"
+                      >
+                        {{scope.row.trainsetName}}
+                      </div>
+                    </el-popover>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column align="center sortable" prop="iPiccount" label="标准图片数量" prop="iPiccount">
+              </el-table-column>
+            </template>
+            @if(shiro.hasPermission("repairManagent:edit")){
+            <el-table-column align="center" label="修改" min-width="70" show-overflow-tooltip>
+              <template slot-scope="scope">
+                <el-button
+                  \@click.native.prevent="changeRow(scope.$index, main.tableData)"
+                  type="text"
+                  title="修改"
+                  size="mini"
+                >
+                  <i class="iconBtn el-icon-edit-outline"></i>
+                </el-button>
+              </template>
+            </el-table-column>
+            <el-table-column
+              align="center"
+              :label="search.xc == 1 ? '删除' : '清空'"
+              min-width="70"
+              show-overflow-tooltip
+            >
+              <template slot-scope="scope">
+                <el-button
+                  \@click.native.prevent="deleteRow(scope.$index, main.tableData)"
+                  type="text"
+                  :title="search.xc == 1 ? '删除' : '清空'"
+                  size="mini"
+                >
+                  <i class="iconBtn el-icon-delete"></i>
+                </el-button>
+              </template>
+            </el-table-column>
+            @}
+          </el-table>
+          <div class="block" style="margin-top: 5px">
+            <el-pagination
+              style="text-align: center"
+              v-on:size-change="handleSizeChange"
+              v-on:current-change="handleCurrentChange"
+              :current-page="main.currentPage"
+              :page-sizes="[10, 20, 30, 40,100]"
+              :page-size="main.pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="main.total"
+            >
+            </el-pagination>
+          </div>
+        </div>
+      </el-card>
+
+      <!-- 一级修-新增、修改 -->
+      <el-dialog
+        :visible.sync="search.dialogTableVisible"
+        width="860px"
+        max-height="60%"
+        show-close="false"
+        center="true"
+        :close-on-click-modal="false"
+        :title="dialog.dialogTitle"
+        \@close="onCancel"
+      >
+        <div class="dialog-body">
+          <el-form ref="dialog" :model="dialog" :rules="dialogRules" label-position="right" size="mini">
+            <table class="table">
+              <tbody>
+                <tr>
+                  <td>
+                    <el-form-item label="车型：" prop="trainType">
+                      <el-select
+                        v-model="dialog.trainType"
+                        :disabled="dialog.isDisabled"
+                        clearable
+                        filterable
+                        placeholder="请选择"
+                        \@change="changTrainType"
+                      >
+                        <el-option v-for="item in search.trainTypeOptions" :key="item" :label="item" :value="item">
+                        </el-option>
+                      </el-select>
+                    </el-form-item>
+                  </td>
+                  <td>
+                    <el-form-item label="批次：" prop="batch">
+                      <el-select
+                        v-model="dialog.batch"
+                        :disabled="dialog.isDisabled"
+                        clearable
+                        filterable
+                        placeholder="请选择"
+                      >
+                        <el-option v-for="item in dialog.batchOptions" :key="item" :label="item" :value="item">
+                        </el-option>
+                      </el-select>
+                    </el-form-item>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <el-form-item label="最小检修时长(分)：" prop="minTime">
+                      <el-input placeholder="请输入最小检修时长" v-model.trim="dialog.minTime" clearable> </el-input>
+                    </el-form-item>
+                  </td>
+                  <td>
+                    <el-form-item label="最大检修时长(分)：" prop="maxTime">
+                      <el-input placeholder="请输入最大检修时长" v-model.trim="dialog.maxTime" clearable> </el-input>
+                    </el-form-item>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <el-form-item label="提前预警时长(分)：" prop="warningTime">
+                      <el-input placeholder="请输入提前预警时长" v-model.trim="dialog.warningTime" clearable> </el-input>
+                    </el-form-item>
+                  </td>
+                  <td>
+                    <el-form-item label="预警角色：" prop="man">
+                      <el-select v-model="dialog.man" collapse-tags multiple placeholder="请选择">
+                        <el-option
+                          v-for="item in dialog.manOptions"
+                          :key="item.roleCode"
+                          :label="item.roleName"
+                          :value="item.roleCode"
+                        >
+                        </el-option>
+                      </el-select>
+                    </el-form-item>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <el-form-item label="图片数量要求(张)：" prop="imgNum">
+                      <el-input placeholder="请输入图片数量要求" v-model.trim="dialog.imgNum" clearable> </el-input>
+                    </el-form-item>
+                  </td>
+                  <td>
+                    <el-form-item label="作业岗位：" prop="taskPost">
+                      <el-select
+                        v-model="dialog.taskPost"
+                        placeholder="请选择"
+                        collapse-tags
+                        multiple
+                        filterable
+                        clearable
+                        value-key="workId"
+                      >
+                        <el-option
+                          v-for="item in dialog.taskPostOption"
+                          :key="item.code"
+                          :label="item.name"
+                          :value="item.code"
+                        >
+                        </el-option>
+                      </el-select>
+                    </el-form-item>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <el-form-item label="供断电状态：" prop="ele">
+                      <el-select v-model="dialog.ele" clearable placeholder="请选择">
+                        <el-option v-for="item in dialog.elOption" :key="item.id" :label="item.name" :value="item.id">
+                        </el-option>
+                      </el-select>
+                    </el-form-item>
+                  </td>
+                  <td>
+                    <el-form-item label="优先作业角色：" prop="priorityTask">
+                      <el-select
+                        v-model="dialog.priorityTask"
+                        collapse-tags
+                        multiple
+                        clearable
+                        filterable
+                        placeholder="请选择"
+                      >
+                        <el-option
+                          v-for="item in dialog.taskPostOption"
+                          :key="item.code"
+                          :label="item.name"
+                          :value="item.code"
+                        >
+                        </el-option>
+                      </el-select>
+                    </el-form-item>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <el-form-item label="作业内容：" prop="content">
+                      <el-input
+                        placeholder="请输入作业内容"
+                        :disabled="dialog.isDisabled"
+                        :maxlength="25"
+                        show-word-limit
+                        v-model.trim="dialog.content"
+                        class="fix-count-out"
+                      >
+                      </el-input>
+                    </el-form-item>
+                  </td>
+                  <td>
+                    <el-form-item label="作业内容简称：" prop="contentAbbr">
+                      <el-input
+                        placeholder="请输入作业内容简称"
+                        v-model.trim="dialog.contentAbbr"
+                        :maxlength="25"
+                        show-word-limit
+                        class="fix-count-out"
+                      >
+                      </el-input>
+                    </el-form-item>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <el-form-item label="作业人数：" prop="workerNumber">
+                      <el-input placeholder="请输入作业人数" v-model.trim="dialog.workerNumber" :controls="false">
+                      </el-input>
+                    </el-form-item>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </el-form>
+        </div>
+        <div class="textCenter saveBtnBox" style="text-align: center">
+          <!-- <el-button type="primary" size="mini" v-on:click.stop="onCopy">复制</el-button> -->
+          <el-button type="primary" size="mini" v-on:click.stop="onCopy" v-if="!dialog.isDisabled">复制</el-button>
+          <el-button type="primary" size="mini" v-on:click.stop="onSave('dialog')">确定</el-button>
+          <el-button type="primary" size="mini" v-on:click.stop="onCancel">取消</el-button>
+        </div>
+      </el-dialog>
+      <!-- 一级修-复制 -->
+      <el-dialog
+        :visible.sync="dialog.isCopy"
+        width="625px"
+        show-close="false"
+        top="25vh"
+        center="true"
+        :close-on-click-modal="false"
+        title="复制"
+        \@close="cancelCopy"
+      >
+        <el-form
+          ref="iscopy"
+          :model="iscopy"
+          :rules="iscopyRules"
+          label-position="right"
+          size="mini"
+          label-width="95px"
+        >
+          <table class="table">
+            <tbody>
+              <tr>
+                <td>
+                  <el-form-item label="车型：" prop="trainType">
+                    <el-select
+                      v-model="iscopy.trainType"
+                      clearable
+                      filterable
+                      placeholder="请选择"
+                      \@change="changTrainType"
+                      style="width: 180px"
+                    >
+                      <el-option v-for="item in search.trainTypeOptions" :key="item" :label="item" :value="item">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                </td>
+                <td>
+                  <el-form-item label="批次：" prop="batch">
+                    <el-select
+                      v-model="iscopy.batch"
+                      clearable
+                      filterable
+                      placeholder="请选择"
+                      style="width: 180px"
+                      \@change="changeBatch"
+                    >
+                      <el-option v-for="item in iscopy.batchOptions" :key="item" :label="item" :value="item">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <el-form-item label="作业内容：" prop="content">
+                    <el-select v-model="iscopy.content" clearable filterable placeholder="请选择" style="width: 180px">
+                      <el-option v-for="item in iscopy.contentList" :key="item" :label="item" :value="item">
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="textCenter saveBtnBox" style="margin-top: 20px">
+            <el-button type="primary" size="mini" v-on:click.stop="confirmCopy('iscopy')">确定</el-button>
+            <el-button type="primary" size="mini" v-on:click.stop="cancelCopy">取消</el-button>
+          </div>
+        </el-form>
+      </el-dialog>
+
+      <!-- 二级修-修改 -->
+      <el-dialog
+        :visible.sync="twoWorkEdit.visible"
+        width="500px"
+        show-close="false"
+        top="25vh"
+        center="true"
+        :close-on-click-modal="false"
+        title="二级修检修作业标准配置"
+        \@close="cancelCopyEdit"
+        class="twoWorkEdit"
+      >
+        <el-form ref="twoWorkEdit" :model="twoWorkEdit" :rules="twoWorkEditRules" label-position="right" size="mini">
+          <el-form-item label="图片数量：" prop="imgNum">
+            <el-input-number placeholder="请输入" v-model.trim="twoWorkEdit.imgNum" :controls="false"> </el-input-number>
+          </el-form-item>
+          <div class="textCenter saveBtnBox" style="text-align: center">
+            <el-button type="primary" size="mini" v-on:click.stop="modify('twoWorkEdit')">确定</el-button>
+          </div>
+        </el-form>
+      </el-dialog>
+    </div>
+    <script src="${ctxPath}/static/trainRepair/overhaulmanagent/repairManagent/js/repairManagent.js"></script>
+  </body>
+</html>

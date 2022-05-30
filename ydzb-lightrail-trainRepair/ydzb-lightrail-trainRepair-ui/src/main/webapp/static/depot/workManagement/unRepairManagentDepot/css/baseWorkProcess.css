@@ -1,0 +1,60 @@
+[v-cloak] {
+    display: none !important;
+}
+
+.body {
+    background: #F6F4F5;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.body>.pane:nth-child(1) {
+    margin-top: 10px;
+}
+
+.body>.pane {
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    background: #fff;
+    box-shadow: 4px 4px 4px #ccc;
+    border-radius: 6px;
+}
+
+.container {
+    padding: 0 10px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.nowPosition {
+    line-height: 40px;
+    color: #666;
+    padding: 0 10px;
+}
+
+.container .main {
+    flex-grow: 1;
+}
+
+.container .header {
+    margin-bottom: 10px;
+}
+
+.searchList {
+    border-bottom: 1px solid #ccc;
+}
+
+.common_title .title {
+    line-height: 38px;
+}
+
+.el-input__inner {
+    height: 30px;
+}
+
+.el-input__icon {
+    line-height: 30px;
+}

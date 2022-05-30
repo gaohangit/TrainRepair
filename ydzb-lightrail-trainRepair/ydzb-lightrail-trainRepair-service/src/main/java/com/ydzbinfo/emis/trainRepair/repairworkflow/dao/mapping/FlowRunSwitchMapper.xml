@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.repairworkflow.dao.FlowRunSwitchMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ${tableAlias}S_ID as "${columnPrefix}id",
+        ${tableAlias}S_SOURCEFLOWRUNID as "${columnPrefix}sourceFlowRunId",
+        ${tableAlias}S_SOURCEFLOWID as "${columnPrefix}sourceFlowId",
+        ${tableAlias}S_SOURCEFLOWTYPECODE as "${columnPrefix}sourceFlowTypeCode",
+        ${tableAlias}S_TARGETFLOWRUNID as "${columnPrefix}targetFlowRunId",
+        ${tableAlias}S_TARGETFLOWID as "${columnPrefix}targetFlowId",
+        ${tableAlias}S_TARGETFLOWTYPECODE as "${columnPrefix}targetFlowTypeCode",
+        ${tableAlias}S_DAYPLANID as "${columnPrefix}dayPlanId",
+        ${tableAlias}S_TYPE as "${columnPrefix}type",
+        ${tableAlias}D_SWITCHTIME as "${columnPrefix}switchTime",
+        ${tableAlias}S_WORKERID as "${columnPrefix}workerId",
+        ${tableAlias}S_WORKERNAME as "${columnPrefix}workerName",
+        ${tableAlias}S_TRAINSETID as "${columnPrefix}trainsetId"
+    </sql>
+
+</mapper>

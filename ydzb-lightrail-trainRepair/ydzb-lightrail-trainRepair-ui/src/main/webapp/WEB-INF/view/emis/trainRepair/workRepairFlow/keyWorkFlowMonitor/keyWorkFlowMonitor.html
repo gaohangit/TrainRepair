@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>关键作业流程监控</title>
+
+    <script src="${publicStaticPath}/IE/babel-browser.min.js"></script>
+    <link rel="stylesheet" href="${publicStaticPath}/elementUI/index.css" />
+    <script src="${publicStaticPath}/vue/vue.js"></script>
+    <script src="${publicStaticPath}/elementUI/index.js"></script>
+    <script src="${ctxPath}/static/lib/day/day.js"></script>
+    <script src="${publicStaticPath}/vue/axios.min.js"></script>
+    <script src="${ctxPath}/static/config/index.js"></script>
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/keyWorkFlowMonitor/utils/index.js"></script>
+
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/keyWorkFlowMonitor/api/apiTrainRepair/commonRequest.js?"></script>
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/keyWorkFlowMonitor/api/apiTrainRepair/trackpowerStateCurRequest.js?"></script>
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/keyWorkFlowMonitor/api/apiTrainRepair/trainsetLocationConfigRequest.js?"></script>
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/keyWorkFlowMonitor/api/apiTrainRepair/trainsetPostIonCurRequest.js?"></script>
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/keyWorkFlowMonitor/api/apiTrainRepair/flowRunRequest.js?"></script>
+
+    <script>
+      // Vue.config.devtools = false;
+      // Vue.config.productionTip = false;
+      const ctxPath = '${ctxPath}';
+
+      const unitCode = '${thirdOrganCode}'; //所编码
+    </script>
+    <script src="${ctxPath}/static/lib/Sortable.min.js"></script>
+    <script src="${ctxPath}/static/lib/vuedraggable.umd.min.js"></script>
+    <link rel="stylesheet" href="${ctxPath}/static/components/columnDraggable/columnDraggable.css" />
+    <script src="${ctxPath}/static/components/columnDraggable/columnDraggable.js"></script>
+
+    <link rel="stylesheet" href="${ctxPath}/static/components/trackAreaConfig/trackAreaConfig.css" />
+    <script src="${ctxPath}/static/components/trackAreaConfig/trackAreaConfig.js"></script>
+
+    <script src="${ctxPath}/static/components/track/getTrainUrls.js"></script>
+    <link rel="stylesheet" href="${ctxPath}/static/components/track/track.css" />
+    <!-- <script src="${ctxPath}/static/components/track/trainWrapper.js"></script>
+    <script src="${ctxPath}/static/components/track/positionWrapper.js"></script>
+    <script src="${ctxPath}/static/components/track/trackWrapper.js"></script>
+    <script src="${ctxPath}/static/components/track/trackContainer.js"></script> -->
+
+    <link rel="stylesheet" href="${ctxPath}/static/components/singleTrain/singleTrain.css" />
+    <script src="${ctxPath}/static/components/singleTrain/singleTrain.js"></script>
+
+    <link rel="stylesheet" href="${ctxPath}/static/trainRepair/workRepairFlow/keyWorkFlowMonitor/css/index.css" />
+    <!-- input全局指令 -->
+    <script  src="${ctxPath}/static/utils/InputNumberDirective.js"></script>
+  </head>
+
+  <body>
+    <div id="keyWorkFlowMonitor" v-cloak>
+      <el-container class="container">
+        <el-header class="container-header">
+          <div class="title tc">关键作业流程监控</div>
+          <div class="sub-title">
+            <span class="time1">{{time1}}</span>
+            <span class="time2">{{time2}}</span>
+            <div style="display: flex; cursor: pointer; position: relative" \@click="configShow = !configShow">
+              <img style="margin-right: 5px" :src="baseImgPath+'/top_ico3.png'" alt="" />
+              <div class="custom-button common-button" \@click="openCommonDialog" v-show="configShow">
+                <img :src="baseImgPath+'/top_ico3.png'" alt="" />
+                <span style="margin-left: 5px; color: rgb(36, 129, 196); margin-right: 5px">通用配置</span>
+              </div>
+              <div class="custom-button monitor-button" \@click="openMonitorDialog" v-show="configShow">
+                <img :src="baseImgPath+'/top_ico3.png'" alt="" />
+                <span style="margin-left: 5px; color: rgb(36, 129, 196); margin-right: 5px">系统配置</span>
+              </div>
+            </div>
+            <img
+              :src="baseImgPath+'/top_ico4.png'"
+              alt=""
+              \@click="fullscreenClick"
+              v-if="!isFullScreen"
+              style="cursor: pointer"
+            />
+            <img :src="baseImgPath+'/top_ico4-1.png'" alt="" \@click="fullscreenClick" v-else style="cursor: pointer" />
+          </div>
+        </el-header>
+        <el-main v-if="pageTotal>0">
+          <single-train :train="train" :power-info="trackCodePowerMap[train.trackCode]"></single-train>
+          <div class="table-container">
+            <div class="main-table" :key="tableReresh">
+              <template v-for="flowId in Object.keys(trainsetIdFlowIdDataMap[train.trainsetId])">
+                <!-- <el-row class="table-title">{{planlessKeyIdNameMap[flowId]}}</el-row> -->
+                <el-table
+                  :key="flowId"
+                  :data="trainsetIdFlowIdDataMap[train.trainsetId][flowId]"
+                  class="keyWork-table"
+                  header-row-class-name="table-header"
+                  :row-class-name="tableRowClassName"
+                  :height="getTableHeight(trainsetIdFlowIdDataMap[train.trainsetId])"
+                  :id="'keyWorkTableId'+flowId"
+                  :ref="'keyWorkTableRef'+flowId"
+                >
+                  <el-table-column type="index" label="序号" width="50" fixed></el-table-column>
+                  <el-table-column
+                    v-for="column in localConfig.flowConfig[flowId].rightList"
+                    :key="column.key"
+                    :label="column.label"
+                    :fixed="column.fixed"
+                    :min-width="column.width||160"
+                  >
+                    <template v-slot="{row}">
+                      <span v-if="column.type=='static'">
+                        <span v-if="column.key=='TRAINSETID'">{{trainsetIdNameMap[row.trainsetId]}} </span>
+                        <span v-else-if="column.key=='STATE'">{{flowState[row.state]}} </span>
+                        <span v-else>{{row[column.property]}}</span>
+                      </span>
+                      <span v-else-if="column.type=='node'" v-html="flowRunNodeIdRecordsMap[row.id][column.property]">
+                        {{ flowRunNodeIdRecordsMap[row.id][column.property] }}
+                      </span>
+                      <span v-else>
+                        <span v-if="column.type==='text'"> {{row[column.property]}} </span>
+                        <span v-else-if="!column.simpleOption"> {{ getColumnLabel(row,column)}} </span>
+                        <span v-else-if="column.key==='CAR'">
+                          {{row[column.property].length===0?'全列':row[column.property].toString()}}
+                        </span>
+                        <span v-else> {{row[column.property].toString()}} </span>
+                      </span>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </template>
+            </div>
+          </div>
+        </el-main>
+        <el-footer v-if="pageTotal>0">
+          <el-pagination small background layout="pager" :page-count="pageTotal" :current-page.sync="pageNum">
+          </el-pagination>
+        </el-footer>
+      </el-container>
+      <!-- 通用配置弹框 -->
+      <el-dialog
+        :visible.sync="commonDialog.visible"
+        width="50%"
+        :modal="false"
+        center
+        :close-on-click-modal="false"
+        custom-class="monitor-dialog"
+        top="7vh"
+        destroy-on-close
+      >
+        <div slot="title">
+          <span class="little-title el-dialog__title">通用配置</span>
+        </div>
+        <track-area-config
+          ref="trackRef"
+          :line-table-data="lineTableData"
+          :line-table-height="500"
+          :all-track-area-list="allTrackAreaSortList"
+          :track-show-config="commonDialog.trackShowConfig"
+          \@set-track-show-config="setTrackShowCommonConfig"
+        >
+        </track-area-config>
+
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" size="mini" class="config-button" \@click="updCommonConfigBtn">保 存</el-button>
+          <el-button type="primary" size="mini" class="config-button" \@click="commonDialog.visible = false"
+            >取 消
+          </el-button>
+        </span>
+      </el-dialog>
+      <!-- 基础配置弹框 -->
+      <el-dialog
+        :visible.sync="monitorDialog.visible"
+        width="50%"
+        :modal="false"
+        center
+        :close-on-click-modal="false"
+        custom-class="monitor-dialog"
+        top="7vh"
+        destroy-on-close
+        v-if="monitorDialog.visible"
+      >
+        <div slot="title">
+          <span class="little-title el-dialog__title">系统配置</span>
+        </div>
+        <track-area-config
+          :local-config="true"
+          :line-table-data="lineTableData"
+          :all-track-area-list="allTrackAreaSortList"
+          :track-show-config="monitorDialog.trackShowConfig"
+          \@set-track-show-config="setTrackShowConfig"
+        >
+        </track-area-config>
+
+        <div class="dialog-title-text">
+          股道切换时间：<el-input v-number-input="{ min: 0, integer: 9, decimal: 0 }" size="mini" v-model.trim="monitorDialog.trackRefreshTime"></el-input>
+          秒
+        </div>
+
+        <div class="dialog-title-text">
+          股道位置切换：
+          <div class="switch">
+            <el-switch v-model="monitorDialog.TrackPositionChange" active-color="#22395b" inactive-color="#22395b">
+            </el-switch>
+            <div class="switch-choose">
+              <div>是</div>
+              <div>否</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dialog-title-text">
+          是否显示驳回：
+          <div class="switch">
+            <el-switch v-model="monitorDialog.queryPastFlow" active-color="#22395b" inactive-color="#22395b">
+            </el-switch>
+            <div class="switch-choose">
+              <div>是</div>
+              <div>否</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dialog-title-text">
+          流程：<el-select size="mini" v-model="monitorDialog.flowId" popper-class="popper-down">
+            <el-option v-for="item in planlessKeyList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+          </el-select>
+        </div>
+
+        <div class="draggable-scroll">
+          <column-draggable
+            :left-list="monitorDialog.flowConfig[monitorDialog.flowId].leftList"
+            :right-list="monitorDialog.flowConfig[monitorDialog.flowId].rightList"
+            \@column-change="columnChange"
+          >
+          </column-draggable>
+        </div>
+
+        <div class="dialog-title-text">
+          固定数量：<el-input size="mini" v-number-input="{ min: 0, integer: 9, decimal: 0 }" v-model.trim="monitorDialog.fixedNum"></el-input>
+          <span>【注：固定数量会导致关键作业的前几列固定，后几列滚动。】</span>
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" size="mini" class="config-button" \@click="updMonitorConfigBtn">保 存</el-button>
+          <el-button type="primary" size="mini" class="config-button" \@click="updMonitorCancel">取 消 </el-button>
+        </span>
+      </el-dialog>
+    </div>
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/keyWorkFlowMonitor/js/index.js"></script>
+    <!-- <script type="text/babel" src="${ctxPath}/static/trainRepair/workRepairFlow/keyWorkFlowMonitor/js/index.js"></script> -->
+  </body>
+</html>

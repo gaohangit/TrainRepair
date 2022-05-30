@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.common.bill.typeconfig.dao.TemplateLinkAttrMapper">
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ${tableAlias}S_ID as "${columnPrefix}id",
+        ${tableAlias}S_TEMPLATETYPECODE as "${columnPrefix}templateTypeCode",
+        ${tableAlias}S_ATTRIBUTECODE as "${columnPrefix}attributeCode",
+        ${tableAlias}C_FLAG as "${columnPrefix}flag",
+        ${tableAlias}S_REMARK as "${columnPrefix}remark",
+        ${tableAlias}S_SORT as "${columnPrefix}sort",
+        ${tableAlias}D_CREATETIME as "${columnPrefix}createTime",
+        ${tableAlias}S_CREATEUSERCODE as "${columnPrefix}createUserCode",
+        ${tableAlias}S_CREATEUSERNAME as "${columnPrefix}createUserName",
+        ${tableAlias}D_DELTIME as "${columnPrefix}delTime",
+        ${tableAlias}S_DELUSERCODE as "${columnPrefix}delUserCode",
+        ${tableAlias}S_DELUSERNAME as "${columnPrefix}delUserName"
+    </sql>
+
+
+</mapper>

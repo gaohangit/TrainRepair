@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/ydzb-emis-lightrail-parent.iml" filepath="$PROJECT_DIR$/ydzb-emis-lightrail-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../ydzb-lightrail-trainRepair/ydzb-lightrail-trainRepair-api/ydzb-lightrail-trainRepair-api.iml" filepath="$PROJECT_DIR$/../ydzb-lightrail-trainRepair/ydzb-lightrail-trainRepair-api/ydzb-lightrail-trainRepair-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../ydzb-lightrail-trainRepair/ydzb-lightrail-trainRepair-common/ydzb-lightrail-trainRepair-common.iml" filepath="$PROJECT_DIR$/../ydzb-lightrail-trainRepair/ydzb-lightrail-trainRepair-common/ydzb-lightrail-trainRepair-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../ydzb-lightrail-trainRepair/ydzb-lightrail-trainRepair-midground-service/ydzb-lightrail-trainRepair-midground-service.iml" filepath="$PROJECT_DIR$/../ydzb-lightrail-trainRepair/ydzb-lightrail-trainRepair-midground-service/ydzb-lightrail-trainRepair-midground-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../ydzb-lightrail-trainRepair/ydzb-lightrail-trainRepair-midground-ui/ydzb-lightrail-trainrepair-midground-ui.iml" filepath="$PROJECT_DIR$/../ydzb-lightrail-trainRepair/ydzb-lightrail-trainRepair-midground-ui/ydzb-lightrail-trainrepair-midground-ui.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../ydzb-lightrail-trainRepair/ydzb-lightrail-trainRepair-service/ydzb-lightrail-trainrepair-service.iml" filepath="$PROJECT_DIR$/../ydzb-lightrail-trainRepair/ydzb-lightrail-trainRepair-service/ydzb-lightrail-trainrepair-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../ydzb-lightrail-trainRepair/ydzb-lightrail-trainRepair-ui/ydzb-lightrail-trainrepair-ui.iml" filepath="$PROJECT_DIR$/../ydzb-lightrail-trainRepair/ydzb-lightrail-trainRepair-ui/ydzb-lightrail-trainrepair-ui.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../ydzb-lightrail-trainRepair/ydzb-ui-common/ydzb-ui-common.iml" filepath="$PROJECT_DIR$/../ydzb-lightrail-trainRepair/ydzb-ui-common/ydzb-ui-common.iml" />
+    </modules>
+  </component>
+</project>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.bill.fillback.dao.XxtsImportRecordMapper">
+
+    <!--通用查询映射结果-->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.bill.querymodel.checklist.XxtsImportRecord">
+        <id column="S_ID" property="id"/>
+        <result column="S_DAYPLANID" property="dayPalnId"/>
+        <result column="S_CHECKLISTSUMMARYID" property="checkListSummaryId"/>
+        <result column="S_TRAINSETNAME" property="trainSetName"/>
+        <result column="S_SPREPAIRITEMNAME" property="spRepairItemName"/>
+        <result column="D_IMPORTTIME" property="importTime"/>
+        <result column="S_DOCTYPE" property="docType"/>
+        <result column="S_STATE" property="state"/>
+        <result column="S_REMARK" property="remarks"/>
+        <result column="C_STATUS" property="status"/>
+    </resultMap>
+
+    <delete id="del" parameterType="com.ydzbinfo.emis.trainRepair.bill.querymodel.checklist.XxtsImportRecord">
+        delete ZY_M_XXTSIMPORT_RECORD where S_DAYPLANID = #{dayPalnId} and S_TRAINSETNAME = #{trainSetName} and S_SPREPAIRITEMNAME = #{spRepairItemName}
+    </delete>
+</mapper>

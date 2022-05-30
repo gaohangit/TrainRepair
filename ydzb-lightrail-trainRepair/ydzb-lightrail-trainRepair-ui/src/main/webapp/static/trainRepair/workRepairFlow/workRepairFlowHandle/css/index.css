@@ -1,0 +1,342 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+[v-cloak] {
+  display: none;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+#workRepairFlowHandle {
+  height: 100%;
+}
+
+.el-card {
+  height: calc(100% - 2px);
+}
+
+.el-card__header {
+  position: relative;
+  height: 42px;
+  line-height: 42px;
+  padding: 0 0 0 32px;
+}
+
+.adorn {
+  position: absolute;
+  left: 20px;
+  top: 9px;
+  width: 5px;
+  height: 25px;
+  background-color: #4e86fe;
+}
+
+.el-card__body {
+  height: calc(100% - 42px);
+}
+
+.el-pagination {
+  padding: 22px 5px 2px;
+}
+
+.text-l {
+  text-align: left;
+}
+.text-r {
+  text-align: right;
+}
+.text-c {
+  text-align: center;
+}
+.mar-top-10 {
+  margin-top: 10px;
+}
+.el-container {
+  height: 100%;
+  padding: 10px 0;
+}
+.el-header {
+  height: unset !important;
+}
+.el-main {
+  height: 100%;
+}
+.main-table {
+  height: 100%;
+}
+.el-footer {
+  height: unset !important;
+}
+.center-dialog {
+  display: flex;
+}
+.center-dialog .el-dialog {
+  margin: auto;
+}
+
+.page-title {
+  position: relative;
+  padding: 0 0 10px 7px;
+  border-bottom: 1px solid #c0c4cc;
+  line-height: 18px;
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.page-title::before {
+  display: block;
+  content: '';
+  position: absolute;
+  left: -7px;
+  width: 7px;
+  height: 18px;
+  background-color: #409eff;
+}
+
+.el-input__inner {
+  height: 34px;
+  line-height: 34px;
+}
+.el-input__icon {
+  line-height: 34px;
+}
+.el-select,
+.el-input {
+  height: 34px;
+  line-height: 34px;
+}
+
+.border-bottom {
+  border-bottom: 1px solid #c0c4cc;
+}
+
+.home-form .el-form-item {
+  margin-bottom: 0;
+  padding-bottom: 15px;
+}
+.node-deal-dialog .el-dialog__body {
+  padding: 0px 20px;
+}
+.node-deal-dialog .el-scrollbar {
+  height: 453px;
+}
+
+.node-deal-dialog .el-scrollbar__wrap {
+  overflow-x: auto;
+}
+
+.node-deal-dialog .el-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.node-deal-dialog .el-aside {
+  width: 360px !important;
+  padding: 0 10px;
+}
+.node-deal-dialog .el-main {
+  padding: 0;
+}
+.node-deal-dialog .el-footer {
+  text-align: center;
+}
+.picture-title .el-form-item__label {
+  float: unset;
+  text-align: left;
+}
+.not-could-dispose .el-upload.el-upload--picture-card {
+  display: none;
+}
+.el-upload-list--picture-card .el-upload-list__item {
+  width: 100px;
+}
+.el-upload--picture-card {
+  width: 100px;
+}
+.preview-picture-dialog .el-dialog__body {
+  text-align: center;
+  overflow: auto;
+  max-height: 500px;
+}
+.dialog-trainset-name {
+  font-weight: bold;
+  position: relative;
+  margin-left: 20px;
+}
+.dialog-trainset-name::before {
+  display: block;
+  content: '';
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  left: -30px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-image: url('../img/icotrain.png');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+.dialog-body-title {
+  display: flex;
+  margin: -10px 0 20px;
+}
+.title-item {
+  margin-right: 100px;
+}
+
+.position-wrapper {
+  padding: 10px 0px 10px;
+}
+.trainset-title {
+  color: #000000;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 400px;
+  margin: 0 auto;
+}
+.el-tooltip__popper {
+  max-width: 1000px;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  width: 6px;
+  /* background: rgba(144,147,153, 0.1); */
+  -webkit-border-radius: 2em;
+  -moz-border-radius: 2em;
+  border-radius: 2em;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(144, 147, 153, 0.5);
+  background-clip: padding-box;
+  min-height: 28px;
+  -webkit-border-radius: 2em;
+  -moz-border-radius: 2em;
+  border-radius: 2em;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(144, 147, 153, 1);
+}
+.w-e-toolbar {
+  display: none !important;
+}
+.w-e-text-container {
+  height: 190px !important;
+  border-top: 1px solid #c9d8db !important;
+}
+
+.el-table--enable-row-hover .el-table__body-wrapper .cell {
+  color: #606266;
+}
+.flow-scrollbar .el-scrollbar__bar.is-vertical {
+  display: none;
+}
+
+.before-img .el-upload.el-upload--picture-card {
+  display: none;
+}
+.before-img .el-upload-list__item-status-label {
+  display: none;
+}
+
+.hander {
+  cursor: pointer;
+  color: #ffffff;
+}
+/* .cell:hover .hander {
+  color: #606266;
+} */
+
+.el-image {
+  display: block;
+}
+.el-image-viewer__wrapper {
+  z-index: 20000 !important;
+}
+.el-image-viewer__close {
+  color: #ffffff;
+}
+
+.el-image__inner {
+  display: none;
+}
+.el-image__error {
+  display: none;
+}
+
+.mzindex {
+  z-index: 3000 !important;
+}
+
+.el-upload-list__item {
+  transition: none !important;
+}
+
+#workRepairFlowHandle .left-position {
+  background-image: url('../img/tag1.png');
+}
+#workRepairFlowHandle .right-position {
+  background-image: url('../img/tag2.png');
+}
+
+.el-switch__label.is-active {
+  color: #303133;
+}
+
+.el-message-box__btns {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+}
+
+.el-message-box__btns button:nth-child(1) {
+  color: #fff;
+  background-color: #409eff;
+  border-color: #409eff;
+}
+
+.el-message-box__btns button:nth-child(1):focus,
+.el-message-box__btns button:nth-child(1):hover {
+  color: rgb(255, 255, 255);
+  background: rgb(102, 177, 255);
+  border-color: rgb(102, 177, 255);
+}
+
+.el-message-box__btns button:nth-child(2) {
+  margin-right: 10px;
+}
+
+.nodeRecords .el-table__header tr,
+.nodeRecords .el-table__header th {
+  padding: 0;
+  height: 20px;
+}
+
+.nodeRecords .el-table__body tr,
+.nodeRecords .el-table__body td {
+  padding: 0;
+  height: 30px;
+}
+
+.center-dialog .content {
+  height: 70px;
+  border: 1px solid rgb(201, 216, 219);
+  padding: 0px 10px;
+  overflow: auto;
+}
+
+.center-dialog .content p {
+  line-height: 25px;
+}
+
+.dialog-duration {
+  animation-duration: 0.3s;
+}

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.trainMonitor.dao.ConnectTrainTypeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.ConnectTrainType">
+        <id column="S_ID" property="id" />
+        <result column="S_TRAINTYPE" property="trainType" />
+        <result column="S_CONNECTTRAINTYPE" property="connectTrainType" />
+        <result column="D_CREATETIME" property="createTime" />
+        <result column="S_CREATEUSERCODE" property="createUserCode" />
+        <result column="S_CREATEUSERNAME" property="createUserName" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_ID, S_TRAINTYPE, S_CONNECTTRAINTYPE, D_CREATETIME, S_CREATEUSERCODE, S_CREATEUSERNAME
+    </sql>
+
+    <select id="getConnectTrainTypes" resultMap="BaseResultMap" >
+        select
+        <include refid="Base_Column_List"></include>
+        from
+        XZY_C_CONNECTTRAINTYPE
+        order by S_TRAINTYPE
+    </select>
+
+    <select id="getConnectTrainType" resultMap="BaseResultMap" parameterType="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.ConnectTrainType">
+        select * from(
+
+        select
+        <include refid="Base_Column_List"></include>
+        from
+        XZY_C_CONNECTTRAINTYPE
+        where 1=1
+
+        <if test="trainType!=null and trainType !=''">
+            and S_TRAINTYPE=#{trainType}
+        </if>
+        and ROWNUM &lt;2
+        order by D_CREATETIME desc
+        )
+        where ROWNUM &lt;2
+    </select>
+    <insert id="addConnectTrainType" parameterType="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.ConnectTrainType">
+        insert into XZY_C_CONNECTTRAINTYPE
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            S_ID,
+            <if test="trainType !=null and trainType !=''">
+                S_TRAINTYPE,
+            </if>
+            <if test="connectTrainType !=null and connectTrainType !=''">
+                S_CONNECTTRAINTYPE,
+             </if>
+            <if test="createUserCode !=null and createUserCode !=''">
+            S_CREATEUSERCODE,
+            </if>
+             <if test="createUserName !=null and createUserName !=''">
+             S_CREATEUSERNAME,
+            </if>
+            D_CREATETIME
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{id},
+            <if test="trainType !=null and trainType !=''">
+                #{trainType},
+            </if>
+            <if test="connectTrainType !=null and connectTrainType !=''">
+                #{connectTrainType},
+            </if>
+
+            <if test="createUserCode !=null and createUserCode !=''">
+                #{createUserCode},
+            </if>
+            <if test="createUserName !=null and createUserName !=''">
+                #{createUserName},
+            </if>
+            #{createTime}
+        </trim>
+    </insert>
+    <update id="updConnectTrainType" parameterType="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.ConnectTrainType">
+        update XZY_C_CONNECTTRAINTYPE
+        <set>
+            <if test="trainType !=null and trainType !=''">
+                S_TRAINTYPE=#{trainType},
+            </if>
+                S_CONNECTTRAINTYPE=#{connectTrainType},
+            <if test="createTime !=null ">
+                D_CREATETIME=#{createTime},
+            </if>
+            <if test="createUserCode !=null and createUserCode !=''">
+                S_CREATEUSERCODE=#{createUserCode},
+            </if>
+            <if test="createUserName !=null and createUserName !=''">
+                S_CREATEUSERNAME=#{createUserName},
+            </if>
+        </set>
+        where S_ID=#{id}
+    </update>
+    <delete id="delConnectTrainType" parameterType="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.ConnectTrainType">
+        delete from  XZY_C_CONNECTTRAINTYPE where 1=1
+        <if test="id!=null and id !=''">
+            and S_ID=#{id}
+        </if>
+        <if test="trainType!=null and trainType!=''">
+            and S_TRAINTYPE=#{trainType}
+        </if>
+    </delete>
+
+</mapper>

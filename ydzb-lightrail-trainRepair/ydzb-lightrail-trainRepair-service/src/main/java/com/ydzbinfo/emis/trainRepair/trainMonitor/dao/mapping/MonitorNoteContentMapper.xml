@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.trainMonitor.dao.MonitorNoteContentMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.MonitorNoteContent">
+        <id column="S_ID" property="id" />
+        <result column="S_CONTENT" property="content" />
+        <result column="S_CREATEUSERCODE" property="createUserCode" />
+        <result column="S_CREATEUSERNAME" property="createUserName" />
+        <result column="D_CREATETIME" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_ID, S_CONTENT, S_CREATEUSERCODE, S_CREATEUSERNAME, D_CREATETIME
+    </sql>
+    <select id="getMonitornotecontentsById" resultMap="BaseResultMap" >
+        select
+        <include refid="Base_Column_List"></include>
+        from
+        XZY_C_MONITORNOTECONTENT
+    </select>
+
+    <select id="getMonitornotecontentById" resultMap="BaseResultMap" parameterType="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.MonitorNoteContent">
+        select
+        <include refid="Base_Column_List"></include>
+        from
+        XZY_C_MONITORNOTECONTENT
+        where 1=1
+        <if test="id !=null and id !=''">
+            AND  S_ID=#{id}
+        </if>
+    </select>
+
+    <insert id="addMonitornotecontent" parameterType="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.MonitorNoteContent">
+        insert  into XZY_C_MONITORNOTECONTENT
+        (S_ID,
+        <if test="content!=null and content!=''">
+            S_CONTENT,
+        </if>
+        <if test="createUserCode !=null and createUserCode !=''">
+            S_CREATEUSERCODE,
+        </if>
+        <if test="createUserName !=null and createUserName !=''">
+            S_CREATEUSERNAME,
+        </if>
+            D_CREATETIME
+        )
+        values (
+        #{id},
+        <if test="content!=null and content!=''">
+            #{content},
+        </if>
+        <if test="createUserCode !=null and createUserCode !=''">
+            #{createUserCode},
+        </if>
+        <if test="createUserName !=null and createUserName !=''">
+            #{createUserName},
+        </if>
+        SYSDATE
+        )
+    </insert>
+    <update id="updMonitornotecontent" parameterType="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.MonitorNoteContent">
+        update XZY_C_MONITORNOTECONTENT
+        <set>
+            <if test="content!=null and content!=''">
+                S_CONTENT = #{content},
+            </if>
+            <if test="createUserCode !=null and createUserCode !=''">
+                S_CREATEUSERCODE = #{createUserCode},
+            </if>
+            <if test="createUserName !=null and createUserName !=''">
+                S_CREATEUSERNAME = #{createUserName},
+            </if>
+            <if test="createTime!=null ">
+                D_CREATETIME = #{createTime},
+            </if>
+        </set>
+        where S_ID=#{id}
+    </update>
+    <delete id="delMonitornotecontent" parameterType="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.MonitorNoteContent">
+    delete from XZY_C_MONITORNOTECONTENT where S_ID=#{id}
+    </delete>
+
+
+
+</mapper>

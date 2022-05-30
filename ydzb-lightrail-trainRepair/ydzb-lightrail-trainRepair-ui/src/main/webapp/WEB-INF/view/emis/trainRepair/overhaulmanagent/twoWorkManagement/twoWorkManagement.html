@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>二级修作业过程记录</title>
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="${publicStaticPath}/vue/vue.js"></script>
+    <link rel="stylesheet" href="${publicStaticPath}/elementUI/index.css">
+    <script src="${publicStaticPath}/elementUI/index.js"></script>
+    <script src="${ctxPath}/static/lib/elementUI/el-table-fix.js"></script>
+    <script src="${publicStaticPath}/vue/axios.min.js"></script>
+    <script src="${publicStaticPath}/IE/babel-browser.min.js"></script>
+    <script src="${ctxPath}/static/lib/image_url.js"></script>
+    <script src="${ctxPath}/static/utils/GeneralUtil.js"></script>
+    
+    <link
+    rel="stylesheet"
+    href="${ctxPath}/static/components/multipleSelect/multipleSelect.css"
+    />
+    <script src="${ctxPath}/static/components/multipleSelect/multipleSelect.js"></script>
+    <script>
+        var ctxpath = "${ctxPath}";
+    </script>
+    
+    <link rel="stylesheet"
+        href="${ctxPath}/static/trainRepair/overhaulmanagent/twoWorkManagement/css/twoWorkManagement.css">
+    
+    </head>
+</head>
+
+<body class="body">
+  <el-card class="box-card" id="one" v-cloak>
+    <div slot="header">
+      <span class="adorn"></span><h2>{{pageTitle}}</h2>
+    </div>
+
+    <div>
+      <el-row>
+        <el-col :span="5">
+          <span>开始日期：</span>
+          <el-date-picker size="mini" style="width: 180px;" v-model="search.starTime" value-format="yyyy-MM-dd"
+            type="date" placeholder="选择日期">
+          </el-date-picker>
+        </el-col>
+        <el-col :span="5">
+          <span>结束日期：</span>
+          <el-date-picker size="mini" style="width: 180px;" v-model="search.endTime" value-format="yyyy-MM-dd"
+              type="date" placeholder="选择日期">
+          </el-date-picker>
+        </el-col>
+        <el-col :span="5">
+          <span>车型：</span>
+          <el-select size="mini" style="width: 180px;" v-model="search.trainsetType" placeholder="请选择" clearable
+            filterable \@change="getTrainsetNameList">
+            <el-option v-for="item in trainTypeList" :key="item" :label="item" :value="item">
+            </el-option>
+          </el-select>
+        </el-col>
+        <el-col :span="5">
+          <span>车组：</span>
+          <el-select size="mini" style="width: 180px;" v-model="search.trainsetId" placeholder="请选择" clearable
+            filterable>
+            <el-option v-for="item in trainsetList" :key="item" :label="item" :value="item">
+            </el-option>
+          </el-select>
+        </el-col>
+        <el-col :span="5">
+          <span>作业班组：</span>
+          <el-select size="mini" style="width: 180px;" v-model="search.workTeam" placeholder="请选择" clearable
+            filterable \@change="getPersonByDept">
+            <el-option v-for="item in workTeamList" :key="item.id" :label="item.name" :value="item.id">
+            </el-option>
+          </el-select>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="5">
+          <span>作业包：</span>
+          <el-input v-model.trim="search.workPackage" size="mini" style="width: 180px;"></el-input>
+        </el-col>
+        <el-col :span="5">
+          <span>作业人员：</span>
+          <el-select size="mini" style="width: 180px;" v-model="search.workPeople" placeholder="请选择" clearable
+            filterable>
+            <el-option v-for="item in workPeopleList" :key="item.workId" :label="item.workName"
+              :value="item.workId">
+            </el-option>
+          </el-select>
+        </el-col>
+        <el-col :span="14" class="searchBtnBox">
+          <el-button size="mini" type="primary" v-on:click="clickList()">查询</el-button>
+          <el-button size="mini" type="primary" v-on:click="repeatHandle">重置</el-button>
+          @if(shiro.hasPermission("twoWorkManagement:edit")){
+            <el-button size="mini" type="primary" v-on:click="addTwoWorkProcess">新增</el-button>
+          @}
+        </el-col>
+      </el-row>
+    </div>
+    <el-table  
+      class="listTable"
+      :data="tableData" 
+      :height="scrollHeight" 
+      :header-cell-style="{background:'#d4e3ff',color:'#000'}" 
+      :row-class-name="tableRowClassName" 
+      style="width: 100%">
+      <el-table-column align="center" type="index" label="序号" width="80"></el-table-column>
+      <el-table-column align="center" prop="dayPlanId" label="作业班次" width="180" show-overflow-tooltip>
+        <template slot-scope="scope">
+          {{scope.row.dayPlanId | operationShift}}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" sortable prop="trainsetName" label="车组" width="180"
+        show-overflow-tooltip></el-table-column>
+      <el-table-column align="center" label="数据来源" width="140"
+        show-overflow-tooltip>
+        <template slot-scope="scope">
+          {{scope.row.dataSource | datesourseFilter}}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" sortable prop="processPacketList" label="作业包" width="120"
+        show-overflow-tooltip>
+        <template slot-scope="scope">
+          <span v-for="(item,index) in scope.row.processPacketList">
+            {{item.packetName}}
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" sortable prop="itemCount" label="项目数量" width="150"
+        show-overflow-tooltip>
+        <template slot-scope="scope">
+          <span style="cursor: pointer;color: #409eff;"
+          \@click="numberHandle(scope.row)">{{scope.row.itemCount}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" prop="deptName" label="作业班组" width="160" show-overflow-tooltip>
+      </el-table-column>
+      <el-table-column align="center" sortable prop="workerName" label="作业人员" width="130"
+        show-overflow-tooltip></el-table-column>
+      <el-table-column align="center" sortable prop="startTime" label="开始时间" width="180"
+        show-overflow-tooltip> </el-table-column>
+      <el-table-column align="center" sortable prop="endTime" label="结束时间" width="180" show-overflow-tooltip>
+        <template slot-scope="scope">
+          {{scope.row.endTime ? scope.row.endTime : '/'}}
+        </template>
+      </el-table-column>
+      <el-table-column align="center" prop="actualPicCount" label="实际图片数量" width="180" show-overflow-tooltip>
+        <template slot-scope="scope">
+          <span \@click="ClickPicCount(scope.row)"
+          style="cursor: pointer;color: #409eff;">{{scope.row.actualPicCount}}</span>
+        </template>
+      </el-table-column>
+      @if(shiro.hasPermission("twoWorkManagement:edit")){
+        <el-table-column align="center" label="操作">
+          <template slot-scope="scope">
+            <!-- <i class="el-icon-edit-outline" \@click="writeHandle(scope.row)"
+            style="cursor: pointer;color: #409eff;"></i> -->
+            <i class="el-icon-delete" \@click="deleteHandle(scope.row)"
+            style="cursor: pointer;color: #409eff;"></i>
+          </template>
+        </el-table-column>
+      @}
+    </el-table>
+    <div class="block" style="text-align: center;">
+      <el-pagination v-on:size-change="handleSizeChange" v-on:current-change="handleCurrentChange"
+        :current-page.sync="pageNum" :page-sizes="[10, 20, 30, 40,100]" :page-size="pageSize"
+        layout="total, sizes, prev, pager, next, jumper" :total="total">
+      </el-pagination>
+    </div>
+    
+    <!-- 点击新增按钮 -->
+    <el-dialog 
+      :title="twoWorkProcessDialog.addOrUpdate == 'add' ? '二级修作业记录 -- 新增' : '二级修作业记录 -- 查看'" 
+      :visible.sync="twoWorkProcessDialog.visible" 
+      width="55%" 
+      v-on:closed="onTwoWorkProcessDialogClosed"
+      :close-on-click-modal="false"
+    >
+      <el-form :model="twoWorkProcessDialog" :rules="twoWorkProcessDialogRules" ref="twoWorkProcessDialog" label-width="80px">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="作业班次：" prop="time">
+              <el-date-picker v-model="twoWorkProcessDialog.time" value-format="yyyy-MM-dd" type="date" placeholder="选择日期" :disabled="twoWorkProcessDialog.addOrUpdate == 'update'"
+                v-on:change="frequencyChange" style="width: 135px;">
+              </el-date-picker>
+              <el-select v-model="twoWorkProcessDialog.shift" filterable :disabled="twoWorkProcessDialog.addOrUpdate == 'update'" style="width: 80px;"
+                v-on:change="frequencyChange">
+                <el-option v-for="item in shiftList" :key="item.id" :label="item.name" :value="item.id">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="车组：" prop="trainset">
+              <el-select v-model="twoWorkProcessDialog.trainset" placeholder="请选择" filterable clearable :disabled="twoWorkProcessDialog.addOrUpdate == 'update'" \@change="getTrainset"
+                value-key="trainsetId">
+                <el-option v-for="(item,index) in addTrainsetList" :key="item.trainsetId" :label="item.trainsetName"
+                  :value="item">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="作业包：" prop="workPackage">
+              <el-select v-model="twoWorkProcessDialog.workPackage" placeholder="请选择" filterable clearable :disabled="twoWorkProcessDialog.addOrUpdate == 'update'" value-key="packetCode"
+                \@change="workPackageChange">
+                <el-option v-for="item in workPackageList" :key="item.packetCode" :label="item.packetName" :value="item">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="作业项目：" prop="workProject">
+              <lp-select
+                v-if="twoWorkProcessDialog.addOrUpdate == 'add'"
+                v-model="twoWorkProcessDialog.workProject"
+                :list="workProjectList"
+                label="itemName"
+                show-text="itemName"
+                \@change="changeWorkProject"
+                :edit="false"
+              ></lp-select>
+              <el-popover
+                placement="top-start"
+                title="作业项目："
+                trigger="hover"
+                v-else>
+                <div v-html="getWorkProjectUpdate"></div>
+                <el-input slot="reference" v-model.trim="twoWorkProcessDialog.workProjectUpdate" style="width: 217px;" disabled></el-input>
+              </el-popover>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="作业班组：" prop="workTeam">
+              <el-select v-model="twoWorkProcessDialog.workTeam" placeholder="请选择" filterable clearable :disabled="twoWorkProcessDialog.addOrUpdate == 'update'" value-key="deptCode"
+                v-on:change="getPersonByDept">
+                <el-option v-for="item in addWorkTeamList" :key="item.deptCode" :label="item.deptName" :value="item">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="作业人员：" prop="workPeople">
+              <el-select v-model="twoWorkProcessDialog.workPeople" collapse-tags placeholder="请选择" multiple filterable clearable
+              v-if="twoWorkProcessDialog.addOrUpdate == 'add'" value-key="workId">
+                <el-option v-for="item in addWorkPeopleList" :key="item.workId" :label="item.workName" :value="item">
+                </el-option>
+              </el-select>
+              <el-input v-model.trim="twoWorkProcessDialog.workPeopleUpdate" style="width: 217px;" disabled v-else></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="开始时间：" prop="starTime">
+              <el-date-picker value-format="yyyy-MM-dd HH:mm:ss" v-model="twoWorkProcessDialog.starTime" type="datetime" placeholder="选择日期时间">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="结束时间：" prop="endTime">
+              <el-date-picker value-format="yyyy-MM-dd HH:mm:ss" v-model="twoWorkProcessDialog.endTime" type="datetime" placeholder="选择日期时间">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+
+      <div class="dialo">
+        <span class="dialspan"> 作业图片：</span>
+        <div style="display: inline-block;">{{twoWorkProcessDialog.imgLength}}张</div>
+        <el-button type="primary" size="mini" style="width: 90px; margin-left: 15px;" v-on:click="pictureHandle">
+          选择图片
+        </el-button>
+      </div>
+
+
+      <div class="popButton" style="margin-top: 10px; text-align: center;">
+        <el-button type="primary" size="mini" v-on:click="dialogServe('twoWorkProcessDialog')">保存</el-button>
+        <el-button type="primary" size="mini" v-on:click="cancelTwoWorkProcessDialog">取消</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 点击列表项目数量 -->
+    <el-dialog title="二级修作业记录 -- 作业项目详情" :visible.sync="dialogVisibleNum" width="50%" :close-on-click-modal="false">
+      <el-table :data="xiangmuList.processItemList" style="width: 100%" height="300"
+        :header-cell-style="{background:'#d4e3ff',color:'#000'}" :row-class-name="tableRowClassName"
+        :default-sort="{prop: 'actualPicCount', order: 'descending'}" style="width: 100%">
+        <el-table-column align="center" type="index" label="序号" width="80"></el-table-column>
+        <el-table-column align="center" label="作业包">
+          <template slot-scope="scope">
+            {{rowsObj.processPacketList[0].packetName}}
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="项目名称">
+          <template slot-scope="scope">
+            {{scope.row.itemName}}
+          </template>
+        </el-table-column>
+      </el-table>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" v-on:click="dialogVisibleNum = false">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- 点击dialog中得上传图片按钮 -->
+    <el-dialog 
+      title="二级修作业记录 -- 上传图片" 
+      :visible.sync="uploadPicture.visible" 
+      width="870px" 
+      v-on:close="onUploadPictureDialogClose"
+      :close-on-click-modal="false"
+    >
+      <span>作业项目：</span>
+      <el-select v-model="uploadPicture.uploadPictureproject" clearable placeholder="请选择" clearable filterable style="width: 300px;" \@change="projectChange">
+        <el-option v-for="item in twoWorkProcessDialog.workProject" :key="item.itemCode" :label="item.itemName" :value="item.itemCode">
+        </el-option>
+      </el-select>
+      <span style="margin-left: 15px;">作业辆序：</span>
+      <el-select v-model="uploadPicture.workercarNo" clearable placeholder="请选择" clearable filterable style="width: 150px;margin-right: 20px;">
+        <el-option v-for="item in carNoList" :key="item" :label="item" :value="item">
+        </el-option>
+      </el-select>
+      <el-upload class="upload-demo" action="#" multiple list-type="picture" :show-file-list="false"
+        :auto-upload="true" :http-request="successImg" :before-upload="beforeAvatarUploadPdf">
+        <el-button type="primary" size="mini" v-on:click="select_img">
+          选择图片
+        </el-button>
+      </el-upload>
+
+      <div class="picAll">
+        <p>图片展示：</p>
+        <div style="padding: 0 10px; height: 350px; overflow-y: auto;">
+          <el-collapse :value="Object.keys(uploadPicture.uploadImgList)" v-for="(item, projectCode) in uploadPicture.uploadImgList" :key="projectCode">
+            <el-collapse-item :title="projectCodeMap[projectCode][0].itemName" :name="projectCode">
+              <el-collapse style="padding: 0 15px;" :value="Object.keys(item)" v-for="(value, key) in item" :key="key">
+                <el-collapse-item :title="key" :name="key">
+                  <div class="img-list">
+                    <div style="position: relative;" v-for="(img, imgIndex) in value"
+                      :key="img">
+                      <el-image class="img" :src="img" fit="contain" :preview-src-list="[img]">
+                      </el-image>
+                      <div class="delete_img" \@click="deleteImgs(imgIndex, projectCode, key)">
+                        <i class="el-icon-delete"></i>
+                      </div>
+                    </div>
+                  </div>
+                </el-collapse-item>
+              </el-collapse>
+            </el-collapse-item>
+          </el-collapse>
+        </div>
+      </div>
+      <div style="text-align: center; margin-top: 10px;">
+        <el-button size="mini" type="primary" v-on:click="dialogVisiblePicOk">确 定</el-button>
+        <el-button size="mini" type="primary" v-on:click="dialogVisiblePicNo">取 消</el-button>
+      </div>
+    </el-dialog>
+
+    <!--点击列表的实际图片数量  -->
+    <el-dialog 
+      title="二级修作业记录 -- 实际图片数量" 
+      :visible.sync="dialogVisiblePicCount" 
+      width="50%" 
+      :close-on-click-modal="false"
+    >
+      <div class="picAll">
+        <p>图片展示：</p>
+        <div style="padding: 0 10px; height: 275px; overflow-y: auto;">
+          <el-collapse v-for="(value, projectCode) in uploadPicture.uploadImgList" :key="projectCode">
+            <el-collapse-item :title="projectCodeMap[projectCode][0].itemName" :name="projectCode">
+              <el-collapse style="padding: 0 10px;">
+                <div v-for="item in carNoList" :key="item">
+                  <el-collapse-item :title="item | carNosFilter" :name="item" v-if="value[item]"
+                    style="padding: 0 15px;">
+                    <div class="img-list">
+                      <el-image v-for="img in value[item]" :key="img" class="img" :src="img"
+                        fit="contain" :preview-src-list="[img]">
+                      </el-image>
+                    </div>
+                  </el-collapse-item>
+                </div>
+              </el-collapse>
+            </el-collapse-item>
+          </el-collapse>
+        </div>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="mini" type="primary" v-on:click="dialogVisiblePicCount = false">确 定</el-button>
+      </span>
+    </el-dialog>
+  </el-card>
+
+  <!-- <script src="${ctxPath}/static/trainRepair/overhaulmanagent/twoWorkManagement/js/twoWorkManagement.js" type="text/babel"></script> -->
+  <script src="${ctxPath}/static/trainRepair/overhaulmanagent/twoWorkManagement/js/twoWorkManagement.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.repairworkflow.dao.FlowRunMapper">
+    <resultMap id="FlowRunWithExtraInfoMap"
+               autoMapping="true"
+               type="com.ydzbinfo.emis.trainRepair.repairworkflow.querymodel.extend.FlowRunWithExtraInfo">
+        <id column="id" property="id"/>
+        <collection property="flowRunExtraInfoList"
+                    columnPrefix="E_"
+                    autoMapping="true"
+                    ofType="com.ydzbinfo.emis.trainRepair.repairworkflow.querymodel.FlowRunExtraInfo">
+        </collection>
+    </resultMap>
+
+
+    <resultMap id="RuntimeRoleMap" type="com.ydzbinfo.emis.trainRepair.repairworkflow.model.RuntimeRole">
+        <result column="S_TRAINSETID" property="trainsetId"/>
+        <result column="S_POSTID" property="roleId"/>
+        <result column="type" property="type"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ${tableAlias}S_ID as "${columnPrefix}id",
+        ${tableAlias}S_FLOWID as "${columnPrefix}flowId",
+        ${tableAlias}S_FLOWTYPECODE as "${columnPrefix}flowTypeCode",
+        ${tableAlias}S_DAYPLANID as "${columnPrefix}dayPlanId",
+        ${tableAlias}S_TRAINSETID as "${columnPrefix}trainsetId",
+        ${tableAlias}S_TRACKCODE as "${columnPrefix}trackCode",
+        ${tableAlias}S_HEADTRACKPOSITIONCODE as "${columnPrefix}headTrackPositionCode",
+        ${tableAlias}S_TAILTRACKPOSITIONCODE as "${columnPrefix}tailTrackPositionCode",
+        ${tableAlias}S_TRACKNAME as "${columnPrefix}trackName",
+        ${tableAlias}S_HEADTRACKPOSITIONNAME as "${columnPrefix}headTrackPositionName",
+        ${tableAlias}S_TAILTRACKPOSITIONNAME as "${columnPrefix}tailTrackPositionName",
+        ${tableAlias}S_STARTTYPE as "${columnPrefix}startType",
+        ${tableAlias}D_STARTTIME as "${columnPrefix}startTime",
+        ${tableAlias}S_STARTWORKERID as "${columnPrefix}startWorkerId",
+        ${tableAlias}S_STARTWORKERNAME as "${columnPrefix}startWorkerName",
+        ${tableAlias}S_UNITCODE as "${columnPrefix}unitCode",
+        ${tableAlias}S_STATE as "${columnPrefix}state"
+    </sql>
+
+    <select id="getFlowRunWithExtraInfos" resultMap="FlowRunWithExtraInfoMap">
+        select
+        S_ID,
+        <include refid="Base_Column_List">
+            <property name="tableAlias" value="f."/>
+            <property name="columnPrefix" value=""/>
+        </include>
+        ,
+        <include refid="com.ydzbinfo.emis.trainRepair.repairworkflow.dao.FlowRunExtraInfoMapper.Base_Column_List">
+            <property name="tableAlias" value="fe."/>
+            <property name="columnPrefix" value="E_"/>
+        </include>
+
+        from XZY_M_FLOWRUN f
+        LEFT JOIN XZY_M_FLOWRUNEXTRAINFO fe on f.S_ID=fe.S_FLOWRUNID
+        where 1=1
+        <if test="dayPlanIds!=null">
+            and f.S_DAYPLANID in
+            <foreach collection="dayPlanIds" item="dayPlanId" index="index" open="(" close=")" separator=",">
+                #{dayPlanId}
+            </foreach>
+        </if>
+        <if test="flowTypeCodes!=null">
+            and f.S_FLOWTYPECODE in
+            <foreach collection="flowTypeCodes" item="flowTypeCode" open="(" close=")" separator=",">
+                #{flowTypeCode}
+            </foreach>
+        </if>
+        <if test="flowRunId !=null and flowRunId!=''">
+            and f.S_ID=#{flowRunId}
+        </if>
+        <if test="trainsetId!=null and trainsetId!=''">
+            and f.S_TRAINSETID=#{trainsetId}
+        </if>
+        <if test="flowId!=null and flowId!=''">
+            and f.S_FLOWID=#{flowId}
+        </if>
+        <if test="startDate!=null and endDate!=null">
+            and f.D_STARTTIME &gt; #{startDate} and f.D_STARTTIME &lt; #{endDate}
+        </if>
+        <if test="unitCode!=null">
+            and f.S_UNITCODE=#{unitCode}
+        </if>
+        <if test="flowRunState!=null and flowRunState!=''">
+            and f.S_STATE=#{flowRunState}
+        </if>
+        <if test="flowRunIds != null and flowRunIds.length > 0">
+            and f.S_ID in
+            <foreach collection="flowRunIds" item="flowRunId" open="(" close=")" separator=",">
+                #{flowRunId}
+            </foreach>
+        </if>
+        <if test="dayPlanCode!=null and dayPlanCode!=''">
+            and substr(f.S_DAYPLANID,12,2)=#{dayPlanCode}
+        </if>
+        ORDER BY f.S_STATE,f.D_STARTTIME DESC
+    </select>
+
+    <select id="getTaskPostList" resultMap="RuntimeRoleMap">
+        select t.S_TRAINSETID ,post.S_POSTID
+        from XZY_M_TASKCARPART t,XZY_M_TASKALLOTPERSON son,XZY_M_TASKALLOTPERSONPOST post
+        where
+        t.S_PROCESSID=son.S_PROCESSID
+        and SON.S_TASKALLOTPERSONID = post.S_TASKALLOTPERSONID
+        and t.S_DAYPLANID=#{dayPlanId} and t.S_UNITCODE=#{unitCode}
+        and son.S_WORKERID=#{staffId}
+        <if test="trainsetId!=null and trainsetId!=''">
+            and t.S_TRAINSETID=#{trainsetId}
+        </if>
+    </select>
+
+    <select id="getTaskPostWorkTeamList" resultType="com.ydzbinfo.emis.trainRepair.common.model.WorkTeam">
+        select dept.S_DEPTCODE as "teamCode", dept.S_DEPTNAME as "teamName"
+        from XZY_M_TASKALLOTDEPT dept
+        left join XZY_M_TASKCARPART post on post.S_TASKALLOTDEPTID = dept.S_TASKALLOTDEPTID
+        left join XZY_M_TASKALLOTPERSON person on person.S_PROCESSID = post.S_PROCESSID
+        where post.S_DAYPLANID = #{dayPlanId}
+        and post.S_UNITCODE = #{unitCode}
+        and post.S_TRAINSETID in
+        <foreach collection="trainsetIds" item="trainsetId" open="(" close=")" separator=",">
+            #{trainsetId}
+        </foreach>
+        and person.S_WORKERID = #{staffId}
+    </select>
+
+    <select id="getFaultIdList" resultType="java.lang.String">
+        select e.S_VALUE
+        from XZY_M_FLOWRUN f,
+             XZY_M_FLOWRUNEXTRAINFO e
+        where f.S_ID = e.S_FLOWRUNID
+          and e.S_TYPE = 'FAULT_ID'
+          and e.S_VALUE is not NULL
+          and f.S_UNITCODE = #{unitCode}
+    </select>
+
+    <select id="getFlowRunList" resultType="java.lang.String">
+        select t.S_TRAINSETID from XZY_M_FLOWRUN t
+        where t.S_STATE='0'
+        <if test="unitCode != null and unitCode != '' ">
+            and t.S_UNITCODE = #{unitCode}
+        </if>
+        <if test="flowCode != null and flowCode !='' ">
+            and t.S_FLOWTYPECODE=#{flowCode}
+        </if>
+
+        <if test="startDataTime != null and endDataTime != null">
+            and t.D_STARTTIME &gt; #{startDataTime} and t.D_STARTTIME &lt; #{endDataTime}
+        </if>
+
+    </select>
+
+    <select id="getPostByStaffId" resultMap="RuntimeRoleMap">
+        select post.s_postid
+        from XZY_C_POST post inner join  XZY_C_PERSONPOST person on post.s_postid=person.s_postid and post.c_flag='1' and person.c_flag='1'
+        where 1=1
+        <if test="unitCode!=null and unitCode!=''">
+            and person.S_UNITCODE=#{unitCode}
+        </if>
+        <if test="staffId!=null and staffId!=''">
+            and   person.S_STAFFID=#{staffId}
+        </if>
+    </select>
+</mapper>

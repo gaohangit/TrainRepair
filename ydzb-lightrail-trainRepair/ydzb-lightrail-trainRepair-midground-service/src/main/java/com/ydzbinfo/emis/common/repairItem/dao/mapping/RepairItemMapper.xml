@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.common.repairItem.dao.RepairItemMapper">
+    <select id="selectRepairItemList" resultType="com.ydzbinfo.emis.trainRepair.taskAllot.model.RepairItemVo">
+        select * from (
+        SELECT
+        distinct
+        t.S_SPREPAIRITEMCODE as itemCode,
+        t.S_SPREPAIRITEMNAME as itemName,
+        s.S_TRAINSETTYPE as trainsetType
+        FROM
+        pl_b_sprepairitem_dict t,
+        PL_C_ITEMTRAINSETTYPE s,
+        PL_B_ITEMCARV2 c
+        WHERE
+        t.C_USEDFLAG = '1'
+        AND t.S_SPREPAIRITEMCODE = s.S_SPREPAIRITEMCODE
+        AND s.C_USEDFLAG = '1'
+        AND c.S_ITEMTRAINSETTYPEID = s.S_ITEMTRAINSETTYPEID
+        <if test="trainType != null and trainType != ''">
+            and s.S_TRAINSETTYPE = #{trainType}
+        </if>
+        <if test="itemName != null and itemName != ''">
+            and UPPER(t.S_SPREPAIRITEMNAME) like UPPER(#{itemName}) escape '\'
+        </if>
+        <if test="itemCode != null and itemCode != ''">
+            and s.S_TRAINSETTYPE = #{itemCode}
+        </if>
+        ) rs
+        <where>
+            <if test="existItems != null and existItems.size() > 0">
+                and (
+                <trim prefixOverrides="and|or">
+                    <foreach collection="existItems" item="existItem">
+                        <choose>
+                            <when test="include">
+                                or
+                            </when>
+                            <otherwise>
+                                and not
+                            </otherwise>
+                        </choose>
+                        (
+                        <choose>
+                            <when test="existItem.trainsetType != null and existItem.trainsetType != ''">
+                                rs.trainsetType = #{existItem.trainsetType}
+                            </when>
+                            <otherwise>
+                                rs.trainsetType is null
+                            </otherwise>
+                        </choose>
+                        and rs.itemCode = #{existItem.itemCode}
+                        )
+                    </foreach>
+                </trim>
+                )
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.mobile.oftenfunction.dao.PhoneOftenFunctionMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.mobile.querymodel.PhoneOftenFunction">
+        <id column="S_ID" property="id"/>
+        <result column="S_STAFFID" property="staffId"/>
+        <result column="S_PHONEMODULEID" property="phoneModuleId"/>
+        <result column="D_CREATETIME" property="createTime"/>
+        <result column="C_FLAG" property="flag"/>
+        <result column="S_CREATEUSERCODE" property="createUserCode"/>
+        <result column="S_CREATEUSERNAME" property="createUserName"/>
+        <result column="D_DELTIME" property="delTime"/>
+        <result column="S_DELUSERCODE" property="delUserCode"/>
+        <result column="S_DELUSERNAME" property="delUserName"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_ID, S_STAFFID, S_PHONEMODULEID, D_CREATETIME, C_FLAG, S_CREATEUSERCODE,
+        S_CREATEUSERNAME, D_DELTIME, S_DELUSERCODE, S_DELUSERNAME
+    </sql>
+
+    <!--获取常用功能-->
+    <select id="getOftenFunction" resultType="java.lang.String">
+        select
+            a.S_PHONEMODULEID as phoneModuleId
+        from XZY_B_PHONEOFTENFUNCTION a left join XZY_C_PHONEOFTENFUNCTION b
+        on a.S_PHONEMODULEID = b.S_PHONEMODULEID
+        <where>
+            <if test="staffId!=null and staffId!=''">
+                and b.S_STAFFID = #{staffId}
+            </if>
+                and b.C_FLAG = 1
+                and b.S_TYPE=#{type}
+        </where>
+        order by a.S_SORTID
+    </select>
+
+    <!--设置常用功能-->
+    <insert id="setOftenFunction">
+        insert all
+        <foreach collection="list" item="item">
+            into XZY_C_PHONEOFTENFUNCTION(S_ID,S_STAFFID,S_PHONEMODULEID,D_CREATETIME, C_FLAG, S_CREATEUSERCODE, S_CREATEUSERNAME)
+            values (
+            #{item.id},#{item.staffId},#{item.phomeModuleId},#{item.createTime},#{item.flag},#{item.createUserCode},#{item.createUserName})
+        </foreach>
+        select 1 from dual
+    </insert>
+    
+    <!--删除常用功能-->
+    <update id="delOftenFunction">
+        update XZY_C_PHONEOFTENFUNCTION
+        <set>
+            <if test="delTime !=null ">
+                D_DELTIME=#{delTime},
+            </if>
+            <if test="delUserCode !=null and delUserCode !=''">
+                S_DELUSERCODE=#{delUserCode},
+            </if>
+            <if test="delUserName !=null and delUserName !=''">
+                S_DELUSERNAME=#{delUserName},
+            </if>
+            C_FLAG = 0
+        </set>
+        where S_STAFFID = #{staffId}
+        and C_FLAG = 1
+    </update>
+</mapper>

@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.ydzbinfo.emis.trainRepair.taskAllot.dao.XzyMTaskAllotPersonMapper">
+
+	<!--通用查询映射结果 -->
+	<resultMap id="BaseResultMap"
+		type="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyMTaskallotperson">
+		<id column="S_TASKALLOTPERSONID" property="taskAllotPersonId" />
+		<result column="S_WORKERID" property="workerID" />
+		<result column="S_WORKERNAME" property="workerName" />
+		<result column="S_WORKERTYPE" property="workerType" />
+		<result column="S_PROCESSID" property="processId" />
+	</resultMap>
+
+	<!-- 通用查询结果列 -->
+	<sql id="Base_Column_List">
+		S_TASKALLOTPERSONID AS taskAllotPersonId,
+		S_WORKERID AS workerID,
+		S_WORKERNAME AS workerName,
+		S_WORKERTYPE AS workerType,
+		S_PROCESSID AS processId
+	</sql>
+
+	<!-- 根据部件id查询派工人员 -->
+	<select id="getTaskAllotPersonListByProcessId"
+		resultType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyMTaskallotperson">
+		select
+		<include refid="Base_Column_List"></include>
+		from XZY_M_TASKALLOTPERSON
+		where S_PROCESSID = #{processId}
+	</select>
+
+	<!-- 增加派工人员 -->
+	<insert id="setTaskAllotPerson"
+		parameterType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyMTaskallotperson">
+		insert into XZY_M_TASKALLOTPERSON
+		(
+		<if test="workerID != null and workerID != ''">
+			S_WORKERID,
+		</if>
+		<if test="workerName != null and workerName != ''">
+			S_WORKERNAME,
+		</if>
+		<if test="workerType != null and workerType != ''">
+			S_WORKERTYPE,
+		</if>
+		<if test="processId != null and processId != ''">
+			S_PROCESSID,
+		</if>
+		S_TASKALLOTPERSONID
+		)
+		values (
+		<if test="workerID != null and workerID != ''">
+			#{workerID},
+		</if>
+		<if test="workerName != null and workerName != ''">
+			#{workerName},
+		</if>
+		<if test="workerType != null and workerType != ''">
+			#{workerType},
+		</if>
+		<if test="processId != null and processId != ''">
+			#{processId},
+		</if>
+		#{taskAllotPersonId}
+		)
+	</insert>
+
+
+	<!-- 根据 prossid 集合 删除人员 -->
+	<delete id="deletePerson" parameterType="Map">
+		delete from xzy_m_taskallotperson t
+		where t.S_PROCESSID in
+		(
+		select t.S_PROCESSID
+		from XZY_M_TASKCARPART t,
+		xzy_m_taskallotdept td
+		where td.s_taskallotdeptid = t.s_taskallotdeptid
+		<if test="dayplanId != null and dayplanId != ''">
+			and t.s_dayplanid = #{dayplanId}
+		</if>
+		<if test="unitCode != null and unitCode != ''">
+			and t.s_unitcode = #{unitCode}
+		</if>
+		<if test="deptCode != null and deptCode != ''">
+			and td.s_deptcode = #{deptCode}
+		</if>
+		)
+	</delete>
+
+
+	<!-- 根据 prossid 集合 删除人员 -->
+	<resultMap id="getPersonsMap" type="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyMTaskallotperson" autoMapping="true">
+		<id column="taskAllotPersonId" property="taskAllotPersonId"></id>
+		<collection property="taskAllotPersonPostEntityList" columnPrefix="B_" ofType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.TaskAllotPersonPostEntity" autoMapping="true">
+			<id column="sId" property="sId"></id>
+		</collection>
+	</resultMap>
+	<select id="getPersons" parameterType="Map" resultMap="getPersonsMap">
+		select
+		t.S_TASKALLOTPERSONID AS taskAllotPersonId,
+		t.S_WORKERID AS workerID,
+		t.S_WORKERNAME AS workerName,
+		t.S_WORKERTYPE AS workerType,
+		t.S_PROCESSID AS processId,
+		tp.S_ID AS B_sId,
+		tp.S_POSTID AS B_postId,
+		tp.S_POSTNAME AS B_postName,
+		tp.S_TASKALLOTPERSONID AS B_taskAllotPersonId
+		from XZY_M_TASKALLOTPERSON t
+		inner join XZY_M_TASKCARPART tc on t.s_processid = tc.s_processid
+		inner join xzy_m_taskallotdept td on td.s_taskallotdeptid = tc.s_taskallotdeptid
+		left join XZY_M_TASKALLOTPERSONPOST tp on t.s_taskallotpersonid=tp.s_taskallotpersonid
+		where 1=1
+		<if test="processIds != null and processIds.size() > 0">
+			<bind name="values" value="processIds"/>
+			<include refid="com.ydzbinfo.emis.base.dao.YdzbBaseMapper.And_Huge_Size_In">
+				<property name="column" value="t.S_PROCESSID"/>
+			</include>
+		</if>
+		<if test="dayPlanId != null and dayPlanId != ''">
+			and tc.s_dayplanid = #{dayPlanId}
+		</if>
+		<if test="unitCode != null and unitCode != ''">
+			and tc.s_unitcode = #{unitCode}
+		</if>
+		<if test="deptCode != null and deptCode != ''">
+			and td.s_deptcode = #{deptCode}
+		</if>
+	</select>
+
+	<select id="getPersonPosts" resultType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.TaskAllotPersonPostEntity">
+		select
+		S_ID as sID,
+		S_TASKALLOTPERSONID as taskAllotPersonId,
+		S_POSTID as postID,
+		S_POSTNAME as postName
+		from XZY_M_TASKALLOTPERSONPOST
+		where 1=1
+		and S_TASKALLOTPERSONID in
+		<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</select>
+
+
+	<!-- 根据派工包id、班次、部门code查询派工人员 -->
+	<select id="getTaskAllotPerson"
+			resultType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyMTaskallotperson">
+		select a.S_TASKALLOTPERSONID AS taskAllotPersonId,
+		a.S_WORKERID AS workerID,
+		a.S_WORKERNAME AS workerName,
+		a.S_WORKERTYPE AS workerType,
+		a.S_PROCESSID AS processId
+		from XZY_M_TASKALLOTPERSON a
+		, XZY_M_TASKCARPART c
+		where a.S_PROCESSID = c.S_PROCESSID(+)
+		<if test="taskAllotPacketId != null and taskAllotPacketId != ''">
+			and c.S_TASKALLOTPACKETID = #{taskAllotPacketId}
+		</if>
+		<if test="dayplanId != null and dayplanId != ''">
+			and c.S_DAYPLANID = #{dayplanId}
+		</if>
+		<if test="deptCode != null and deptCode != ''">
+			and c.S_TASKALLOTDEPTID = #{deptCode}
+		</if>
+		<if test="repairType != null and repairType !=''">
+			and c.S_REPAIRTYPE = #{repairType}
+		</if>
+		<if test="trainsetName != null and trainsetName !=''">
+			and c.S_TRAINSETNAME = #{trainsetName}
+		</if>
+	</select>
+
+	<select id="getPersonByPacket" resultType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyMTaskallotperson">
+		select
+		t.S_TASKALLOTPERSONID AS taskAllotPersonId,
+		t.S_WORKERID AS workerID,
+		t.S_WORKERNAME AS workerName,
+		t.S_WORKERTYPE AS workerType,
+		t.S_PROCESSID AS processId
+		from XZY_M_TASKALLOTPERSON t
+		left join XZY_M_TASKCARPART tc on t.S_PROCESSID = tc.S_PROCESSID
+		left join XZY_M_TASKALLOTPACKET p on p.s_taskallotpacketid = tc.s_taskallotpacketid
+		where 1=1
+		<if test="packetCode != null and packetCode != ''">
+			and p.S_PACKETCODE = #{packetCode}
+		</if>
+		<if test="dayPlanId != null and dayPlanId != ''">
+			and tc.s_dayplanid = #{dayPlanId}
+		</if>
+		<if test="trainsetId != null and trainsetId != ''">
+			and tc.s_trainsetid = #{trainsetId}
+		</if>
+	</select>
+
+	<select id="getTaskAllotPersonListByProcessIds" resultType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyMTaskallotperson">
+		select
+		<include refid="Base_Column_List"></include>
+		from XZY_M_TASKALLOTPERSON
+		where
+		1 = 1
+		<if test="list != null and list.size() > 0">
+			<bind name="values" value="list"/>
+			<include refid="com.ydzbinfo.emis.base.dao.YdzbBaseMapper.And_Huge_Size_In">
+				<property name="column" value="S_PROCESSID"/>
+			</include>
+			<!--and (S_PROCESSID in
+			<trim suffixOverrides=" OR S_PROCESSID in ()">
+				<foreach collection="list" item="item" index="index" open="(" close=")">
+					<if test="index != 0">
+						<choose>
+							<when test="index % 1000 == 999">
+								) or S_PROCESSID in (
+							</when>
+							<otherwise>
+								,
+							</otherwise>
+						</choose>
+					</if>
+					#{item}
+				</foreach>
+			</trim>
+			)-->
+		</if>
+	</select>
+
+
+</mapper>

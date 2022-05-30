@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.taskAllot.dao.XzyBTaskallotshowDictMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyBTaskallotshowDict">
+        <id column="S_TASKALLOTSHOWCODE" property="sTaskallotshowcode" />
+        <result column="S_TASKALLOTSHOWNAME" property="sTaskallotshowname" />
+        <result column="S_REMARK" property="sRemark" />
+        <result column="C_FLAG" property="cFlag" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+      c.s_itemtypecode as itemTypeCode,
+      a.S_TASKALLOTSHOWCODE AS sTaskallotshowcode,
+      a.S_TASKALLOTSHOWNAME AS sTaskallotshowname,
+      a.S_REMARK AS sRemark,
+      a.C_FLAG AS cFlag
+    </sql>
+
+    <!-- 根据派工类型获取派工显示字典 -->
+    <select id="getShowDictByTaskAllotType" resultType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyBTaskallotshowDict">
+        select <include refid="Base_Column_List"></include>
+        from XZY_B_TASKALLOTSHOW_DICT a
+        left join
+        XZY_B_ALLOTSHOWCONTENT b on a.S_TASKALLOTSHOWCODE = b.S_TASKALLOTSHOWCODE
+        left join
+        TI_B_ITEMTYPE_DICT c on c.s_itemtypecode = b.S_TASKALLOTTYPECODE
+        where 1 = 1 and a.c_flag='1' and c.c_flag='1'
+        <if test="taskAllotType!=null and taskAllotType!=''">
+            and c.s_itemtypecode = #{taskAllotType}
+        </if>
+    </select>
+
+</mapper>

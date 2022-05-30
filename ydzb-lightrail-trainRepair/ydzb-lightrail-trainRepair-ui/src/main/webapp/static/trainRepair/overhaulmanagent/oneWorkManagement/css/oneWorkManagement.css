@@ -1,0 +1,326 @@
+[v-cloak] {
+  display: none !important;
+}
+
+html,
+body,
+#one {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+ul,
+li {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+
+.container {
+  height: 100%;
+}
+
+.el-card {
+  height: calc(100% - 2px);
+}
+
+.el-card__header {
+  position: relative;
+  height: 42px;
+  line-height: 42px;
+  padding: 0 0 0 32px;
+}
+
+.adorn {
+  position: absolute;
+  left: 20px;
+  top: 9px;
+  width: 5px;
+  height: 25px;
+  background-color: #4e86fe;
+}
+
+.el-card__body {
+  padding: 0 20px;
+  height: calc(100% - 84px);
+}
+
+.el-card__header h2 {
+  margin: 0;
+  font-size: 21px;
+}
+
+.dialo {
+  margin: 10px 0;
+  display: inline-block;
+  width: 49%;
+}
+
+.dialspan {
+  display: inline-block;
+  width: 115px;
+  text-align: right;
+}
+
+.picLi {
+  height: 85px;
+}
+
+.el-divider--horizontal {
+  display: block;
+  height: 1px;
+  width: 100%;
+  margin: 21px 0;
+}
+
+.picUl {
+  overflow: auto;
+  height: 100%;
+}
+
+.picLiOne {
+  text-align: center;
+  height: 43px;
+  width: 10%;
+  line-height: 43px;
+}
+
+.upload-demo {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.img-list {
+  flex: 1;
+  display: flex;
+  width: 80%;
+  flex-wrap: nowrap;
+  justify-content: start;
+  align-items: center;
+  margin: 0 5px;
+}
+
+.img-list > div {
+  position: relative;
+}
+
+.img-list .img {
+  width: 97px;
+  height: 60px;
+  margin: 0 5px;
+}
+
+.delete_img {
+  position: absolute;
+  margin: 0 5px;
+  top: 0px;
+  bottom: 0;
+  right: 0;
+  width: 16px;
+  height: 18px;
+  text-align: center;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.5);
+  transition: opacity 0.3s;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.img-list:hover .delete_img {
+  /* display: block; */
+  opacity: 1;
+}
+
+.delete_img:hover i {
+  color: red;
+}
+
+/*点击列表  */
+.dialNews {
+  width: 100%;
+}
+
+.dialNews tr {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.dialNews tr td {
+  padding: 10px 0 10px 24px;
+  text-align: left;
+  width: 50%;
+}
+
+.diaSpan {
+  width: 96%;
+  display: inline-block;
+  margin-bottom: 10px;
+  position: relative;
+  min-height: 140px;
+  background: #f5f5f5;
+  border-radius: 20px;
+  padding: 10px;
+}
+
+.dia {
+  display: inline-block;
+  text-align: center;
+  width: 49%;
+  margin: 10px 0;
+}
+
+/* span.el-tag.el-tag--info.el-tag--small.el-tag--light {
+    width: 50px;
+    padding: 0;
+} */
+
+.select_nowarp .el-select__tags > span {
+  display: block;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+[v-cloak] {
+  display: none !important;
+}
+
+/* 后续补充 */
+
+.header {
+  height: auto !important;
+}
+
+.el-col {
+  margin: 10px 0;
+}
+
+.el-col-5 {
+  width: 20%;
+  text-align: right;
+}
+
+/* .el-input {
+  max-width: 170px;
+} */
+
+.el-input--mini .el-input__inner {
+  height: 30px;
+  line-height: 30px;
+}
+
+.searchBtnBox {
+  width: 60%;
+  text-align: end;
+}
+
+.el-table .warning-row {
+  background: #f4f6fd;
+}
+
+.el-table .success-row {
+  background: #ffffff;
+}
+
+.el-date-picker__header {
+  margin: 0;
+  background-color: #fff;
+}
+
+.el-picker-panel__content {
+  padding: 15px;
+  margin: 0;
+  background-color: #fff;
+}
+
+.el-date-picker__time-header {
+  background-color: #fff;
+}
+
+.el-dialog {
+  border-radius: 7px;
+}
+
+.el-dialog__header {
+  padding: 10px;
+  text-align: left;
+  height: 20px;
+  background: #409eff;
+  border-radius: 6px 6px 0 0;
+}
+
+.el-dialog__title {
+  color: #fff;
+}
+
+.el-dialog__headerbtn {
+  top: 12px;
+}
+
+.el-dialog__headerbtn .el-dialog__close {
+  color: #fff;
+}
+
+.el-dialog__headerbtn  .el-dialog__close:hover {
+  color: #fff !important;
+}
+
+.el-dialog__footer {
+  text-align: center;
+}
+
+.startAndEnd {
+  color: #4f85ff;
+}
+
+.requiredSpan {
+  color: red;
+  vertical-align: middle;
+}
+
+.doubleClickImg .el-dialog__body {
+  padding: 0;
+}
+
+.doubleClickImg img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
+.el-message-box__btns {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+}
+
+.el-message-box__btns button:nth-child(1) {
+  color: #fff;
+  background-color: #409eff;
+  border-color: #409eff;
+}
+
+.el-message-box__btns button:nth-child(1):focus,
+.el-message-box__btns button:nth-child(1):hover {
+  color: rgb(255, 255, 255);
+  background: rgb(102, 177, 255);
+  border-color: rgb(102, 177, 255);
+}
+
+.el-message-box__btns button:nth-child(2) {
+  margin-right: 10px;
+}
+
+.el-image-viewer__close {
+  color: #ffffff;
+}
+
+.el-form-item__label {
+  width: 120px !important;
+}
+
+.el-form-item {
+  margin-bottom: 0;
+}

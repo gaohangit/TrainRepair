@@ -1,0 +1,262 @@
+.hyperlink-dialog {
+    width: 520px;
+    height: 420px;
+    overflow: hidden;
+}
+
+.hyperlink-dialog-text-info {
+    margin: 15px 15px 5px 15px;
+}
+
+.hyperlink-dialog-text-info > div {
+    margin-bottom: 15px;
+}
+
+.hyperlinkAddressInputEle {
+    display: none;
+}
+
+.hyperlink-dialog-display div {
+    width: 100px;
+    display: inline-block;
+}
+
+.hyperlink-dialog-display input {
+    width: 240px;
+    display: inline-block;
+}
+
+.hyperlink-dialog-screen-tip > div {
+    width: 100px;
+    display: inline-block;
+}
+
+.hyperlink-dialog-screen-tip input {
+    width: 240px;
+    display: inline-block;
+}
+
+.hyperlink-dialog-drawUnderline {
+    display: inline-block;
+}
+
+.hyperlink-dialog-drawUnderline > div {
+    display: inline-block;
+}
+
+.hyperlink-dialog-draw-underline-label {
+    margin-right: 20px;
+}
+
+.hyperlink-dialog-draw-underline-input {
+    margin-right: 90px;
+}
+
+.hyperlink-dialog-link-color .color-span {
+    display: block;
+    height: 15px;
+    width: 125px;
+    border: 1px solid lightgray;
+}
+
+
+.hyperlink-dialog-target {
+    display: inline-block;
+}
+
+.hyperlink-dialog-target div {
+    display: inline-block;
+}
+
+.hyperlink-dialog-target-label {
+    margin-right: 20px;
+}
+
+.hyperlink-dialog-target select {
+    display: inline-block;
+}
+
+.hyperlink-dialog-link-color {
+    margin-bottom: 10px;
+}
+
+.hyperlink-dialog-link-color label {
+    display: inline-block;
+    width: 150px;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+#hyperlink-dialog-link-color-selector {
+    display: inline-block;
+    height: 18px;
+    width: 100px;
+}
+
+#hyperlink-dialog-link-color-selector .link-color-span {
+    display: inline-block;
+    width: 70px;
+    height: 13px;
+}
+
+.hyperlink-dialog-visited-link-color {
+    display: inline-block;
+}
+
+.hyperlink-dialog-visited-link-color label {
+    display: inline-block;
+    width: 150px;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+#hyperlink-dialog-visited-link-color-selector {
+    display: inline-block;
+    height: 18px;
+    width: 100px;
+}
+
+#hyperlink-dialog-visited-link-color-selector .visited-link-color-span {
+    display: inline-block;
+    width: 70px;
+    height: 13px;
+}
+
+.hyperlink-dialog-link-info {
+    display: inline-block;
+    width: 470px;
+    margin-left: 15px;
+    margin-right: 15px;
+    height: 200px;
+}
+
+.hyperlink-dialog-link-info legend {
+    margin: 0;
+}
+
+.hyperlink-dialog-link-info > div {
+    height: 180px;
+}
+
+.hyperlink-dialog-link-type ul {
+    padding: 0;
+    margin: 0;
+}
+
+
+.hyperlink-dialog-link-type li {
+    display: inline-block;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.hyperlink-dialog-link-type li button {
+    width: 150px;
+    text-align: center;
+    /*border-left: 1px solid;*/
+    /*border-top: 1px solid;*/
+    /*border-bottom: 1px solid;*/
+    height: 25px;
+}
+
+/*.hyperlink-dialog-link-type li div span {*/
+/*    display: inline-block;*/
+/*}*/
+
+.hyperlink-web-page {
+    display: inline-block;
+}
+
+.hyperlink-document {
+    display: inline-block;
+}
+
+.hyperlink-email {
+    display: inline-block;
+    /*border-right: 1px solid;*/
+}
+
+.hyperlink-web-page-details {
+    padding: 15px;
+}
+
+.hyperlink-web-page-details > div {
+    margin-bottom: 15px;
+}
+
+.hyperlink-web-page-details label {
+    display: inline-block;
+    width: 75px;
+}
+
+.hyperlink-web-page-details input {
+    display: inline-block;
+    width: 240px;
+}
+
+.hyperlink-document-details {
+    padding: 15px;
+    height: 155px;
+    /*display: none;*/
+}
+
+.hyperlink-document-details-cell-reference {
+    margin-bottom: 10px;
+}
+
+.hyperlink-document-details-cell-reference label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.hyperlink-document-details-cell-reference input {
+    width: 300px;
+}
+
+.hyperlink-document-details span {
+    display: inline-block;
+    margin-bottom: 5px;
+}
+
+.hyperlink-document-details-place {
+    overflow: scroll;
+    background-color: white;
+    height: 95px;
+}
+
+.hyperlink-document-details-place ul {
+    padding: 5px 5px 5px 20px;
+    margin: 0;
+}
+
+.hyperlink-document-details-place ul li a {
+    text-decoration: none;
+}
+
+.hyperlinkDefinedNames > div{
+    margin-left: 15px;
+}
+
+
+
+.hyperlink-email-details {
+    /*display: none;*/
+}
+
+.hyperlink-email-details > div {
+    padding: 25px 0 10px 20px;
+}
+
+.hyperlink-email-details label {
+    display: block;
+    padding-bottom: 5px;;
+}
+
+.hyperlink-email-details input {
+    width: 80%;
+}
+
+.activeSelect {
+    background-color: #dbdbdb;
+}

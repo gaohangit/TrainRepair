@@ -1,0 +1,123 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+html,
+body {
+  height: 100%;
+}
+
+#app {
+  height: 100%;
+}
+
+.el-card {
+  height: calc(100% - 2px);
+}
+
+.el-card__header {
+  position: relative;
+  height: 42px;
+  line-height: 42px;
+  padding: 0 0 0 32px;
+}
+
+.adorn {
+  position: absolute;
+  left: 20px;
+  top: 9px;
+  width: 5px;
+  height: 25px;
+  background-color: #4e86fe;
+}
+
+.el-card__body {
+  height: calc(100% - 40px);
+  padding: 0;
+}
+
+.text-l {
+  text-align: left;
+}
+.text-r {
+  text-align: right;
+}
+/* .el-select {
+  width: 100%;
+}
+.el-input {
+  width: 100%;
+} */
+.el-select__tags {
+  overflow: hidden;
+  flex-wrap: nowrap;
+}
+.el-container {
+  height: 100%;
+  padding: 10px 0;
+}
+.el-header {
+  height: unset !important;
+}
+.el-main {
+  padding-bottom: 10px;
+  padding-top: 0px;
+  height: calc(100% - 150px);
+}
+.main-table {
+  height: 100%;
+}
+.el-table td {
+  padding: 5px 0;
+}
+.el-footer {
+  height: unset !important;
+}
+.center-dialog {
+  display: flex;
+}
+.center-dialog .el-dialog {
+  margin: auto;
+}
+.form-left {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.form-left .el-form-item {
+  width: 25%;
+}
+.el-form-item__content > div {
+  width: 100% !important;
+}
+.el-buttons {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+.el-buttons .el-form-item__content {
+  margin-left: 0 !important;
+}
+
+.el-message-box__btns {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+}
+
+.el-message-box__btns button:nth-child(1) {
+  color: #fff;
+  background-color: #409eff;
+  border-color: #409eff;
+}
+
+.el-message-box__btns button:nth-child(1):focus,
+.el-message-box__btns button:nth-child(1):hover {
+  color: rgb(255, 255, 255);
+  background: rgb(102, 177, 255);
+  border-color: rgb(102, 177, 255);
+}
+
+.el-message-box__btns button:nth-child(2) {
+  margin-right: 10px;
+}

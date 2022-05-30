@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.common.dao.LogMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ${tableAlias}S_ID as "${columnPrefix}id",
+        ${tableAlias}S_TYPE as "${columnPrefix}type",
+        ${tableAlias}S_MODULE as "${columnPrefix}module",
+        ${tableAlias}D_CREATETIME as "${columnPrefix}createTime",
+        ${tableAlias}S_CREATESTAFFNAME as "${columnPrefix}createstaffname",
+        ${tableAlias}S_CREATESTAFFID as "${columnPrefix}createstaffid",
+        ${tableAlias}S_ADDRESSIP as "${columnPrefix}addressip",
+        ${tableAlias}S_CONTENT as "${columnPrefix}content"
+    </sql>
+
+</mapper>

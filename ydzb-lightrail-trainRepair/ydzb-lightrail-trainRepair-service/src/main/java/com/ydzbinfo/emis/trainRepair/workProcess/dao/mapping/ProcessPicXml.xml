@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.workProcess.dao.ProcessPicMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.workprocess.querymodel.ProcessPic">
+        <id column="S_PICID" property="picId" />
+        <result column="S_PICADDRESS" property="picAddress" />
+        <result column="S_PICNAME" property="picName" />
+        <result column="S_PICTYPE" property="picType" />
+        <result column="S_WORKTYPE" property="workType" />
+        <result column="S_DAYPLANID" property="dayplanId" />
+        <result column="D_CREATETIME" property="createTime" />
+        <result column="S_TRAINSETID" property="trainsetId" />
+        <result column="S_TRAINSETNAME" property="trainsetName" />
+        <result column="S_UNITCODE" property="unitCode" />
+        <result column="S_ITEMCODE" property="itemCode" />
+        <result column="S_PARTPOSITION" property="partPosition" />
+        <result column="S_WORKERID" property="workerId" />
+        <result column="S_CARNO" property="carNo" />
+        <result column="S_SORTID" property="sortId" />
+        <result column="S_PARTNAME" property="partName" />
+        <result column="S_PARTTYPE" property="partType" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_PICID, S_PICADDRESS, S_PICNAME, S_PICTYPE, S_WORKTYPE, S_DAYPLANID, D_CREATETIME, S_TRAINSETID, S_TRAINSETNAME, S_UNITCODE, S_ITEMCODE, S_PARTPOSITION, S_WORKERID, S_CARNO, S_SORTID, S_PARTNAME, S_PARTTYPE
+    </sql>
+
+</mapper>

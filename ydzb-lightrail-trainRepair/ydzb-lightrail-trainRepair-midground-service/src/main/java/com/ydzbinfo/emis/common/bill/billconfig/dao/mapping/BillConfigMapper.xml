@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.common.bill.billconfig.dao.BillConfigMapper">
+    <sql id="AndQueryTemplateModel">
+        <bind name="paramEntity" value="_parameter"/>
+        <bind name="likeProperties" value="'itemName,batch'"/>
+        <include refid="com.ydzbinfo.emis.base.dao.YdzbBaseMapper.And_Simple_Conditions">
+            <property name="tableAlias" value="${tableAlias}"/>
+        </include>
+
+        <if test="unitCodes != null and unitCodes.length > 0">
+            and ${tableAlias}S_UNITCODE in
+            <foreach collection="unitCodes" item="unitCode" open="(" close=")" separator=",">
+                #{unitCode}
+            </foreach>
+        </if>
+        <if test="batches != null and batches.length > 0">
+            and ${tableAlias}S_BATCH in
+            <foreach collection="batches" item="batch" open="(" close=")" separator=",">
+                #{batch}
+            </foreach>
+        </if>
+        <if test="trainsetTypes != null and trainsetTypes.length > 0">
+            and ${tableAlias}S_TRAINSETTYPE in
+            <foreach collection="trainsetTypes" item="trainsetType" open="(" close=")" separator=",">
+                #{trainsetType}
+            </foreach>
+        </if>
+        <if test="templateTypeCodes != null and templateTypeCodes.length > 0">
+            and ${tableAlias}S_TEMPLATETYPECODE in
+            <foreach collection="templateTypeCodes" item="templateTypeCode" open="(" close=")" separator=",">
+                #{templateTypeCode}
+            </foreach>
+        </if>
+        <if test="!showCustomTemplate">
+            and ${typeTableAlias}C_SYSTEMPLATE <![CDATA[<>]]> '1'
+        </if>
+        <if test="!showSystemTemplate">
+            and ${typeTableAlias}C_SYSTEMPLATE <![CDATA[<>]]> '0'
+        </if>
+    </sql>
+    <!-- 记录单据配置不带分页记录单查看功能 -->
+    <select id="queryBills" parameterType="Map"
+            resultType="com.ydzbinfo.emis.trainRepair.bill.querymodel.templateprocess.TemplateProcessForShow">
+        select
+        t1.S_TEMPLATETYPENAME as templateTypeName,
+        t1.C_MORECELLFLAG as moreCellFlag,
+        <include refid="com.ydzbinfo.emis.common.bill.billconfig.dao.TemplateProcessMapper.Base_Column_List">
+            <property name="tableAlias" value="t."/>
+            <property name="columnPrefix" value=""/>
+        </include>
+        from
+        XZY_C_TEMPLATEPROCESSSUMMARY t
+        left join XZY_C_TEMPLATETYPE t1 on t.s_templatetypecode = t1.s_templatetypecode
+        <where>
+            <include refid="AndQueryTemplateModel">
+                <property name="tableAlias" value="t."/>
+                <property name="typeTableAlias" value="t1."/>
+            </include>
+        </where>
+
+    </select>
+
+    <!-- 记录单查询发布表查询 -->
+    <select id="queryReleaseBills"
+            resultType="com.ydzbinfo.emis.trainRepair.bill.querymodel.templatesummary.TemplateSummaryForShow">
+        select
+        t1.S_TEMPLATETYPENAME as templateTypeName,
+        t1.C_MORECELLFLAG as moreCellFlag,
+        <include refid="com.ydzbinfo.emis.common.bill.billconfig.dao.TemplateSummaryMapper.Base_Column_List">
+            <property name="tableAlias" value="t."/>
+            <property name="columnPrefix" value=""/>
+        </include>
+        from XZY_C_TEMPLATESUMMARY t
+        left join XZY_C_TEMPLATETYPE t1 on t.s_templatetypecode = t1.s_templatetypecode
+        <where>
+            <include refid="AndQueryTemplateModel">
+                <property name="tableAlias" value="t."/>
+                <property name="typeTableAlias" value="t1."/>
+            </include>
+            and t.C_VALIDFLAG = '1'
+        </where>
+
+    </select>
+
+</mapper>

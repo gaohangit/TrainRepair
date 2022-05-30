@@ -1,0 +1,363 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+[v-cloak] {
+  display: none;
+}
+html,
+body,
+#keyWorkFlowMonitor,
+.container {
+  height: 100%;
+  overflow: hidden;
+}
+.container {
+  background: url('../img/bg.jpg') no-repeat;
+  background-size: 100% 100%;
+}
+.container-header {
+  height: 6% !important;
+  position: relative;
+}
+
+.tc {
+  text-align: center;
+}
+.title {
+  color: #46e6fe;
+  font-weight: bolder;
+  font-size: 25px;
+  letter-spacing: 2px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sub-title {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: 20px;
+  top: 0;
+}
+@font-face {
+  font-family: timeFont;
+  src: url(../font/UnidreamLED.ttf);
+}
+.time1,
+.time2 {
+  color: #46e6fe;
+  font-weight: 500;
+  font-size: 25px;
+  margin-right: 10px;
+}
+.time2 {
+  font-size: 30px;
+  font-family: timeFont;
+  letter-spacing: 3px;
+}
+.custom-button {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: absolute;
+  right: 0;
+  width: 91px;
+  background: #031130;
+  border-radius: 10px;
+  border: 1px solid #0089ff;
+  z-index: 2;
+  padding: 4px;
+
+}
+
+.custom-button img{
+  width: 17px;
+  height: 17px;
+}
+.common-button {
+  top: 25px;
+}
+.monitor-button {
+  top: 57px;
+
+}
+.monitor-dialog .el-dialog__body {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.monitor-dialog {
+  background-color: #142841;
+}
+.monitor-dialog .el-dialog__header {
+  padding: 0;
+}
+.monitor-dialog .el-dialog__headerbtn {
+  top: 8px;
+}
+.monitor-dialog .el-dialog__headerbtn .el-dialog__close {
+  color: #46e6fe;
+}
+.monitor-dialog .el-dialog__header .el-dialog__title {
+  width: 200px;
+  display: inline-block;
+}
+
+.little-title {
+  /* height: 4%; */
+  background: url('../img/subtitle.png') no-repeat;
+  background-size: 100% 100%;
+  color: #46e6fe;
+  font-size: 16px;
+  text-align: center;
+  font-weight: 700;
+  line-height: 30px;
+}
+/* .little-title .el-input .el-input__icon {
+  line-height: 20px;
+}
+.little-title .el-input input {
+  height: 25px;
+}
+.little-title .el-input .el-input__count .el-input__count-inner {
+  background-color: #1a324e;
+ border: 1px solid #1a324e; 
+  color: #fff;
+} */
+
+.el-button.cancel-button {
+  background-color: #7396c3;
+  border: 1px solid #7396c3;
+  color: #fff;
+  padding: 10px 35px;
+}
+.el-button.confirm-button {
+  background-color: #5190e2;
+  border: 1px solid #5190e2;
+  color: #fff;
+  padding: 10px 35px;
+}
+.el-main {
+  display: flex;
+  flex-direction: column;
+}
+
+.table-container {
+
+  height: calc(100% - 250px);
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  background-color: #0a2747;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.main-table {
+  width: 100%;
+}
+
+.main-table:last-child {
+  margin-right: 0px;
+}
+.keyWork-table {
+  border-radius: 5px;
+  border: 1px solid #425d9a;
+  background-color: rgba(20, 70, 121, 0.33);
+}
+.keyWork-table td,
+.keyWork-table th.is-leaf {
+  border-bottom: 1px solid #425d9a;
+}
+.keyWork-table th {
+  text-align: center;
+  color: #68c0ff;
+}
+.keyWork-table td {
+  text-align: center;
+  padding: 6px 0;
+}
+.table-header th {
+  background-color: #081c38;
+}
+.odd td {
+  background-color: #081c38;
+  color: #fff;
+}
+.even td {
+  background-color: #23354d;
+  color: #fff;
+}
+.keyWork-table tbody tr:hover td {
+  background-color: #081c38 !important;
+}
+.keyWork-table .el-table__body tr.hover-row td {
+  background-color: #081c38 !important;
+}
+.keyWork-table .el-table__fixed {
+  height: 100% !important;
+}
+
+.el-table--scrollable-x .el-table__body-wrapper {
+  z-index: 1;
+}
+.el-table__fixed::before {
+  background-color: unset;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #ffffff;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-corner {
+  background-color: rgba(20, 70, 121, 0.33);
+}
+
+.dialog-title-text {
+  color: #799cf0;
+  margin: 20px 0;
+}
+.dialog-title-text .el-input {
+  width: 100px;
+}
+.dialog-title-text .el-select .el-input {
+  width: 200px;
+}
+.dialog-title-text .el-input__inner {
+  background-color: #22395b;
+  border: 1px solid #22395b;
+  color: #799cf0;
+}
+.dialog-title-text .el-input__suffix {
+  color: #799cf0;
+}
+.dialog-title-text .el-select .el-input .el-select__caret {
+  color: #799cf0;
+}
+.popper-down {
+  border: 1px solid#22395b;
+  background: #22395b;
+}
+.popper-down .el-select-dropdown__empty {
+  background-color: #22395b;
+  color: #799cf0;
+}
+.popper-down .popper__arrow {
+  border-bottom-color: #22395b !important;
+}
+.popper-down .popper__arrow::after {
+  border-bottom-color: #22395b !important;
+}
+.popper-down .el-select-dropdown__item {
+  background-color: #22395b;
+}
+
+.config-button {
+  color: #425d9a;
+  border: 3px solid #425d9a;
+  background: unset;
+  font-weight: bold;
+}
+
+.track-container {
+  min-height: 140px;
+  height: unset !important;
+  margin-bottom: 15px;
+}
+
+.el-select-dropdown__item {
+  color: #799cf0;
+}
+
+.el-footer {
+  height: unset !important;
+}
+.el-footer .el-pagination.is-background .el-pager li {
+  color: #1682cb;
+  background-color: #0f3562;
+}
+.el-pagination.is-background .el-pager li:not(.disabled).active {
+  color: #000000;
+  background-color: #00e4fd;
+}
+.el-pagination {
+  margin-top: -10px;
+  text-align: right;
+}
+.el-pagination__total {
+  color: #fff;
+}
+.el-pagination__sizes input {
+  color: #fff;
+  background-color: #4a70a1;
+}
+.el-pagination button {
+  background-color: #4a70a1 !important;
+}
+.el-pagination .btn-next,
+.el-pagination .btn-prev {
+  color: #fff;
+}
+.el-pager li {
+  background-color: #4a70a1;
+  color: #fff;
+}
+
+.draggable-scroll {
+  max-height: 400px;
+  overflow: scroll;
+  border-radius: 5px;
+  border: 1px solid #425d9a;
+}
+/* 
+.table-title {
+  font-weight: bold;
+  color: #68c0ff;
+} */
+
+.el-switch__core {
+  width: 60px !important;
+  height: 26px !important;
+  z-index: 2;
+  opacity: 0.5;
+}
+.el-switch__core::after {
+  /* margin-left: -25px; */
+  height: 20px !important;
+  top: 2px;
+  /* left: 86%; */
+}
+.el-switch.is-checked .el-switch__core::after {
+  left: 100%;
+  margin-left: -26px;
+}
+.el-switch__core:after {
+  width: 24px;
+  border-radius: 8px;
+  background-color: #5180ff;
+}
+
+.switch {
+  display: inline;
+  position: relative;
+  width: 50px;
+}
+.switch-choose {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: inline-flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 60px;
+  line-height: 24px;
+  z-index: 1;
+}

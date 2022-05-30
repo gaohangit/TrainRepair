@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.common.bill.typeconfig.dao.TemplateTypeMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.bill.querymodel.attribute.TemplateType">
+        <id column="S_TEMPLATETYPECODE" property="templateTypeCode"/>
+        <result column="S_TEMPLATETYPENAME" property="templateTypeName"/>
+        <result column="S_FATHERTYPECODE" property="fatherTypeCode"/>
+        <result column="S_REMARK" property="remark"/>
+        <result column="C_MORECELLFLAG" property="moreCellFlag"/>
+        <result column="S_TYPE" property="type"/>
+        <result column="C_SYSTYPE" property="sysType"/>
+        <result column="C_SYSTEMPLATE" property="sysTemplate"/>
+        <result column="S_ITEMTYPE" property="itemType"/>
+        <result column="C_SYNFLAG" property="synFlag"/>
+        <result column="D_SYNDATE" property="synDate"/>
+        <result column="D_CREATETIME" property="createTime"/>
+        <result column="S_CREATEUSERCODE" property="createUserCode"/>
+        <result column="S_CREATEUSERNAME" property="createUserName"/>
+        <result column="D_DELTIME" property="delTime"/>
+        <result column="S_DELUSERCODE" property="delUserCode"/>
+        <result column="S_DELUSERNAME" property="delUserName"/>
+        <result column="C_FLAG" property="flag"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ${tableAlias}S_TEMPLATETYPECODE as "${columnPrefix}templateTypeCode",
+        ${tableAlias}S_TEMPLATETYPENAME as "${columnPrefix}templateTypeName",
+        ${tableAlias}S_FATHERTYPECODE as "${columnPrefix}fatherTypeCode",
+        ${tableAlias}S_REMARK as "${columnPrefix}remark",
+        ${tableAlias}C_MORECELLFLAG as "${columnPrefix}moreCellFlag",
+        ${tableAlias}S_TYPE as "${columnPrefix}type",
+        ${tableAlias}C_SYSTYPE as "${columnPrefix}sysType",
+        ${tableAlias}C_SYSTEMPLATE as "${columnPrefix}sysTemplate",
+        ${tableAlias}S_ITEMTYPE as "${columnPrefix}itemType",
+        ${tableAlias}C_SYNFLAG as "${columnPrefix}synFlag",
+        ${tableAlias}D_SYNDATE as "${columnPrefix}synDate",
+        ${tableAlias}D_CREATETIME as "${columnPrefix}createTime",
+        ${tableAlias}S_CREATEUSERCODE as "${columnPrefix}createUserCode",
+        ${tableAlias}S_CREATEUSERNAME as "${columnPrefix}createUserName",
+        ${tableAlias}D_DELTIME as "${columnPrefix}delTime",
+        ${tableAlias}S_DELUSERCODE as "${columnPrefix}delUserCode",
+        ${tableAlias}S_DELUSERNAME as "${columnPrefix}delUserName",
+        ${tableAlias}C_FLAG as "${columnPrefix}flag"
+    </sql>
+
+    <!--获取单据类型、子类型、单据名称下拉列表-->
+    <select id="getTemplateType" resultType="com.ydzbinfo.emis.trainRepair.bill.querymodel.attribute.TemplateType">
+        select
+        <include refid="Base_Column_List">
+            <property name="tableAlias" value=""/>
+            <property name="columnPrefix" value=""/>
+        </include>
+        from XZY_C_TEMPLATETYPE
+        where 1=1
+        <if test="cFlag!=null and cFlag!=''">
+            and C_FLAG=#{cFlag}
+        </if>
+        <if test="type!=null and type!=''">
+            and S_TYPE=#{type}
+        </if>
+        <if test="fatherCode!=null and fatherCode!=''">
+            and S_FATHERTYPECODE=#{fatherCode}
+        </if>
+        <if test="sysType!=null and sysType!=''">
+            and C_SYSTYPE=#{sysType}
+        </if>
+        order by S_TEMPLATETYPENAME
+    </select>
+
+    <!--查询单据类型列表-->
+    <select id="getTemplateTypeList"
+            resultType="com.ydzbinfo.emis.trainRepair.bill.model.attribute.TemplateTypeForShow">
+        select
+        a.S_TEMPLATETYPECODE as templateTypeCode,
+        a.S_TEMPLATETYPENAME as templateTypeName,
+        a.S_FATHERTYPECODE as fatherTypeCode,
+        (select S_TEMPLATETYPENAME from XZY_C_TEMPLATETYPE b where b.S_TEMPLATETYPECODE=a.S_FATHERTYPECODE) as
+        fatherTypeName,
+        (select S_TEMPLATETYPECODE from XZY_C_TEMPLATETYPE c where c.S_TEMPLATETYPECODE=((select S_FATHERTYPECODE from
+        XZY_C_TEMPLATETYPE b where b.S_TEMPLATETYPECODE=a.S_FATHERTYPECODE))) as oneTypeCode,
+        (select S_TEMPLATETYPENAME from XZY_C_TEMPLATETYPE c where c.S_TEMPLATETYPECODE=((select S_FATHERTYPECODE from
+        XZY_C_TEMPLATETYPE b where b.S_TEMPLATETYPECODE=a.S_FATHERTYPECODE))) as oneTypeName,
+        a.S_REMARK as remark,
+        a.C_MORECELLFLAG as moreCellFlag,
+        a.S_TYPE as type,
+        a.C_SYSTYPE as sysType,
+        a.C_SYSTEMPLATE as sysTemplate,
+        a.S_ITEMTYPE as itemType,
+        a.D_CREATETIME as createTime,
+        a.S_CREATEUSERNAME as createUserName,
+        a.C_FLAG as flag,
+        (select to_char(substr(replace(wm_concat(c.S_QUERYCODE),',',','),1,20000)) templatevalues from XZY_C_TEMPLATELINKQUERY b
+        inner join XZY_B_TEMPLATEQUERY c on b.S_QUERYCODE=c.S_QUERYCODE where b.S_TEMPLATETYPECODE=a.S_TEMPLATETYPECODE and b.c_flag='1')
+        queryCodes,
+        (select to_char(substr(replace(wm_concat(c.S_QUERYNAME),',',','),1,20000)) templatevalues from XZY_C_TEMPLATELINKQUERY b
+        inner join XZY_B_TEMPLATEQUERY c on b.S_QUERYCODE=c.S_QUERYCODE where b.S_TEMPLATETYPECODE=a.S_TEMPLATETYPECODE and b.c_flag='1')
+        queryNames,
+        (select to_char(substr(replace(wm_concat(c.S_ATTRIBUTECODE),',',','),1,20000)) attrCodes from XZY_C_TEMPLATELINKATTR b inner
+        join XZY_B_TEMPLATEATTRIBUTE c on b.S_ATTRIBUTECODE=c.S_ATTRIBUTECODE where
+        b.S_TEMPLATETYPECODE=a.S_TEMPLATETYPECODE and c.c_flag='1' and b.c_flag='1') templateLinkAttrs,
+        (select to_char(substr(replace(wm_concat(c.S_ATTRIBUTENAME),',',','),1,20000)) attrCodes from XZY_C_TEMPLATELINKATTR b inner
+        join XZY_B_TEMPLATEATTRIBUTE c on b.S_ATTRIBUTECODE=c.S_ATTRIBUTECODE where
+        b.S_TEMPLATETYPECODE=a.S_TEMPLATETYPECODE and c.c_flag='1' and b.c_flag='1') templateLinkAttrNames
+        from XZY_C_TEMPLATETYPE a
+        where
+        1=1 and a.S_TYPE='3'
+        <if test="oneTypeCode!=null and oneTypeCode!=''">
+            and (select S_TEMPLATETYPECODE from XZY_C_TEMPLATETYPE c where c.S_TEMPLATETYPECODE=((select
+            S_FATHERTYPECODE from XZY_C_TEMPLATETYPE b where b.S_TEMPLATETYPECODE=a.S_FATHERTYPECODE)))=#{oneTypeCode}
+        </if>
+        <if test="fatherTypeCode!=null and fatherTypeCode!=''">
+            and a.S_FATHERTYPECODE=#{fatherTypeCode}
+        </if>
+        <if test="templateTypeName!=null and templateTypeName!=''">
+            and lower(a.S_TEMPLATETYPENAME) like CONCAT(CONCAT('%',lower(#{templateTypeName})),'%') escape '\'
+        </if>
+        <if test="flag!=null and flag!=''">
+            and a.C_FLAG=#{flag}
+        </if>
+        <if test="sysType!=null and sysType!=''">
+            and a.C_SYSTYPE=#{sysType}
+        </if>
+        order by  oneTypeName,fatherTypeName,a.S_TEMPLATETYPENAME
+    </select>
+
+    <!--根据fathercodes获取多个templateTypeCode-->
+    <select id="getTypeCodesByFatherCodes"
+            resultType="com.ydzbinfo.emis.trainRepair.bill.querymodel.attribute.TemplateType">
+        select
+        S_TEMPLATETYPECODE as templateTypeCode,
+        S_TEMPLATETYPENAME as templateTypeName,
+        S_FATHERTYPECODE as fatherTypeCode,
+        S_TYPE as type
+        from XZY_C_TEMPLATETYPE
+        where C_FLAG = '1'
+        and S_FATHERTYPECODE in
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+    <!--获取关联条件下拉列表-->
+    <select id="getQueryList" resultType="com.ydzbinfo.emis.trainRepair.bill.querymodel.attribute.TemplateQuery">
+        select S_QUERYCODE as queryCode,
+               S_QUERYNAME as queryName,
+               S_REMARK    as remark
+        from XZY_B_TEMPLATEQUERY
+    </select>
+
+    <!--删除关联条件关系（逻辑删除）-->
+    <update id="delQuery">
+        update XZY_C_TEMPLATELINKQUERY set
+        C_FLAG='0',D_DELTIME=sysdate,S_DELUSERCODE=#{delUserCode},S_DELUSERNAME=#{delUserName} where S_TEMPLATETYPECODE
+        in
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </update>
+
+    <!--删除关联条件关系（物理删除）-->
+    <delete id="delQueryPhysics" parameterType="String">
+        delete from XZY_C_TEMPLATELINKQUERY where S_TEMPLATETYPECODE in
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+
+    <!--插入关联条件关系-->
+    <insert id="addQuerys">
+        insert all
+        <foreach collection="templateLinkQueryParamModelList" item="item" index="index" separator=" ">
+            into XZY_C_TEMPLATELINKQUERY
+            (
+            S_ID,S_QUERYCODE,S_TEMPLATETYPECODE,S_CREATEUSER,S_CREATETIME,C_FLAG
+            )
+            values
+            (
+            sys_guid(),#{item.queryCode},#{item.templateTypeCode},#{item.createUser},sysdate,'1'
+            )
+        </foreach>
+        select 1 from dual
+    </insert>
+
+    <!--批量新增单据类型-->
+    <insert id="addTemplateTypes" parameterType="list">
+        insert all
+        <foreach collection="list" item="item" index="index" separator=" ">
+            into XZY_C_TEMPLATETYPE
+            (
+            S_TEMPLATETYPECODE,S_TEMPLATETYPENAME,S_FATHERTYPECODE,C_MORECELLFLAG,S_TYPE,C_SYSTYPE,C_SYSTEMPLATE,
+            D_CREATETIME,S_CREATEUSERCODE,S_CREATEUSERNAME,C_FLAG
+            )
+            values
+            (
+            #{item.templateTypeCode},#{item.templateTypeName},#{item.fatherTypeCode},'0',#{item.type},#{item.sysType},#{item.sysTemplate},
+            sysdate,#{item.createUserCode},#{item.createUserName},'1'
+            )
+        </foreach>
+        select 1 from dual
+    </insert>
+
+    <!--删除单据类型（逻辑删除）-->
+    <update id="delTemplateType">
+        update XZY_C_TEMPLATETYPE set
+        C_FLAG='0',D_DELTIME=sysdate,
+        S_DELUSERCODE=#{delUserCode},
+        S_DELUSERNAME=#{delUserName},
+        S_TEMPLATETYPECODE=S_TEMPLATETYPECODE || '_' || sys_guid()
+        where 1=1
+        and S_TEMPLATETYPECODE in
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </update>
+
+    <!--删除该模板类型的所有关联属性（逻辑删除）-->
+    <update id="delTemplateLinkAttrs" parameterType="String">
+        update XZY_C_TEMPLATELINKATTR set C_FLAG =
+        '0',D_DELTIME=sysdate,S_DELUSERCODE=#{delUserCode},S_DELUSERNAME=#{delUserName} where S_TEMPLATETYPECODE in
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </update>
+
+    <!--删除该模板类型的所有关联属性（物理删除）-->
+    <delete id="delTemplateLinkAttrsPhysics" parameterType="String">
+        delete from XZY_C_TEMPLATELINKATTR where S_TEMPLATETYPECODE in
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+
+    <!--批量插入该模板类型的关联属性-->
+    <insert id="addTemplateLinkAttrs" parameterType="list">
+        insert all
+        <foreach collection="list" item="item" index="index" separator=" ">
+            into XZY_C_TEMPLATELINKATTR
+            (
+            S_ID,S_ATTRIBUTECODE,S_TEMPLATETYPECODE,C_ISCHANGE,
+            S_CREATEUSERCODE,S_CREATEUSERNAME,S_CREATETIME,C_FLAG
+            )
+            values
+            (
+            sys_guid(),#{item.attributeCode},#{item.templateTypeCode},'0',
+            #{item.createUserCode},#{item.createUserName},#{item.createTime},'1'
+            )
+        </foreach>
+        select 1 from dual
+    </insert>
+
+    <select id="getTemplatetypeFuList" resultMap="BaseResultMap"
+            parameterType="com.ydzbinfo.emis.trainRepair.bill.querymodel.attribute.TemplateType">
+        select S_TEMPLATETYPECODE, S_TEMPLATETYPENAME
+        from XZY_C_TEMPLATETYPE
+        where S_FATHERTYPECODE is NULL
+    </select>
+
+    <select id="getTemplatetypeZiList" resultMap="BaseResultMap"
+            parameterType="com.ydzbinfo.emis.trainRepair.bill.querymodel.attribute.TemplateType">
+        select S_TEMPLATETYPECODE, S_TEMPLATETYPENAME, S_FATHERTYPECODE
+        from XZY_C_TEMPLATETYPE
+        where S_FATHERTYPECODE = #{tempId}
+    </select>
+
+    <select id="getTemplatetypeNameList" resultMap="BaseResultMap"
+            parameterType="com.ydzbinfo.emis.trainRepair.bill.querymodel.attribute.TemplateType">
+        select S_TEMPLATETYPECODE, S_TEMPLATETYPENAME, S_FATHERTYPECODE
+        from XZY_C_TEMPLATETYPE
+        where S_FATHERTYPECODE = #{tempId}
+    </select>
+
+    <resultMap id="TemplateTypeInfoResultMap" type="com.ydzbinfo.emis.trainRepair.bill.model.attribute.TemplateTypeInfo"
+               autoMapping="true">
+        <id column="templateTypeCode" property="templateTypeCode"/>
+        <collection property="linkAttributes"
+                    ofType="com.ydzbinfo.emis.trainRepair.bill.querymodel.attribute.TemplateAttribute"
+                    autoMapping="true" columnPrefix="A_">
+            <id column="id" property="id"/>
+        </collection>
+        <collection property="linkQueries"
+                    ofType="com.ydzbinfo.emis.trainRepair.bill.querymodel.attribute.TemplateQuery"
+                    autoMapping="true" columnPrefix="Q_">
+            <id column="queryCode" property="queryCode"/>
+        </collection>
+    </resultMap>
+
+    <select id="getTemplateTypeInfo" resultMap="TemplateTypeInfoResultMap">
+        select
+        (select S_TEMPLATETYPENAME from XZY_C_TEMPLATETYPE f_t where f_t.S_TEMPLATETYPECODE=t.S_FATHERTYPECODE) as
+        fatherTypeName,
+        (select S_TEMPLATETYPECODE from XZY_C_TEMPLATETYPE one_c where one_c.S_TEMPLATETYPECODE=((select
+        S_FATHERTYPECODE from
+        XZY_C_TEMPLATETYPE b where b.S_TEMPLATETYPECODE=t.S_FATHERTYPECODE))) as oneTypeCode,
+        (select S_TEMPLATETYPENAME from XZY_C_TEMPLATETYPE one_c where one_c.S_TEMPLATETYPECODE=((select
+        S_FATHERTYPECODE from
+        XZY_C_TEMPLATETYPE b where b.S_TEMPLATETYPECODE=t.S_FATHERTYPECODE))) as oneTypeName,
+        <include refid="Base_Column_List">
+            <property name="tableAlias" value="t."/>
+            <property name="columnPrefix" value=""/>
+        </include>
+        ,
+        <include refid="com.ydzbinfo.emis.common.bill.typeconfig.dao.TemplateAttributeMapper.Base_Column_List">
+            <property name="tableAlias" value="a."/>
+            <property name="columnPrefix" value="A_"/>
+        </include>
+        ,
+        <include refid="com.ydzbinfo.emis.common.bill.typeconfig.dao.TemplateQueryMapper.Base_Column_List">
+            <property name="tableAlias" value="q."/>
+            <property name="columnPrefix" value="Q_"/>
+        </include>
+        from XZY_C_TEMPLATETYPE t
+        left join XZY_C_TEMPLATELINKATTR l_a on t.S_TEMPLATETYPECODE = l_a.S_TEMPLATETYPECODE
+        left join XZY_B_TEMPLATEATTRIBUTE a on l_a.S_ATTRIBUTECODE = a.S_ATTRIBUTECODE
+        left join XZY_C_TEMPLATELINKQUERY l_q on t.S_TEMPLATETYPECODE = l_q.S_TEMPLATETYPECODE
+        left join XZY_B_TEMPLATEQUERY q on l_q.S_QUERYCODE = q.S_QUERYCODE
+        where t.S_TEMPLATETYPECODE = #{templateTypeCode}
+    </select>
+</mapper>

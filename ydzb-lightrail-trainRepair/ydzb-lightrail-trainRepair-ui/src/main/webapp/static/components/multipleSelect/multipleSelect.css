@@ -1,0 +1,215 @@
+.lp-select {
+  position: relative;
+  width: 100%;
+}
+
+.lp-select input::-webkit-input-placeholder {
+  color: #dcdfe6;
+}
+
+.lp-select.is-focus .lp-input__inner {
+  border-color: #409eff;
+}
+
+.lp-select.is-disabled .lp-input__inner {
+  background-color: #f5f7fa;
+  border-color: #e4e7ed;
+  color: #c0c4cc;
+  cursor: not-allowed;
+}
+
+.lp-select .lp-input__inner {
+  height: 34px;
+  width: 100%;
+  background-color: #fff;
+  background-image: none;
+  border-radius: 4px;
+  border: 1px solid #dcdfe6;
+  padding: 0 30px 0 15px;
+  box-sizing: border-box;
+  color: #606266;
+  display: inline-block;
+  font-size: inherit;
+  outline: 0;
+  line-height: 40px;
+  cursor: pointer;
+}
+
+.lp-select .lp-input__suffix {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+}
+
+.lp-select .lp-input__suffix .lp-icon {
+  transition: all 0.3s;
+  color: #c0c4cc;
+}
+
+.lp-select .lp-input__suffix .lp-icon.is-reverse {
+  transform: rotateZ(180deg);
+}
+
+.lp-select .lp-select-dropdown {
+  position: absolute;
+  width: 100%;
+  top: 37px;
+  left: 0;
+  box-sizing: border-box;
+  margin: 5px 0;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid #e4e7ed;
+  border-radius: 4px;
+  background-color: #fff;
+  padding: 10px 0;
+  z-index: 10002;
+}
+
+.lp-select .el-select-dropdown__empty {
+  padding: 0;
+}
+
+.lp-select .lp-select-dropdown .el-scrollbar {
+  height: 200px;
+}
+
+.lp-select .lp-select-dropdown .el-scrollbar ul li {
+  display: flex;
+  align-items: center;
+}
+
+.lp-select .lp-select-dropdown .el-scrollbar ul li label:hover {
+  background-color: #f5f7fa;
+}
+
+.lp-select .lp-select-dropdown .el-scrollbar ul li label {
+  width: -webkit-fill-available;
+  cursor: pointer;
+}
+
+.lp-select .lp-select-dropdown .el-scrollbar ul li .lp-checkbox {
+  margin-right: 10px;
+}
+
+.el-form-item.is-error .lp-input__inner {
+  border-color: #f56c6c;
+}
+
+.sub-input {
+  height: 34px;
+  width: 60px;
+  text-align: center;
+  background-color: #fff;
+  background-image: none;
+  border-radius: 4px;
+  border: 1px solid #dcdfe6;
+  box-sizing: border-box;
+  color: #606266;
+  display: inline-block;
+  font-size: inherit;
+  outline: 0;
+  line-height: 40px;
+}
+
+.sub-input.is-disabled {
+  background-color: #f5f7fa;
+  border-color: #e4e7ed;
+  color: #c0c4cc;
+  cursor: not-allowed;
+}
+
+.lp-scrollbar .el-scrollbar__wrap {
+  overflow-x: hidden;
+}
+
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.5s;
+}
+
+.slide-fade-enter,
+.slide-fade-leave-to {
+  height: 0px;
+  /* border:none;
+  box-shadow:unset */
+}
+
+.el-zoom-in-top-enter-active,
+.el-zoom-in-top-leave-active {
+  opacity: 1;
+  -webkit-transform: scaleY(1);
+  transform: scaleY(1);
+  -webkit-transition: opacity 0.3s cubic-bezier(0.23, 1, 0.32, 1), -webkit-transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: opacity 0.3s cubic-bezier(0.23, 1, 0.32, 1), -webkit-transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.3s cubic-bezier(0.23, 1, 0.32, 1),
+    -webkit-transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  -webkit-transform-origin: center top;
+  transform-origin: center top;
+}
+
+.el-zoom-in-top-enter,
+.el-zoom-in-top-leave-active {
+  opacity: 0;
+  -webkit-transform: scaleY(0);
+  transform: scaleY(0);
+}
+
+.lp-select .el-icon-circle-close {
+  cursor: pointer;
+}
+
+.lp-select .lp-select-dropdown .el-scrollbar ul label {
+  padding: 0 20px;
+}
+
+.lp-select .lp-select-dropdown .el-scrollbar ul li>input {
+  margin-right: 20px;
+}
+
+.lp-select-dropdown__empty {
+  line-height: 14px;
+  margin: 0;
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+}
+
+.lp_popper__arrow {
+  position: absolute;
+  top: -6px;
+  left: 36px;
+  display: block;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 6px;
+  filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.03));
+  margin-right: 3px;
+  border-top-width: 0;
+  border-bottom-color: #ebeef5;
+}
+
+.lp_popper__arrow::after {
+  position: absolute;
+  display: block;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  content: " ";
+  border-width: 6px;
+  top: 1px;
+  left: 0px;
+  margin-left: -6px;
+  border-top-width: 0;
+  border-bottom-color: #FFF;
+}
+
+.lp-select .filter-input {
+  width: calc(100% - 40px);
+  margin-left: 20px;
+  margin-bottom: 5px;
+}

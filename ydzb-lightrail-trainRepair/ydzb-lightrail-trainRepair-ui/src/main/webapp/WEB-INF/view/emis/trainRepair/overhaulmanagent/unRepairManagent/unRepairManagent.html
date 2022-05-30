@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>一体化作业回填</title>
+    <link href="${publicStaticPath}/common/base.css" rel="stylesheet" />
+    <link href="${ctxPath}/static/lib/animate.css" rel="stylesheet" />
+    <script src="${publicStaticPath}/jquery/jquery-1.10.2.min.js"></script>
+    <script src="${publicStaticPath}/common/common.js"></script>
+    <!--使IE支持Promise-->
+    <script src="${publicStaticPath}/IE/babel-browser.min.js"></script>
+    <!--时间处理工具-->
+    <script src="${publicStaticPath}/moment/moment.min.js"></script>
+    <!--Vue相关-->
+    <script src="${publicStaticPath}/vue/axios.min.js"></script>
+    <script src="${publicStaticPath}/vue/vue.min.js"></script>
+    <!--elementUi-->
+    <link href="${publicStaticPath}/elementUI/index.css" rel="stylesheet" />
+    <script src="${publicStaticPath}/elementUI/index.js"></script>
+    <script src="${ctxPath}/static/lib/elementUI/el-table-fix.js"></script>
+    <script src="${ctxPath}/static/utils/GeneralUtil.js"></script>
+
+    <!-- scope.css -->
+    <link
+      href="${ctxPath}/static/trainRepair/overhaulmanagent/unRepairManagent/css/baseWorkProcess.css"
+      rel="stylesheet"
+    />
+    <link
+      href="${ctxPath}/static/trainRepair/overhaulmanagent/unRepairManagent/css/unRepairManagent.css"
+      rel="stylesheet"
+    />
+    <script>
+      var ctxpath = '${ctxPath}';
+      let ConfirmEdit = false;
+      @if(shiro.hasPermission("unRepairManagent:ConfirmEdit")){
+        ConfirmEdit = true;
+      @}else{
+        ConfirmEdit = false;
+      @}
+      // console.log(ConfirmEdit)
+    </script>
+  </head>
+
+  <body class="body">
+    <!-- <div class="nowPosition pane">当前位置: 检修管理><span style="font-weight: bold;color: #000;">无修程作业过程管理</span></div> -->
+    <div class="container pane" id="notFixed" v-cloak v-loading="loading">
+      <el-card class="box-card">
+        <div slot="header">
+          <span class="adorn"></span>
+          <h2>{{pageTitle}}</h2>
+        </div>
+
+        <div class="header">
+          <div class="searchList">
+            <el-row>
+              <el-col :span="5">
+                <template>
+                  <div class="block dateTime startDate">
+                    <span class="demonstration">开始日期：</span>
+                    <el-date-picker
+                      size="mini"
+                      value-format="yyyy-MM-dd"
+                      v-model="search.dateFrom"
+                      type="date"
+                      placeholder="选择日期"
+                    >
+                    </el-date-picker>
+                  </div>
+                </template>
+              </el-col>
+              <el-col :span="5">
+                <template>
+                  <div class="block dateTime endDate">
+                    <span class="demonstration">结束日期：</span>
+                    <el-date-picker
+                      size="mini"
+                      value-format="yyyy-MM-dd"
+                      v-model="search.dateTo"
+                      type="date"
+                      placeholder="选择日期"
+                    >
+                    </el-date-picker>
+                  </div>
+                </template>
+              </el-col>
+              <el-col :span="5">
+                <template>
+                  <label>车型：</label>
+                  <el-select
+                    size="mini"
+                    v-model="search.trainType"
+                    clearable
+                    filterable
+                    placeholder="请选择"
+                    \@change="changeTrainType"
+                  >
+                    <el-option v-for="item in search.trainTypeOptions" :key="item" :label="item" :value="item">
+                    </el-option>
+                  </el-select>
+                </template>
+              </el-col>
+              <el-col :span="5">
+                <template>
+                  <label>车组：</label>
+                  <el-select size="mini" v-model="search.trainGroup" clearable filterable placeholder="请选择">
+                    <el-option v-for="item in search.trainGroupOptions" :key="item" :label="item" :value="item">
+                    </el-option>
+                  </el-select>
+                </template>
+              </el-col>
+              <el-col :span="5">
+                <template>
+                  <label>作业班组：</label>
+                  <el-select size="mini" v-model="search.jobGroup" clearable filterable placeholder="请选择">
+                    <el-option
+                      v-for="item in search.jobGroupOptions"
+                      :key="item.id"
+                      :label="item.name"
+                      :value="item.id"
+                    >
+                    </el-option>
+                  </el-select>
+                </template>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="24" class="searchBtnBox">
+                <template>
+                  <el-button size="mini" type="primary" size="mini" v-on:click.stop="onSearch">查询</el-button>
+                  <el-button size="mini" type="primary" size="mini" v-on:click.stop="reset">重置</el-button>
+                  @if(shiro.hasPermission("unRepairManagent:Edit")){
+                  <el-button size="mini" type="primary" size="mini" v-on:click.stop="newAdd">新增</el-button>
+                  @}
+                </template>
+              </el-col>
+            </el-row>
+          </div>
+        </div>
+        <div class="main">
+          <el-table
+            :data="main.tableData"
+            stripe
+            :height="main.scrollHeight"
+            :header-cell-style="{background:'#d4e1ff',color:'#333'}"
+            :default-sort="{prop: 'trainsetName', order: 'ascending'}"
+            style="width: 100%"
+            class="listTable"
+          >
+            <el-table-column align="center" label="序号" width="80">
+              <template slot-scope="scope"> {{scope.$index + 1}} </template>
+            </el-table-column>
+            <el-table-column align="center" prop="dayPlanId" label="作业班次" width="150">
+              <template slot-scope="scope"> {{ scope.row.dayPlanId | operationShift}} </template>
+            </el-table-column>
+            <el-table-column align="center" prop="trainsetName" label="车组" sortable width="150"> </el-table-column>
+            <el-table-column align="center" prop="itemName" label="作业项目" sortable width="150"> </el-table-column>
+            <el-table-column align="center" prop="deptName" label="作业班组" sortable width="150"> </el-table-column>
+
+            <el-table-column align="center" prop="processWorkerList" label="作业人员" sortable width="150">
+              <template slot-scope="scope"> {{ scope.row.processWorkerList | peopleName}} </template>
+            </el-table-column>
+
+            <el-table-column width="150" align="center" prop="workCarCount" label="作业辆序"> </el-table-column>
+
+            <el-table-column width="180" align="center" prop="workEndTime" label="作业完成时间"> </el-table-column>
+
+            <el-table-column width="150" align="center" prop="confirmDeptName" label="确认班组" sortable>
+            </el-table-column>
+
+            <el-table-column width="150" align="center" prop="processConfirmList" label="确认人" sortable>
+              <template slot-scope="scope"> {{ scope.row.processConfirmList | peopleName}} </template>
+            </el-table-column>
+
+            <el-table-column width="150" align="center" prop="confirmCarCount" label="确认辆序"> </el-table-column>
+
+            <el-table-column width="180" align="center" prop="confirmEndTime" label="确认完成时间"> </el-table-column>
+
+            @if(shiro.hasPermission("unRepairManagent:Edit")){
+            <el-table-column align="center" label="操作" width="120">
+              <template slot-scope="scope">
+                <!-- <el-button
+                  \@click.native.prevent="changeRow(scope.$index, scope.row)"
+                  type="text"
+                  title="修改"
+                  size="mini"
+                >
+                  <i class="iconBtn el-icon-edit-outline"></i>
+                </el-button> -->
+                <el-button
+                  \@click.native.prevent="deleteRow(scope.$index, scope.row)"
+                  type="text"
+                  title="删除"
+                  size="mini"
+                >
+                  <i class="iconBtn el-icon-delete"></i>
+                </el-button>
+              </template>
+            </el-table-column>
+            @}
+          </el-table>
+          <div class="block" style="text-align: center">
+            <el-pagination
+              v-on:size-change="handleSizeChange"
+              v-on:current-change="handleCurrentChange"
+              :current-page="main.currentPage"
+              :page-sizes="[10, 20, 30, 40,100,200]"
+              :page-size="main.pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="main.tableData.length"
+            >
+            </el-pagination>
+          </div>
+        </div>
+      </el-card>
+
+      <el-dialog
+        :visible.sync="dialog.dialogTableVisible"
+        width="55%"
+        top="80px"
+        show-close="false"
+        center="true"
+        :close-on-click-modal="false"
+        :title="dialog.dialogTitleName"
+        \@close="onCancel"
+      >
+      <div v-loading="dialogLoading">
+        <el-form :model="dialog" :rules="dialogRules" ref="dialog" label-width="100px" class="demo-ruleForm">
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="作业班次：" prop="date" label-width="125px">
+                <el-date-picker
+                  value-format="yyyy-MM-dd"
+                  v-model="dialog.date"
+                  align="right"
+                  type="date"
+                  :disabled="isDisa"
+                  placeholder="选择日期"
+                  \@change="changeGetDa"
+                  style="width: 135px"
+                  :clearable='false'
+                >
+                </el-date-picker>
+                <el-select v-model="dialog.worktime" :disabled="isDisa" \@change="changeGetDa" style="width: 80px">
+                  <el-option
+                    v-for="item in dialog.worktimeList"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="车组：" prop="trainGroup" label-width="125px">
+                <el-select
+                  v-model="dialog.trainGroup"
+                  width="200"
+                  clearable
+                  filterable
+                  placeholder="请选择"
+                  :disabled="isDisa"
+                  value-key="trainsetId"
+                  v-on:change="changeMultipleUnit"
+                >
+                  <el-option
+                    v-for="item in dialog.trainGroupOptions"
+                    :key="item.trainsetId"
+                    :label="item.trainsetName"
+                    :value="item"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="作业项目：" prop="jobProject" label-width="125px">
+                <el-select
+                  v-model="dialog.jobProject"
+                  clearable
+                  filterable
+                  placeholder="请选择"
+                  :disabled="isDisa"
+                  value-key="packetCode"
+                >
+                  <el-option
+                    v-for="item in dialog.jobProjectOptions"
+                    :key="item.packetCode"
+                    :label="item.packetName"
+                    :value="item"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="车组辆序：" label-width="125px">
+                <el-input v-model.trim="dialog.CRHCarriage.length" disabled style="width: 217px"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="作业班组：" prop="jobGroup" label-width="125px">
+                <el-select
+                  v-model="dialog.jobGroup"
+                  clearable
+                  filterable
+                  placeholder="请选择"
+                  v-on:change="changeWorkTeam"
+                  value-key="id"
+                >
+                  <el-option v-for="item in dialog.jobGroupOptions" :key="item.id" :label="item.name" :value="item">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="作业人员：" prop="workers" label-width="125px">
+                <el-select
+                  v-model="dialog.workers"
+                  collapse-tags
+                  multiple
+                  clearable
+                  filterable
+                  placeholder="请选择"
+                  value-key="workId"
+                >
+                  <el-option
+                    v-for="item in dialog.workersOptions"
+                    :key="item.workId"
+                    :label="item.workName"
+                    :value="item"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="作业辆序：" prop="workCarriage" label-width="125px">
+                <el-input
+                  v-model.trim="dialog.workCarriage"
+                  typr="text"
+                  \@input="changeInpit('workCarriage')"
+                  style="width: 217px"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="作业完成时间：" prop="dateTo" label-width="125px">
+                <el-date-picker
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                  v-model="dialog.dateTo"
+                  type="datetime"
+                  placeholder="选择时间"
+                >
+                </el-date-picker>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item
+                label="确认班组："
+                prop="confirmJobGroup"
+                label-width="125px"
+                v-if="Number(affirmMsg) || ConfirmEdit"
+              >
+                <el-select
+                  v-model="dialog.confirmJobGroup"
+                  clearable
+                  filterable
+                  placeholder="请选择"
+                  v-on:change="changeConfirmWorkTeam"
+                  value-key="id"
+                >
+                  <el-option v-for="item in dialog.jobGroupOptions" :key="item.id" :label="item.name" :value="item">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item
+                label="确认人员："
+                prop="confirmMan"
+                label-width="125px"
+                v-if="Number(affirmMsg) || ConfirmEdit"
+              >
+                <el-select
+                  v-model="dialog.confirmMan"
+                  collapse-tags
+                  multiple
+                  clearable
+                  filterable
+                  placeholder="请选择"
+                  value-key="workId"
+                  \@change="changeWorkerPeople"
+                >
+                  <el-option
+                    v-for="item in dialog.confirmManOptions"
+                    :key="item.workId"
+                    :label="item.workName"
+                    :value="item"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item
+                label="确认辆序："
+                prop="confirmWorkCarriage"
+                label-width="125px"
+                v-if="Number(affirmMsg) || ConfirmEdit"
+              >
+                <el-input
+                  v-model.trim="dialog.confirmWorkCarriage"
+                  typr="text"
+                  \@input="changeConfirmWorkCarriage"
+                  style="width: 217px"
+                >
+                </el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item
+                label="确认完成时间："
+                prop="confirmDateTo"
+                label-width="125px"
+                v-if="Number(affirmMsg) || ConfirmEdit"
+              >
+                <el-date-picker
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                  v-model="dialog.confirmDateTo"
+                  type="datetime"
+                  placeholder="选择时间"
+                  \@change="changeConfirmDateTo"
+                >
+                </el-date-picker>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <div class="textCenter saveBtnBox" style="text-align: center">
+          <el-button type="primary" size="mini" v-on:click.stop="onSave('dialog')">确定</el-button>
+          <el-button type="primary" size="mini" v-on:click.stop="onCancel">取消</el-button>
+        </div>
+      </div>
+      </el-dialog>
+      <div class="footer"></div>
+    </div>
+
+    <script src="${ctxPath}/static/trainRepair/overhaulmanagent/unRepairManagent/js/unRepairManagent.js"></script>
+  </body>
+</html>

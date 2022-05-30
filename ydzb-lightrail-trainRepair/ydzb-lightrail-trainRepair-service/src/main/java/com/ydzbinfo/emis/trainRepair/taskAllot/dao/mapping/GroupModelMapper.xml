@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.taskAllot.dao.GroupModelMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.taskAllot.model.GroupModel">
+        <result column="S_BRANCHCODE" property="branchCode" />
+        <result column="S_BRANCHNAME" property="branchName" />
+        <result column="S_SORT" property="sort" />
+        <result column="S_DEPTCODE" property="deptCode" />
+        <result column="S_DEPTNAME" property="deptName" />
+        <result column="C_FLAG" property="flag" />
+        <collection property="perSonNelModels" ofType="com.ydzbinfo.emis.trainRepair.taskAllot.model.PerSonNelModel">
+            <id column="S_REPAIRPERSONALLOTID" property="rePairPeRSonAllotId" />
+            <result column="S_WORKNAME" property="workName" />
+            <result column="S_SORT" property="sort" />
+            <result column="S_DEPTCODE" property="deptCode" />
+            <result column="S_DEPTNAME" property="deptName" />
+            <result column="S_BRANCHCODE" property="branchCode" />
+            <result column="S_BRANCHNAME" property="branchName" />
+            <result column="C_PARTTIME" property="partTime" />
+            <collection property="postModelList" ofType="com.ydzbinfo.emis.trainRepair.taskAllot.model.PostModel">
+                <id column="S_POSTID" property="postId" />
+                <result column="S_POSTNAME" property="postName" />
+            </collection>
+        </collection>
+    </resultMap>
+
+    <resultMap id="GroupResultMap" type="com.ydzbinfo.emis.trainRepair.taskAllot.model.GroupModel">
+    <result column="S_BRANCHCODE" property="branchCode" />
+    <result column="S_BRANCHNAME" property="branchName" />
+    <result column="S_SORT" property="sort" />
+    <result column="S_DEPTCODE" property="deptCode" />
+    <result column="S_DEPTNAME" property="deptName" />
+    <result column="C_FLAG" property="flag" />
+    </resultMap>
+
+    <resultMap id="PerSonNelMap" type="com.ydzbinfo.emis.trainRepair.taskAllot.model.PerSonNelModel">
+        <id column="S_REPAIRPERSONALLOTID" property="rePairPeRSonAllotId" />
+        <result column="S_WORKNAME" property="workName" />
+        <result column="S_WORKCode" property="workCode" />
+        <result column="S_SORT" property="sort" />
+        <result column="S_DEPTCODE" property="deptCode" />
+        <result column="S_DEPTNAME" property="deptName" />
+        <result column="S_BRANCHCODE" property="branchCode" />
+        <result column="S_BRANCHNAME" property="branchName" />
+        <result column="C_PARTTIME" property="partTime" />
+    </resultMap>
+    <resultMap id="PostModelResultMap" type="com.ydzbinfo.emis.trainRepair.taskAllot.model.PostModel">
+        <id column="S_POSTID" property="postId" />
+        <result column="S_POSTNAME" property="postName" />
+        <result column="S_DEPTCODE" property="deptCode"></result>
+        <result column="S_BRANCHCODE" property="branchCode"></result>
+        <result column="S_STAFFID" property="staffId"></result>
+        <result column="S_STAFFNAME" property="staffName"></result>
+        <result column="S_UNITCODE" property="unitCode"></result>
+    </resultMap>
+
+
+    <select id="getPerSonNelList" resultMap="BaseResultMap">
+select
+b.S_BRANCHCODE,b.S_BRANCHNAME,b.S_SORT,b.S_DEPTCODE,b.S_DEPTNAME,b.C_FLAG,
+C.S_REPAIRPERSONALLOTID,c.S_DEPTCODE,c.S_DEPTNAME,c.S_BRANCHCODE,c.S_BRANCHNAME,c.S_WORKNAME,c.S_SORT,c.C_PARTTIME,
+d.S_POSTID,d.S_POSTNAME
+from
+XZY_C_PERSONPOST a,XZY_C_ALLOTBRANCH_CONFIG b,XZY_C_ALLOTPERSON_CONFIG c,XZY_C_POST d
+where a.S_POSTID= d.S_POSTID
+and a.S_BRANCHCODE=b.S_BRANCHCODE
+and a.S_STAFFID=S_REPAIRPERSONALLOTID
+<if test="deptCode!=null and deptCode !=''">
+    and a.S_DEPTCODE=#{deptCode}
+</if>
+
+<if test="workerId!=null and workerId !=''">
+    and C.S_REPAIRPERSONALLOTID=#{workerId}
+</if>
+ORDER BY b.S_SORT,c.S_SORT
+    </select>
+
+    <select id="getGroupList" resultMap="GroupResultMap">
+select * from XZY_C_ALLOTBRANCH_CONFIG where S_DEPTCODE=#{deptCode}
+    </select>
+
+    <select id="getPerSonNel" resultMap="PerSonNelMap">
+select
+C.S_REPAIRPERSONALLOTID,c.S_DEPTCODE,c.S_DEPTNAME,c.S_BRANCHCODE,c.S_BRANCHNAME,c.S_WORKNAME,c.S_SORT,c.C_PARTTIME,c.S_WORKCODE
+ from XZY_C_ALLOTPERSON_CONFIG c
+where
+c.S_REPAIRPERSONALLOTID=#{id}
+    </select>
+
+    <select id="getPostListByStaffId" resultMap="PostModelResultMap">
+select c.* from
+XZY_C_PERSONPOST a,XZY_C_POST c
+where
+a.S_POSTID=c.S_POSTID
+and a.S_STAFFID=#{id}
+    </select>
+
+    <select id="getPostByStaffId" resultMap="PostModelResultMap">
+select b.S_POSTID,b.S_POSTNAME from XZY_C_POST b where  b.S_POSTID in(
+select a.S_POSTID from XZY_C_PERSONPOST a where a.S_STAFFID=#{id})
+
+    </select>
+
+
+
+    <!--根据班组编码获取人员岗位关系数据-->
+    <select id="getPostList" resultMap="PostModelResultMap">
+        select
+        a.s_postid,
+        a.s_postname,
+        b.s_deptcode,
+        b.s_branchcode,
+        b.s_staffid,
+        b.s_staffname
+        from XZY_C_POST a inner join  XZY_C_PERSONPOST b on a.s_postid=b.s_postid and a.c_flag='1' and b.c_flag='1'
+        where 1=1
+        <if test="deptCode!=null and deptCode!=''">
+            and b.s_deptcode=#{deptCode}
+        </if>
+        <if test="unitCode!=null and unitCode!=''">
+            and b.S_UNITCODE=#{unitCode}
+        </if>
+    </select>
+
+    <!--根据班组编码获取该班组下的小组，及小组下边的人员 集合-->
+    <resultMap id="branchPersonMap" type="com.ydzbinfo.emis.trainRepair.taskAllot.model.GroupModel" autoMapping="true">
+        <id column="branchCode" property="branchCode"></id>
+        <collection property="perSonNelModels" columnPrefix="B_" ofType="com.ydzbinfo.emis.trainRepair.taskAllot.model.PerSonNelModel" autoMapping="true">
+            <id column="rePairPeRSonAllotId" property="rePairPeRSonAllotId"></id>
+        </collection>
+    </resultMap>
+    <select id="getBranchPersonList" parameterType="com.ydzbinfo.emis.trainRepair.taskAllot.model.GroupModel" resultMap="branchPersonMap">
+        select
+        a.S_BRANCHCODE as branchCode,
+        a.S_BRANCHNAME as branchName,
+        a.S_DEPTCODE as deptCode,
+        a.S_DEPTNAME as deptName,
+        a.S_UNITCODE as unitCode,
+        a.S_SORT as "sort",
+        a.C_FLAG as flag,
+
+        b.S_REPAIRPERSONALLOTID as B_rePairPeRSonAllotId,
+        b.S_DEPTCODE as B_deptCode,
+        b.S_DEPTNAME as B_deptName,
+        b.S_BRANCHCODE as B_branchCode,
+        b.S_BRANCHNAME as B_branchName,
+        b.S_WORKCODE as B_workCode,
+        b.S_WORKNAME as B_workName,
+        b.C_PARTTIME as B_partTime,
+        b.C_FLAG as B_flag,
+        b.S_UNITCODE as B_unitCode,
+        b.S_SORT as B_sort
+        from XZY_C_ALLOTBRANCH_CONFIG a left join XZY_C_ALLOTPERSON_CONFIG b on a.s_branchcode=b.s_branchcode
+        where 1=1 and a.C_FLAG='1'
+        <if test="deptCode!=null and deptCode!=''">
+            and a.S_DEPTCODE=#{deptCode}
+        </if>
+        <if test="branchCode!=null and branchCode!=''">
+            and a.S_BRANCHNAME=#{branchCode}
+        </if>
+        <if test="unitCode!=null and unitCode!=''">
+            and a.S_UNITCODE=#{unitCode}
+        </if>
+        order by b.S_SORT
+    </select>
+
+</mapper>

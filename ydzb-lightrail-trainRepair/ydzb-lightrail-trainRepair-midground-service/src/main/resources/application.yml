@@ -1,0 +1,141 @@
+############################## 项目启动信息配置 开始  ##############################
+#http:
+#  port: 8080
+
+server:
+  port: 8091
+  tomcat:
+    port-header: HEAD,DELETE,OPTIONS,TRACE,COPY,SEARCH,PROPFIND,BOGUS
+    min-spare-threads: 20
+    max-threads: 500
+    max-connections: 10000
+  max-http-header-size: 1024KB
+  servlet:
+    context-path: /apiTrainRepairMidGround
+#  ssl:
+#     key-store: ydzbcwgl.keystore
+#     key-store-type: JKS
+#     key-store-password: cwgl_93296
+#     key-alias: ydzbcwglf
+#     key-password: 93296cw
+
+############################## 项目启动信息配置 结束  ##############################
+############################## spring配置 开始  ##############################
+spring:
+  application:
+    name: apiTrainRepairMidGround
+    type: 0 # com.ydzbinfo.hussar.core.aop.LogAop使用
+  jmx:
+    default-domain: apiTrainRepairMidGround
+  main:
+    allow-bean-definition-overriding: true
+  profiles:
+    active: @profiles.active@
+  mvc:
+    static-path-pattern: /static/**         # 静态资源路径
+    view:
+      prefix: /WEB-INF/view                 # 页面文件路径
+  http:
+    converters:
+      preferred-json-mapper: fastjson       # Json转换器
+  servlet:
+    multipart:
+      max-request-size: 100MB               # 最大请求大小
+      max-file-size: 100MB                  # 最大文件大小
+#  devtools:
+#    restart:
+#      enabled: true                         # 是否开启开发者工具（true/false）
+#      additional-paths:
+#      exclude: static/js/mtoken
+  aop:
+    proxy-target-class: true                #false为启用jdk默认动态代理,true为cglib动态代理
+#  activiti:
+#    check-process-definitions: false
+############################## spring配置 结束  ##############################
+
+############################## mybatis-plus配置 开始  ##############################
+mybatis-plus:
+  mapper-locations: classpath*:com/**/mapping/*.xml
+  typeAliasesPackage: com.jxdinfo.hussar.**.model,com.xxxx.**.model
+  typeEnumsPackage: com.jxdinfo.hussar.common.constant.enums
+  global-config:
+    id-type: 3                                              # 0:数据库ID自增   1:用户输入id  2:全局唯一id(IdWorker)  3:全局唯一ID(uuid)
+    db-column-underline: false
+    refresh-mapper: false
+    logic-delete-value: 0
+    logic-not-delete-value: 1
+    sql-injector: com.ydzbinfo.emis.handlers.AppSqlInjector
+  configuration:
+    map-underscore-to-camel-case: false
+    cache-enabled: true                                     # 配置的缓存的全局开关
+    lazyLoadingEnabled: true                                # 延时加载的开关
+    multipleResultSetsEnabled: true                 # 开启的话，延时加载一个属性时会加载该对象全部属性，否则按需加载属性
+    jdbc-type-for-null: 'null'                             #Oracle数据库开启，否则使用updateAllColumnById()这种方法，如果列值为空，就会报错
+############################## mybatis-plus配置 结束  ##############################
+
+############################## 日志配置 开始  ##############################
+logging:
+  config: classpath:log4j2.xml          # 详细日志配置文件
+  level:
+    root: INFO                         # 日志默认输出级别
+############################## 日志配置 结束  ##############################
+
+############################## 系统监控配置 开始  ##############################
+#  monitor:
+#    stat-view-servlet:
+#      hosts: 127.0.0.1:8080
+#      enabled: true
+#      local: 127.0.0.1:8080
+#      url-pattern: /smon
+#    web-stat-filter:
+#      enabled: true
+#      url-pattern: /smon
+############################## 系统监控配置 结束  ##############################
+
+############################## 连监控配置 开始接池  ##############################
+#druid:
+#  merge-sql: false
+#  need-login: true               #连接池监控页面是否需要登陆
+#  login-username: druid     #连接池监控页面用户名（需要登陆时有效）
+#  login-password: hussar      #连接池监控页面密码（需要登陆时有效）
+#  slow-sql-millis:  2000          #慢SQL时间（单位:毫秒；执行时间超过此时间的sql会被标红）
+#  log-slow-sql: false               #慢SQL是否记录日志
+############################## 连接池监控配置 结束  ##############################
+
+############################## Spring Boot Actuator监控设置 开始##############################
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+############################## Spring Boot Actuator监控设置 结束##############################
+############################## 连接字符串 加密设置 开始##############################
+jasypt:
+  encryptor:
+    password: abc123
+############################## 连接字符串 加密设置 结束##############################
+ydzb:
+  user-whitelist: # 用户上下文过滤器中不需要检测的白名单
+    - /swagger-ui.html
+    - /swagger/*
+    - /webjars/*
+    - /v2/*
+    - /swagger-resources/*
+    - /swagger-resources
+  upload:
+    uploadFilePath: "D:\\\\train_repair_upload_file\\"      #上传文件的实际存储位置，项目上线使用后，文件迁移后可根据实际情况更改。注意：结尾的斜杠不能省略
+    uploadFileHandlerPath: "upload"
+  base-service-list:
+    - id: userservice             #用户认证中心
+      path: http://${properties.user-service-root-path}
+    - id: systemservice
+      path: http://${properties.base-service-root-path}
+    - id: logservice
+      path: http://${properties.base-service-root-path}
+    - id: messageservice
+      path: http://${properties.base-service-root-path}
+  work-team-type-code: BD_06 #检修班组类型编码
+
+spring.kafka:
+  producer:
+    key-serializer: org.apache.kafka.common.serialization.StringSerializer

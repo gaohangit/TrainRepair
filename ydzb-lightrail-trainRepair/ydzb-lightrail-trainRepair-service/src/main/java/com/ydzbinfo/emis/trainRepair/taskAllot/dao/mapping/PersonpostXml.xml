@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.taskAllot.dao.PersonpostMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.PersonPost">
+        <id column="S_ID" property="id" />
+        <result column="S_POSTID" property="postId" />
+        <result column="S_DEPTCODE" property="deptCode" />
+        <result column="S_BRANCHCODE" property="branchCode" />
+        <result column="S_STAFFID" property="staffId" />
+        <result column="S_STAFFNAME" property="staffName" />
+        <result column="C_FLAG" property="flag" />
+        <result column="D_CREATETIME" property="createTime" />
+        <result column="S_CREATEUSERCODE" property="createUserCode" />
+        <result column="S_CREATEUSERNAME" property="createUserName" />
+        <result column="S_UNITCODE" property="unitCode" />
+        <result column="D_DELTIME" property="delTime" />
+        <result column="S_DELUSERCODE" property="delUserCode" />
+        <result column="S_DELUSERNAME" property="delUserName" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_ID, S_POSTID, S_DEPTCODE, S_BRANCHCODE, S_STAFFID, S_STAFFNAME, C_FLAG, D_CREATETIME, S_CREATEUSERCODE, S_CREATEUSERNAME, S_UNITCODE, D_DELTIME, S_DELUSERCODE, S_DELUSERNAME
+    </sql>
+    <select id="getPersonpostList" resultMap="BaseResultMap">
+    select * from  XZY_C_PERSONPOST
+    where
+    S_BRANCHCODE=#{staffId}
+    </select>
+
+</mapper>

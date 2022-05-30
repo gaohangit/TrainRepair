@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RFID标签配置</title>
+
+    <script src="${publicStaticPath}/jquery/jquery-1.10.2.min.js"></script>
+    <!--使IE支持Promise-->
+    <script src="${publicStaticPath}/IE/babel-browser.min.js"></script>
+    <!--Vue相关-->
+    <script src="${publicStaticPath}/vue/axios.min.js"></script>
+    <script src="${publicStaticPath}/vue/vue.min.js"></script>
+    <!--elementUi-->
+    <link href="${publicStaticPath}/elementUI/index.css" rel="stylesheet" />
+    <script src="${publicStaticPath}/elementUI/index.js"></script>
+    <script src="${ctxPath}/static/lib/elementUI/el-table-fix.js"></script>
+    <script src="${ctxPath}/static/utils/GeneralUtil.js"></script>
+
+    <link href="${publicStaticPath}/common/base.css" rel="stylesheet" />
+    <!-- scope.css -->
+    <link href="${ctxPath}/static/lib/baseWorkProcess.css" rel="stylesheet" />
+    <link rel="stylesheet" href="${ctxPath}/static/trainRepair/overhaulmanagent/rfidRegist/css/rfidRegist.css" />
+    <script type="text/javascript">
+      var ctxPath = '${ctxPath}';
+      var uhfBaseUrl = 'http://127.0.0.1:${uhfServerPort}/api/uhf';
+    </script>
+  </head>
+
+  <body class="body">
+    <div id="main" class="container pane" v-cloak>
+      <el-card class="box-card">
+        <div slot="header">
+          <span class="adorn"></span>
+          <h2>{{pageTitle}}</h2>
+        </div>
+
+        <div class="header">
+          <div class="searchList">
+            <el-row type="flex">
+              <!-- <el-col :sm="8" :md="6" :lg="5">
+              <label>运用所：</label>
+              <el-select
+                v-model="searchData.bureauCode"
+                clearable
+                filterable
+                placeholder="请选择"
+                :disabled="isDisabled"
+              >
+                <el-option
+                  v-for="item in searchData.bureaOption"
+                  :key="item.unitCode"
+                  :label="item.unitName"
+                  :value="item.unitCode"
+                >
+                </el-option>
+              </el-select>
+            </el-col> -->
+              <el-col :sm="8" :md="6" :lg="5" v-if="stateRadio == 1 || stateRadio == 2">
+                <label>股道：</label>
+                <el-select
+                  v-model="searchData.trackCode"
+                  clearable
+                  filterable
+                  placeholder="请选择"
+                  \@change="allTracksChange"
+                >
+                  <el-option
+                    v-for="item in allTracks"
+                    :key="item.trackCode"
+                    :label="item.trackName"
+                    :value="item.trackCode"
+                  >
+                  </el-option>
+                </el-select>
+              </el-col>
+              <el-col :sm="8" :md="6" :lg="5" v-if="stateRadio == 2">
+                <label>列位：</label>
+                <el-select v-model="searchData.place" clearable filterable placeholder="请选择">
+                  <el-option
+                    v-for="item in placeList"
+                    :key="item.trackPositionCode"
+                    :label="item.trackPostionName"
+                    :value="item.trackPositionCode"
+                  >
+                  </el-option>
+                </el-select>
+              </el-col>
+              <el-col :sm="8" :md="6" :lg="5" v-if="stateRadio == 2">
+                <label>编组数：</label>
+                <el-select v-model="gandUpNum" clearable filterable placeholder="请选择">
+                  <el-option v-for="item in gandUpNumList" :key="item" :label="item" :value="item"> </el-option>
+                </el-select>
+              </el-col>
+              <el-col :sm="8" :md="6" :lg="5" v-if="stateRadio == 3">
+                <label>车型：</label>
+                <el-select v-model="trainType" clearable filterable placeholder="请选择" \@change="changTrainType">
+                  <el-option v-for="item in trainTypeList" :key="item" :label="item" :value="item"> </el-option>
+                </el-select>
+              </el-col>
+              <el-col :sm="8" :md="6" :lg="5" v-if="stateRadio == 3">
+                <label>批次：</label>
+                <el-select
+                  v-model="PatchListByTraintype"
+                  clearable
+                  filterable
+                  placeholder="请选择"
+                  \@change="batchChange"
+                >
+                  <el-option
+                    v-for="item in trainTempList"
+                    :key="item.traintempid"
+                    :label="item.traintempid"
+                    :value="item.traintempid"
+                  >
+                  </el-option>
+                </el-select>
+              </el-col>
+              <el-col :sm="8" :md="6" :lg="5" v-if="stateRadio == 1 || stateRadio == 3">
+                <label>标签载体：</label>
+                <el-select v-model="searchData.repairPlaceCode" clearable filterable placeholder="请选择">
+                  <el-option
+                    v-for="item in placeTypes"
+                    :key="item.repairPlaceCode"
+                    :label="item.repairPlaceName"
+                    :value="item.repairPlaceCode"
+                  >
+                  </el-option>
+                </el-select>
+              </el-col>
+              <el-col :sm="8" :md="6" :lg="5" v-if="stateRadio == 1">
+                <label>位置编号：</label>
+                <el-autocomplete
+                  class="inline-input"
+                  v-model="searchData.pillarName"
+                  :fetch-suggestions="querySearch"
+                  placeholder="请输入位置编号"
+                ></el-autocomplete>
+                <!-- <el-input
+                  type="number"
+                  v-model="searchData.pillarName"
+                  clearable
+                  :controls="false"
+                  :min="1"
+                  placeholder="请输入位置编号"
+                  \@wheel.native.prevent="stopScroll($event)"
+                ></el-input> -->
+              </el-col>
+              <el-col :sm="8" :md="6" :lg="5" v-if="stateRadio == 1 || stateRadio == 2">
+                <label>标签编号：</label>
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  :content="searchData.tId"
+                  placement="top"
+                  :disabled="!searchData.tId"
+                >
+                  <el-input v-model.trim="searchData.tId" clearable filterable placeholder="请输入标签编号"></el-input>
+                </el-tooltip>
+              </el-col>
+              <el-col :sm="8" :md="6" :lg="5">
+                <el-radio-group v-model="stateRadio" \@change="stateRadioChange">
+                  <el-radio :label="1">标签注册</el-radio>
+                  <el-radio :label="2">位置注册</el-radio>
+                  <el-radio :label="3">标准关系</el-radio>
+                </el-radio-group>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col class="searchBtnBox" span="24">
+                <el-button
+                  type="primary"
+                  size="mini"
+                  v-on:click.stop="onReadNumber"
+                  v-if="stateRadio == 1 || stateRadio == 2"
+                >
+                  读取标签编号
+                </el-button>
+                <el-button type="primary" size="mini" v-on:click.stop="onReset"> 重置 </el-button>
+                <el-button type="primary" size="mini" v-on:click.stop="onSearch"> 查询 </el-button>
+                @if(shiro.hasPermission("rfidRegist:edit")){
+                <el-button type="primary" size="mini" v-on:click.stop="onAdd"> 新增 </el-button>
+                <el-button type="primary" size="mini" v-on:click.stop="onDelete"> 删除 </el-button>
+                @}
+              </el-col>
+            </el-row>
+          </div>
+        </div>
+        <div class="main">
+          <el-table
+            class="listTable"
+            height="calc(100vh - 185px)"
+            :data="rfidList"
+            :row-key="'sId'"
+            stripe
+            ref="mainTable"
+            \@selection-change="onSelectionChange"
+            style="width: 100%"
+          >
+            <el-table-column type="selection" width="60"> </el-table-column>
+            <el-table-column v-for="rfid in rfidListShow" :key="rfid.prop" :prop="rfid.prop" :label="rfid.lable">
+            </el-table-column>
+            <div slot="empty" class="emptyBg">
+              <p>暂无数据</p>
+            </div>
+          </el-table>
+          <div class="block" style="text-align: center">
+            <el-pagination
+              v-on:size-change="handleSizeChange"
+              v-on:current-change="handleCurrentChange"
+              :current-page="pageInfo.pageNum"
+              :page-size="pageInfo.pageSize"
+              :total="pageInfo.total"
+              :page-sizes="[10, 20, 30, 40, 100]"
+              layout="total, sizes, prev, pager, next, jumper"
+            >
+            </el-pagination>
+          </div>
+        </div>
+      </el-card>
+      <el-dialog
+        class="formData"
+        :visible.sync="dialog.dialogVisible"
+        width="860px"
+        :show-close="false"
+        :center="true"
+        :close-on-click-modal="false"
+        :title="dialog.dialogTitle"
+      >
+        <div class="changeState">
+          <el-radio-group v-model="dialog.singleOrMultiple" style="display: flex; justify-content: space-around">
+            <span style="text-align: center">
+              <div class="singleRegister"></div>
+              <el-radio :label="1" style="margin: 20px 0" :disabled="dialog.continuityCreate">单一注册</el-radio>
+            </span>
+            <span style="text-align: center">
+              <div class="seriesRegister"></div>
+              <el-radio :label="2" style="margin: 20px 0" :disabled="dialog.continuityCreate">连续注册</el-radio>
+            </span>
+          </el-radio-group>
+        </div>
+        <!-- 单次创建 -->
+        <div class="dialog-body" v-if="dialog.singleOrMultiple == 1">
+          <table class="table form-table">
+            <tbody>
+              <tr>
+                <td>
+                  <label><span class="requiredSpan">*</span>股道：</label>
+                  <el-select
+                    v-model="dialog.formData.trackCode"
+                    clearable
+                    filterable
+                    placeholder="请选择"
+                    \@change="dialog.trackCodeChange"
+                    style="width: 235px"
+                  >
+                    <el-option
+                      v-for="item in allTracks"
+                      :key="item.trackCode"
+                      :label="item.trackName"
+                      :value="item.trackCode"
+                    ></el-option>
+                  </el-select>
+                </td>
+                <td>
+                  <label><span class="requiredSpan">*</span>列位：</label>
+                  <el-select
+                    v-model="dialog.formData.place"
+                    clearable
+                    filterable
+                    placeholder="请选择"
+                    value-key="trackPositionCode"
+                    style="width: 235px"
+                  >
+                    <el-option
+                      v-for="item in placeList"
+                      :key="item.trackPositionCode"
+                      :label="item.trackPostionName"
+                      :value="item"
+                    ></el-option>
+                  </el-select>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label><span class="requiredSpan">*</span>标签载体：</label>
+                  <el-select
+                    v-model="dialog.formData.repairPlaceCode"
+                    clearable
+                    filterable
+                    placeholder="请选择"
+                    style="width: 235px"
+                  >
+                    <el-option
+                      v-for="item in placeTypes"
+                      :key="item.repairPlaceCode"
+                      :label="item.repairPlaceName"
+                      :value="item.repairPlaceCode"
+                    >
+                    </el-option>
+                  </el-select>
+                </td>
+                <td>
+                  <label><span class="requiredSpan">*</span>位置编号：</label>
+                  <el-input-number
+                    v-model="dialog.formData.pillarName"
+                    :controls="false"
+                    :min="1"
+                    label="位置编号："
+                    placeholder="请输入"
+                    style="width: 235px"
+                  >
+                  </el-input-number>
+                  <!-- <el-popover placement="top-start" width="200" trigger="hover" content="位置编号格式为【冠号（最大5个汉字）】-【数字】格式。">
+                  <i class="el-icon-question" slot="reference"
+                    style="background-color: #000; color: #fff; border-radius: 7px; cursor: pointer;"></i>
+                </el-popover> -->
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label><span class="requiredSpan">*</span>标签编号：</label>
+                  <el-input
+                    v-model.trim="dialog.formData.tId"
+                    :readonly="true"
+                    placeholder="请输入"
+                    style="max-width: 235px"
+                  >
+                  </el-input>
+                  <el-button type="primary" size="mini" v-on:click.stop="dialog.onReadTId"> 读取 </el-button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- 连续创建 -->
+        <div class="dialog-body" v-if="dialog.singleOrMultiple == 2">
+          <table class="table form-table">
+            <tbody>
+              <tr>
+                <td>
+                  <label style="width: 105px"><span class="requiredSpan">*</span>股道：</label>
+                  <el-select
+                    v-model="dialog.formData.trackCode"
+                    clearable
+                    filterable
+                    placeholder="请选择"
+                    :disabled="dialog.continuityCreate"
+                    \@change="dialog.trackCodeChange"
+                    style="width: 235px"
+                  >
+                    <el-option
+                      v-for="item in allTracks"
+                      :key="item.trackCode"
+                      :label="item.trackName"
+                      :value="item.trackCode"
+                    ></el-option>
+                  </el-select>
+                </td>
+                <td>
+                  <label style="width: 105px"><span class="requiredSpan">*</span>列位：</label>
+                  <el-select
+                    v-model="dialog.formData.place"
+                    clearable
+                    filterable
+                    placeholder="请选择"
+                    value-key="trackPositionCode"
+                    :disabled="dialog.continuityCreate"
+                    style="width: 235px"
+                  >
+                    <el-option
+                      v-for="item in placeList"
+                      :key="item.trackPositionCode"
+                      :label="item.trackPostionName"
+                      :value="item"
+                    >
+                    </el-option>
+                  </el-select>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label style="width: 105px"><span class="requiredSpan">*</span>标签载体：</label>
+                  <el-select
+                    v-model="dialog.formData.repairPlaceCode"
+                    clearable
+                    filterable
+                    placeholder="请选择"
+                    :disabled="dialog.continuityCreate"
+                    style="width: 235px"
+                  >
+                    <el-option
+                      v-for="item in placeTypes"
+                      :key="item.repairPlaceCode"
+                      :label="item.repairPlaceName"
+                      :value="item.repairPlaceCode"
+                    >
+                    </el-option>
+                  </el-select>
+                </td>
+                <td>
+                  <label style="width: 105px"><span class="requiredSpan">*</span>当前位置编号：</label>
+                  <!-- <el-input v-model="dialog.preFixes" :controls="false" :min="1" :max="5" style="width: 60px;"
+                  :disabled="dialog.continuityCreate">
+                </el-input> - -->
+                  <el-input-number
+                    v-model="dialog.newPillarName"
+                    :controls="false"
+                    :min="1"
+                    label="当前位置编号："
+                    placeholder="请输入"
+                    style="width: 235px"
+                    :disabled="dialog.continuityCreate"
+                  >
+                  </el-input-number>
+                  <!-- <el-popover placement="top-start" width="200" trigger="hover" content="位置编号格式为【冠号（最大5个汉字）】-【数字】格式。">
+                  <i class="el-icon-question" slot="reference"
+                    style="background-color: #000; color: #fff; border-radius: 7px; cursor: pointer;"></i>
+                </el-popover> -->
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label style="width: 105px"><span class="requiredSpan">*</span>结束位置编号：</label>
+                  <!-- <el-input v-model="dialog.preFixes" :controls="false" :min="1" :max="5" style="width: 60px;"
+                  :disabled="dialog.continuityCreate">
+                </el-input> - -->
+                  <el-input-number
+                    v-model="dialog.oldPillarName"
+                    :controls="false"
+                    :min="1"
+                    label="结束位置编号："
+                    placeholder="请输入"
+                    style="width: 235px"
+                    :disabled="dialog.continuityCreate"
+                  >
+                  </el-input-number>
+                </td>
+                <td>
+                  <label style="width: 105px"><span class="requiredSpan">*</span>位置间隔：</label>
+                  <el-input-number
+                    v-model="dialog.intervalPillarName"
+                    :controls="false"
+                    :min="1"
+                    label="位置间隔："
+                    placeholder="请输入"
+                    :disabled="dialog.continuityCreate"
+                    style="width: 235px"
+                  >
+                  </el-input-number>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <label style="width: 105px"><span class="requiredSpan">*</span>标签编号：</label>
+                  <el-input
+                    v-model.trim="dialog.formData.tId"
+                    :readonly="true"
+                    placeholder="请输入"
+                    :disabled="dialog.continuityCreate"
+                    style="width: 235px"
+                  >
+                  </el-input>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <el-table
+          class="listTable"
+          :data="dialog.tempRfidList"
+          :row-key="'sId'"
+          stripe
+          height="200px"
+          style="width: 100%; margin: 10px 0px"
+        >
+          <el-table-column
+            v-for="col in dialog.getColumns"
+            :prop="col.property"
+            :key="col.property"
+            :label="col.label"
+            :width="col.width"
+            :align="col.align"
+          >
+          </el-table-column>
+          <div slot="empty" class="emptyBg">
+            <p>暂无数据</p>
+          </div>
+        </el-table>
+        <div class="textCenter saveBtnBox" style="text-align: center">
+          <el-button
+            type="primary"
+            size="mini"
+            v-on:click.stop="dialog.onDialogConfirm"
+            v-if="dialog.singleOrMultiple == 1"
+          >
+            注册
+          </el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            v-on:click.stop="dialog.newOnDialogConfirm"
+            v-if="dialog.singleOrMultiple == 2"
+            :disabled="dialog.continuityCreate"
+          >
+            开始
+          </el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            v-on:click.stop="dialog.oldOnDialogConfirm"
+            v-if="dialog.singleOrMultiple == 2"
+          >
+            结束
+          </el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            v-on:click.stop="dialog.onDialogCancel"
+            :disabled="dialog.continuityCreate"
+          >
+            关闭
+          </el-button>
+        </div>
+      </el-dialog>
+
+      <!-- RFID位置注册 -->
+      <el-dialog title="RFID位置注册" :close-on-click-modal="false" :visible.sync="dialog.RFIDLocation" width="58%">
+        <table>
+          <tr>
+            <td class="left">
+              <label><span class="requiredSpan">*</span>标签编号：</label>
+              <el-input
+                v-model.trim="dialog.formData.tId"
+                :readonly="true"
+                placeholder="请输入"
+                style="width: 235px"
+              ></el-input>
+              <el-button type="primary" size="mini" v-on:click.stop="dialog.onReadTId"> 读取 </el-button>
+            </td>
+            <td class="right">
+              <label style="width: 105px"><span class="requiredSpan">*</span>编组数：</label>
+              <el-select
+                v-model="dialog.gandUpNum"
+                clearable
+                filterable
+                placeholder="请选择"
+                :disabled="dialog.continuityCreate"
+                style="width: 235px"
+              >
+                <el-option v-for="item in gandUpNumList" :key="item" :label="item" :value="item"> </el-option>
+              </el-select>
+            </td>
+          </tr>
+          <tr>
+            <td class="left track">
+              <label style="width: 105px"><span class="requiredSpan">*</span>股道：</label>
+              <el-select
+                v-model="dialog.trackCode"
+                disabled
+                clearable
+                filterable
+                placeholder="请选择"
+                style="width: 235px"
+              >
+                <el-option
+                  v-for="item in dialog.trackAll"
+                  :key="item.trackCode"
+                  :label="item.trackName"
+                  :value="item.trackCode"
+                >
+                </el-option>
+              </el-select>
+            </td>
+            <td class="right track">
+              <label style="width: 105px"><span class="requiredSpan">*</span>列位：</label>
+              <el-select
+                v-model="dialog.placeCode"
+                disabled
+                clearable
+                filterable
+                placeholder="请选择"
+                value-key="trackPositionCode"
+                style="width: 235px"
+              >
+                <el-option
+                  v-for="item in dialog.placeAll"
+                  :key="item.trackPositionCode"
+                  :label="item.trackPostionName"
+                  :value="item.trackPositionCode"
+                >
+                </el-option>
+              </el-select>
+            </td>
+          </tr>
+          <tr>
+            <td class="left">
+              <label style="width: 105px"><span class="requiredSpan">*</span>车头方向：</label>
+              <el-input placeholder="请输入内容" v-model.trim="dialog.trainHead" :disabled="true" style="width: 235px">
+              </el-input>
+              <el-popover width="200" trigger="hover" placement="right" content="车头靠近1列位">
+                <i class="el-icon-question question-icon" slot="reference"></i>
+              </el-popover>
+            </td>
+            <td class="right track">
+              <label style="width: 105px"><span class="requiredSpan">*</span>辆序：</label>
+              <el-input
+                placeholder="请输入内容"
+                maxlength="2"
+                minlength="2"
+                v-model.trim="dialog.trainHeadSequenc"
+                \@input="dialog.changeInpit('trainHeadSequenc')"
+                style="width: 235px"
+              >
+              </el-input>
+            </td>
+          </tr>
+          <tr>
+            <td class="left">
+              <label style="width: 105px"><span class="requiredSpan">*</span>车尾方向：</label>
+              <el-input placeholder="请输入内容" v-model.trim="dialog.trainTail" :disabled="true" style="width: 235px">
+              </el-input>
+              <el-popover width="200" trigger="hover" placement="right" content="车尾靠近1列位">
+                <i class="el-icon-question question-icon" slot="reference"></i>
+              </el-popover>
+            </td>
+            <td class="right track">
+              <label style="width: 105px"><span class="requiredSpan">*</span>辆序：</label>
+              <el-input
+                placeholder="请输入内容"
+                maxlength="2"
+                minlength="2"
+                v-model.trim="dialog.trainTailSequenc"
+                \@input="dialog.changeInpit('trainTailSequenc')"
+                style="width: 235px"
+              >
+              </el-input>
+            </td>
+          </tr>
+        </table>
+        <div class="textCenter saveBtnBox" style="text-align: center; margin-top: 20px">
+          <el-button type="primary" size="mini" v-on:click.stop="dialog.RFIDLocationAdd"> 保存 </el-button>
+          <el-button type="primary" size="mini" v-on:click.stop="dialog.onDialogCancel"> 取消 </el-button>
+        </div>
+      </el-dialog>
+      <!-- RFID位置注册 -->
+
+      <!-- RFID标签和作业标准关系 -->
+      <el-dialog
+        title="RFID标签和作业标准关系"
+        :close-on-click-modal="false"
+        :visible.sync="dialog.RFIDRelation"
+        width="27%"
+      >
+        <table>
+          <tr>
+            <td class="left track">
+              <label><span class="requiredSpan">*</span>车型：</label>
+              <el-select
+                v-model="dialog.trainType"
+                clearable
+                filterable
+                placeholder="请选择"
+                \@change="dialog.changTrainType"
+              >
+                <el-option v-for="item in dialog.trainTypeList" :key="item" :label="item" :value="item"></el-option>
+              </el-select>
+            </td>
+          </tr>
+          <tr>
+            <td class="left track">
+              <label style="width: 105px"><span class="requiredSpan">*</span>批次：</label>
+              <el-select v-model="dialog.batch" clearable filterable placeholder="请选择" \@change="dialog.batchChange">
+                <el-option
+                  v-for="item in dialog.trainTempList"
+                  :key="item.traintempid"
+                  :label="item.traintempid"
+                  :value="item.traintempid"
+                >
+                </el-option>
+              </el-select>
+            </td>
+          </tr>
+          <tr>
+            <td class="left">
+              <label style="width: 105px"><span class="requiredSpan">*</span>作业标准：</label>
+              <el-select v-model="dialog.sItemname" clearable filterable placeholder="请选择">
+                <el-option
+                  v-for="item in dialog.sItemnameList"
+                  :key="item.sCritertionid"
+                  :label="item.sItemname"
+                  :value="item.sCritertionid"
+                >
+                </el-option>
+              </el-select>
+            </td>
+          </tr>
+          <tr>
+            <td class="left">
+              <label style="width: 105px"><span class="requiredSpan">*</span>标签载体：</label>
+              <el-select v-model="dialog.repairPlaceCode" clearable filterable placeholder="请选择">
+                <el-option
+                  v-for="item in placeTypes"
+                  :key="item.repairPlaceCode"
+                  :label="item.repairPlaceName"
+                  :value="item.repairPlaceCode"
+                >
+                </el-option>
+              </el-select>
+            </td>
+          </tr>
+        </table>
+        <div class="textCenter saveBtnBox" style="text-align: center; margin-top: 10px">
+          <el-button type="primary" size="mini" v-on:click.stop="dialog.relationAdd"> 保存 </el-button>
+          <el-button type="primary" size="mini" v-on:click.stop="dialog.onDialogCancel"> 取消 </el-button>
+        </div>
+      </el-dialog>
+      <!-- RFID标签和作业标准关系 -->
+      <div class="footer"></div>
+    </div>
+    <script src="${ctxPath}/static/trainRepair/overhaulmanagent/rfidRegist/js/rfidRegist.js"></script>
+  </body>
+</html>

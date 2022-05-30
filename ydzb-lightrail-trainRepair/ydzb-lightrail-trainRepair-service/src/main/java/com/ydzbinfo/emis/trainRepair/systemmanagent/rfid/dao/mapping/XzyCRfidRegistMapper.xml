@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.systemmanagent.rfid.dao.XzyCRfidRegistMapper">
+     <!--RFID查询 -->
+	<select id="QueryXzyCRfidregist" parameterType="Map" resultType="com.ydzbinfo.emis.trainRepair.systemmanagent.rfid.model.XzyCRfidRegist">
+		SELECT * FROM 
+		(
+ 		select ROWNUM NUM, AA.* FROM 
+		(select 
+	    t.S_ID as sId,
+		t.S_TID as sTid,
+		t.S_EPC as sEpc,
+		t.C_FLAG as cFlag,
+		t.S_TRACKCODE as sTrackcode,
+		t.S_TRACKNAME as sTrackname,
+		t.S_REPAIRPLACECODE as sRepairplacecode,
+		t.S_REPAIRPLACENAME as sRepairplacename,
+		t.S_PILLARNAME as sPillarname,
+		t.D_CREATETIME as dCreatetime,
+		t.S_UNITCODE as sUnitcode,
+		t.S_UNITNAME as sUnitname
+		from xzy_c_rfidregist t
+		 where  1=1 
+		 <!-- 作业位置CODE  01地沟左侧  02地沟右侧  03车体左侧  04车体右侧  05车顶左侧  06车顶右侧-->
+		 <if test="REPAIRPLACECODE !=null and REPAIRPLACECODE !='' and REPAIRPLACECODE !='ALL'">
+		 and t.S_REPAIRPLACECODE =#{REPAIRPLACECODE} 		 
+		 </if>	 
+		  <!--股道CODE-->
+		 <if test="TRACKCODE !=null and TRACKCODE !='' and TRACKCODE !='ALL'">
+		    and t.S_TRACKCODE =#{TRACKCODE} 		
+		 </if>
+		   <!--立柱号-->
+		 <if test="PILLARNAME !=null and PILLARNAME !='' and PILLARNAME !='ALL'">
+		    and  t.S_PILLARNAME =#{PILLARNAME} 		
+		 </if>
+		   <!--TID-->
+		 <if test="TID !=null and TID !='' and TID !='ALL'">
+		    and  t.S_TID =#{TID} 		
+		 </if>
+		)AA )BB
+		WHERE
+		#{startNo} &lt;
+		BB.NUM AND BB.NUM &lt;= #{endNo}
+	</select>
+
+ <!--RFID注册成功查询 -->
+	<select id="QueryXzyCRfidregistOK" parameterType="Map" resultType="com.ydzbinfo.emis.trainRepair.systemmanagent.rfid.model.XzyCRfidRegist">
+		SELECT * FROM 
+		(
+ 		select ROWNUM NUM, AA.* FROM 
+		(select 
+		t.S_ID as sId,
+		t.S_TID as sTid,
+		t.S_EPC as sEpc,
+		t.C_FLAG as cFlag,
+		t.S_TRACKCODE as sTrackcode,
+		t.S_TRACKNAME as sTrackname,
+		t.S_REPAIRPLACECODE as sRepairplacecode,
+		t.S_REPAIRPLACENAME as sRepairplacename,
+		t.S_PILLARNAME as sPillarname,
+		t.D_CREATETIME as dCreatetime,
+		t.S_UNITCODE as sUnitcode,
+		t.S_UNITNAME as sUnitname
+		from xzy_c_rfidregist t
+		 where  1=1 
+		 <!-- 作业位置CODE  01地沟左侧  02地沟右侧  03车体左侧  04车体右侧  05车顶左侧  06车顶右侧-->
+		 <if test="REPAIRPLACECODE !=null and REPAIRPLACECODE !='' and REPAIRPLACECODE !='ALL'">
+		 and t.S_REPAIRPLACECODE =#{REPAIRPLACECODE} 		 
+		 </if>	 
+		  <!--股道CODE-->
+		 <if test="TRACKCODE !=null and TRACKCODE !='' and TRACKCODE !='ALL'">
+		    and t.S_TRACKCODE =#{TRACKCODE} 		
+		 </if>
+		   <!--立柱号-->
+		 <if test="PILLARNAME !=null and PILLARNAME !='' and PILLARNAME !='ALL'">
+		    and  t.S_PILLARNAME =#{PILLARNAME} 		
+		 </if>
+		   <!--TID-->
+		 <if test="TID !=null and TID !='' and TID !='ALL'">
+		    and  t.S_TID =#{TID} 		
+		 </if>
+		)AA )BB
+		
+	</select>
+
+
+     <!-- RFID查询 数量  -->
+	<select id="QueryXzyCRfidregistCount" parameterType="Map" resultType="String">
+		SELECT count(1) FROM 
+		(
+ 		select ROWNUM NUM, AA.* FROM 
+		(select * from xzy_c_rfidregist t
+		 where  1=1 
+		 <!-- 作业位置CODE  01地沟左侧  02地沟右侧  03车体左侧  04车体右侧  05车顶左侧  06车顶右侧-->
+		 <if test="REPAIRPLACECODE !=null and REPAIRPLACECODE !='' and REPAIRPLACECODE !='ALL'">
+		 and t.S_REPAIRPLACECODE =#{REPAIRPLACECODE} 		 
+		 </if>
+		 
+		  <!--股道CODE-->
+		 <if test="TRACKCODE !=null and TRACKCODE !='' and TRACKCODE !='ALL'">
+		    and t.S_TRACKCODE =#{TRACKCODE} 		
+		 </if>
+		   <!--立柱号-->
+		 <if test="PILLARNAME !=null and PILLARNAME !='' and PILLARNAME !='ALL'">
+		    	 and  t.S_PILLARNAME =#{PILLARNAME} 		
+		 </if>
+		   <!--TID-->
+		 <if test="TID !=null and TID !='' and TID !='ALL'">
+		    	and  t.S_TID =#{TID} 		
+		 </if>
+		)AA )BB
+		
+	</select>
+  <!-- RFID查询 判断TID是否注册 -->
+	<select id="isHaveTID" parameterType="Map" resultType="String">
+		SELECT count(1) FROM 
+		(
+ 		select ROWNUM NUM, AA.* FROM 
+		(select * from xzy_c_rfidregist t
+		 where  1=1 
+		
+		   <!--TID-->
+		 <if test="TID !=null and TID !='' and TID !='ALL'">
+		    	and  t.S_TID =#{TID} 		
+		 </if>
+		)AA )BB
+		
+	</select>
+
+	<select id="QueryXzyCRfidregistByTID" parameterType="Map" resultType="com.ydzbinfo.emis.trainRepair.systemmanagent.rfid.model.XzyCRfidRegist">
+		select
+		t.S_ID as sId,
+		t.S_TID as sTid,
+		t.S_EPC as sEpc,
+		t.C_FLAG as cFlag,
+		t.S_TRACKCODE as sTrackcode,
+		t.S_TRACKNAME as sTrackname,
+		t.S_REPAIRPLACECODE as sRepairplacecode,
+		t.S_REPAIRPLACENAME as sRepairplacename,
+		t.S_PILLARNAME as sPillarname,
+		t.D_CREATETIME as dCreatetime,
+		t.S_UNITCODE as sUnitcode,
+		t.S_UNITNAME as sUnitname
+		from xzy_c_rfidregist t
+		where  1=1
+		<!-- 作业位置CODE  01地沟左侧  02地沟右侧  03车体左侧  04车体右侧  05车顶左侧  06车顶右侧-->
+		<if test="REPAIRPLACECODE !=null and REPAIRPLACECODE !='' and REPAIRPLACECODE !='ALL'">
+			and t.S_REPAIRPLACECODE =#{REPAIRPLACECODE}
+		</if>
+		<!--股道CODE-->
+		<if test="TRACKCODE !=null and TRACKCODE !='' and TRACKCODE !='ALL'">
+			and t.S_TRACKCODE =#{TRACKCODE}
+		</if>
+		<!--立柱号-->
+		<if test="PILLARNAME !=null and PILLARNAME !='' and PILLARNAME !='ALL'">
+			and t.S_PILLARNAME =#{PILLARNAME}
+		</if>
+		<!--TID-->
+		<if test="TID !=null and TID !='' and TID !='ALL'">
+			and substr (t.S_TID ,0,16) = #{TID}
+		</if>
+	</select>
+
+	<!--批量删除RFID标签（假删除）-->
+	<update id="delRfid">
+		update XZY_C_RFIDREGIST set C_FLAG = '0',S_DELUSERCODE=#{delUserCode},S_DELUSERNAME=#{delUserName},D_DELTIME=sysdate
+		where S_ID in
+		<foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+	</update>
+</mapper>

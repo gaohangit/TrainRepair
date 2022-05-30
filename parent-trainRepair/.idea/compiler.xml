@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="ydzb-lightrail-trainRepair-api" />
+        <module name="ydzb-lightrail-trainRepair-midground-service" />
+        <module name="ydzb-lightrail-trainrepair-service" />
+        <module name="ydzb-lightrail-trainrepair-ui" />
+        <module name="ydzb-lightrail-trainrepair-midground-ui" />
+        <module name="ydzb-lightrail-trainRepair-common" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="ydzb-emis-lightrail-parent" target="1.8" />
+      <module name="ydzb-lightrail-trainRepair-api" target="1.8" />
+      <module name="ydzb-lightrail-trainRepair-common" target="1.8" />
+      <module name="ydzb-lightrail-trainRepair-midground-service" target="1.8" />
+      <module name="ydzb-lightrail-trainrepair-midground-ui" target="1.8" />
+      <module name="ydzb-lightrail-trainrepair-service" target="1.8" />
+      <module name="ydzb-lightrail-trainrepair-ui" target="1.8" />
+      <module name="ydzb-ui-common" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="ydzb-lightrail-trainRepair-api" options="-parameters" />
+      <module name="ydzb-lightrail-trainRepair-common" options="-parameters" />
+      <module name="ydzb-lightrail-trainRepair-midground-service" options="-parameters" />
+      <module name="ydzb-lightrail-trainrepair-midground-ui" options="-parameters" />
+      <module name="ydzb-lightrail-trainrepair-service" options="-parameters" />
+      <module name="ydzb-lightrail-trainrepair-ui" options="-parameters" />
+    </option>
+  </component>
+</project>

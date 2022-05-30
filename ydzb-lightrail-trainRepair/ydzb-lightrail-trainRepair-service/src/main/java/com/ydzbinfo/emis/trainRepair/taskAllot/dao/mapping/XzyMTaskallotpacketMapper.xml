@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.ydzbinfo.emis.trainRepair.taskAllot.dao.XzyMTaskallotpacketMapper">
+
+	<!--通用查询映射结果 -->
+	<resultMap id="BaseResultMap"
+		type="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyMTaskallotpacket">
+		<id column="S_TASKALLOTPACKETID" property="taskAllotPacketId" />
+		<result column="S_PACKETNAME" property="packetName" />
+		<result column="S_PACKETCODE" property="packetCode" />
+		<result column="S_PACKETTYPE" property="packetType" />
+		<result column="S_TASKID" property="staskId" />
+	</resultMap>
+
+	<!-- 通用查询结果列 -->
+	<sql id="Base_Column_List">
+		S_TASKALLOTPACKETID AS taskAllotPacketId,
+		S_PACKETNAME AS
+		packetName,
+		S_PACKETCODE AS packetCode,
+		S_PACKETTYPE AS packetType,
+		S_TASKID AS staskId
+	</sql>
+
+	<!-- 根据检修任务包ID获取派工包 -->
+	<select id="getTaskAllotPacketByTaskId"
+		resultType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyMTaskallotpacket">
+		select
+		<include refid="Base_Column_List"></include>
+		from XZY_M_TASKALLOTPACKET
+		where
+		1 = 1
+		<if test="list != null and list.size() > 0">
+			and (S_TASKID in
+			<trim suffixOverrides=" OR S_TASKID in ()">
+				<foreach collection="list" item="item" index="index" open="(" close=")">
+					<if test="index != 0">
+						<choose>
+							<when test="index % 1000 == 999">
+								) or S_TASKID in (
+							</when>
+							<otherwise>
+								,
+							</otherwise>
+						</choose>
+					</if>
+					#{item}
+				</foreach>
+			</trim>
+			)
+		</if>
+	</select>
+
+	<select id="getTaskAllotPacketById"
+		resultType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyMTaskallotpacket">
+		select
+		<include refid="Base_Column_List"></include>
+		from XZY_M_TASKALLOTPACKET
+		where 1 = 1
+		<if test="packetId != null and packetId != ''">
+			and S_TASKALLOTPACKETID = #{packetId}
+		</if>
+	</select>
+
+	<!-- 新增派工包 -->
+	<insert id="setTaskAllotPacket"
+		parameterType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyMTaskallotpacket">
+		insert into XZY_M_TASKALLOTPACKET
+		(
+		<if test="packetName != null and packetName != ''">
+			S_PACKETNAME,
+		</if>
+		<if test="packetCode != null and packetCode != ''">
+			S_PACKETCODE,
+		</if>
+		<if test="packetType != null and packetType != ''">
+			S_PACKETTYPE,
+		</if>
+		<if test="staskId != null and staskId != ''">
+			S_TASKID,
+		</if>
+		S_TASKALLOTPACKETID
+		)
+		values
+		(
+		<if test="packetName != null and packetName != ''">
+			#{packetName},
+		</if>
+		<if test="packetCode != null and packetCode != ''">
+			#{packetCode},
+		</if>
+		<if test="packetType != null and packetType != ''">
+			#{packetType},
+		</if>
+		<if test="staskId != null and staskId != ''">
+			#{staskId},
+		</if>
+		#{taskAllotPacketId}
+		)
+	</insert>
+
+	<delete id="deleteAll" parameterType="String">
+		delete from XZY_M_TASKALLOTPACKET
+		where S_TASKALLOTPACKETID = #{packetId}
+	</delete>
+
+	<delete id="deletePackets" parameterType="Map">
+		delete from XZY_M_TASKALLOTPACKET t
+		where t.s_taskallotpacketid in
+		(
+		select t.s_taskallotpacketid
+		from XZY_M_TASKALLOTPACKET t,
+		XZY_M_TASKCARPART tc,
+		xzy_m_taskallotdept td
+		where tc.s_taskallotpacketid = t.s_taskallotpacketid
+		and td.s_taskallotdeptid = tc.s_taskallotdeptid
+		<if test="dayplanId != null and dayplanId != ''">
+			and tc.s_dayplanid = #{dayplanId}
+		</if>
+		<if test="unitCode != null and unitCode != ''">
+			and tc.s_unitcode = #{unitCode}
+		</if>
+		<if test="deptCode != null and deptCode != ''">
+			and td.s_deptcode = #{deptCode}
+		</if>
+		)
+	</delete>
+
+
+
+	<!-- 根据检修任务包ID获取派工包 -->
+	<select id="getTaskAllotPackets" parameterType="Map"
+		resultType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyMTaskallotpacket">
+		select distinct
+		tp.S_TASKALLOTPACKETID AS taskAllotPacketId,
+		tp.S_PACKETNAME AS packetName,
+		tp.S_PACKETCODE AS packetCode,
+		tp.S_PACKETTYPE AS packetType,
+		tp.S_TASKID AS staskId
+		from XZY_M_TASKALLOTPACKET tp
+		,XZY_M_TASKCARPART tc
+		,xzy_m_taskallotdept td
+		,xzy_m_taskallotperson tpe
+		where 1=1
+		and tc.s_taskallotpacketid = tp.s_taskallotpacketid
+		and td.s_taskallotdeptid = tc.s_taskallotdeptid
+		and tpe.s_processid = tc.s_processid
+		<if test="packetids != null and packetids != ''">
+			and tp.S_TASKALLOTPACKETID in ${packetids}
+		</if>
+		<if test="dayplanId != null and dayplanId != ''">
+			and tc.s_dayplanid = #{dayplanId}
+		</if>
+		<if test="unitCode != null and unitCode != ''">
+			and tc.s_unitcode = #{unitCode}
+		</if>
+		<if test="deptCode != null and deptCode != ''">
+			and td.s_deptcode = #{deptCode}
+		</if>
+		<if test="workerId != null and workerId != ''">
+			and tpe.s_workerid = #{workerId}
+		</if>
+		<if test="trainsetId != null and trainsetId != ''">
+			and tc.s_trainsetid = #{trainsetId}
+		</if>
+		<if test="repairType != null and repairType != ''">
+			and tc.S_REPAIRTYPE = #{repairType}
+		</if>
+		<if test="mainCyc != null and mainCyc != ''">
+			and tc.S_MAINCYC = #{mainCyc}
+		</if>
+		<if test="repairTypes != null and repairTypes != ''">
+			and tc.S_REPAIRTYPE in (#{repairTypes})
+		</if>
+	</select>
+
+	<select id="selectRepairItemList" resultType="com.ydzbinfo.emis.trainRepair.taskAllot.model.RepairItemVo">
+		SELECT
+			t.S_SPREPAIRITEMCODE as itemCode,
+			t.S_SPREPAIRITEMNAME as itemName,
+			s.S_TRAINSETTYPE as trainsetType
+		FROM
+			pl_b_sprepairitem_dict t,
+			PL_C_ITEMTRAINSETTYPE s,
+			PL_B_ITEMCARV2 c
+		WHERE
+			t.C_USEDFLAG = '1'
+			AND t.S_SPREPAIRITEMCODE = s.S_SPREPAIRITEMCODE
+			AND s.C_USEDFLAG = '1'
+			AND c.S_ITEMTRAINSETTYPEID = s.S_ITEMTRAINSETTYPEID
+			<if test="trainType != null and trainType !=''">
+				and s.S_TRAINSETTYPE = #{trainType}
+			</if>
+			<if test="carNoList != null and carNoList.size() > 0">
+				and c.S_REPAIRCAR in
+				<foreach collection="carNoList" index="index" separator="," open="(" close=")" item="item">
+					#{item}
+				</foreach>
+			</if>
+		GROUP BY
+			t.S_SPREPAIRITEMCODE,
+			t.S_SPREPAIRITEMNAME,
+			s.S_TRAINSETTYPE
+    </select>
+
+	<!--根据日计划、运用所获取所有车所有派工辆序数量-->
+	<select id="getTaskCarPartCount" resultType="com.ydzbinfo.emis.trainRepair.taskAllot.model.TaskAllotCarPartCount">
+		select s_trainsetid as trainSetId,count(S_PROCESSID) as carPartCount from XZY_M_TASKCARPART
+		where S_UNITCODE=#{unitCode} and S_DAYPLANID=#{dayPlanId}
+		group by s_trainsetid
+	</select>
+</mapper>

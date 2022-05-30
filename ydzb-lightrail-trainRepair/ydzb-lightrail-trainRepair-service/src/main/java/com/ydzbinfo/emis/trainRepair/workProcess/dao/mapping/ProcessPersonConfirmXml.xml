@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.workProcess.dao.ProcessPersonConfirmMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.workprocess.querymodel.ProcessPersonConfirm">
+        <id column="S_CONFIRMID" property="confirmId" />
+        <result column="S_PROCESSPERSONID" property="processPersonId" />
+        <result column="S_CARNO" property="carNo" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_CONFIRMID, S_PROCESSPERSONID, S_CARNO
+    </sql>
+
+</mapper>

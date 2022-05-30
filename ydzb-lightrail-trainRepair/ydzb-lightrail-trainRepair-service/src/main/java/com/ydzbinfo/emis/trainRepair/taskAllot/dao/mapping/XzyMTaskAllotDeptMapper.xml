@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.ydzbinfo.emis.trainRepair.taskAllot.dao.XzyMTaskAllotDeptMapper">
+
+	<!--通用查询映射结果 -->
+	<resultMap id="BaseResultMap"
+		type="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyMTaskallotdept">
+		<id column="S_TASKALLOTDEPTID" property="taskAllotDeptId" />
+		<result column="S_DEPTCODE" property="deptCode" />
+		<result column="S_DEPTNAME" property="deptName" />
+	</resultMap>
+
+	<!-- 通用查询结果列 -->
+	<sql id="Base_Column_List">
+		S_TASKALLOTDEPTID AS taskAllotDeptId,
+		S_DEPTCODE AS deptCode,
+		S_DEPTNAME AS deptName
+	</sql>
+
+	<select id="getTaskAllotDeptByCarPart"
+		resultType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyMTaskallotdept">
+		select
+		a.S_TASKALLOTDEPTID AS taskAllotDeptId,
+		a.S_DEPTCODE AS deptCode,
+		a.S_DEPTNAME AS deptName
+		from XZY_M_TASKALLOTDEPT a
+		left join
+		XZY_M_TASKCARPART b on
+		b.S_TASKALLOTDEPTID = a.S_TASKALLOTDEPTID
+		where
+		b.S_PROCESSID =
+		#{processId}
+	</select>
+
+	<insert id="setTaskAllotDept"
+		parameterType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyMTaskallotdept">
+		insert into XZY_M_TASKALLOTDEPT
+		(
+		<if test="deptName != null and deptName != ''">
+			S_DEPTNAME,
+		</if>
+		<if test="deptCode != null and deptCode != ''">
+			S_DEPTCODE,
+		</if>
+		S_TASKALLOTDEPTID
+		)values (
+		<if test="deptName != null and deptName != ''">
+			#{deptName},
+		</if>
+		<if test="deptCode != null and deptCode != ''">
+			#{deptCode},
+		</if>
+		#{taskAllotDeptId}
+		)
+	</insert>
+
+	<delete id="deleteDepts" parameterType="Map">
+		delete from xzy_m_taskallotdept t
+		where t.s_taskallotdeptid in
+		(
+		select t.s_taskallotdeptid
+		from xzy_m_taskallotdept t,
+		XZY_M_TASKCARPART tc
+		where t.s_taskallotdeptid = tc.s_taskallotdeptid
+		<if test="dayplanId != null and dayplanId != ''">
+			and tc.s_dayplanid = #{dayplanId}
+		</if>
+		<if test="unitCode != null and unitCode != ''">
+			and tc.s_unitcode = #{unitCode}
+		</if>
+		<if test="deptCode != null and deptCode != ''">
+			and t.s_deptcode = #{deptCode}
+		</if>
+		)
+	</delete>
+
+
+	<select id="getTaskAllotDepts" parameterType="Map"
+		resultType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyMTaskallotdept">
+		select distinct
+		t.S_TASKALLOTDEPTID AS taskAllotDeptId,
+		t.S_DEPTCODE AS deptCode,
+		t.S_DEPTNAME AS deptName
+		from XZY_M_TASKALLOTDEPT t
+		,XZY_M_TASKCARPART tc
+		where 1=1
+		and tc.s_taskallotdeptid = t.s_taskallotdeptid
+		<if test="deptCode != null and deptCode != ''">
+			and t.S_DEPTCODE = #{deptCode}
+		</if>
+		<if test="dayplanId != null and dayplanId != ''">
+			and tc.s_dayplanid = #{dayplanId}
+		</if>
+		<if test="unitCode != null and unitCode != ''">
+			and tc.s_unitcode = #{unitCode}
+		</if>
+	</select>
+
+	<select id="getOneDeptById" resultType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyMTaskallotdept">
+		select
+		<include refid="Base_Column_List"></include>
+		from XZY_M_TASKALLOTDEPT t
+		where
+		t.S_TASKALLOTDEPTID = #{id}
+	</select>
+</mapper>

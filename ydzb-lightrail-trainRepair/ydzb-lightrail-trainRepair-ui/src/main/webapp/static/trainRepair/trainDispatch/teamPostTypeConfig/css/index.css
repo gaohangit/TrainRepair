@@ -1,0 +1,147 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+#teamPostTypeConfig {
+  height: 100%;
+}
+
+.el-card {
+  height: calc(100vh - 2px);
+}
+
+.el-card__header {
+  position: relative;
+  height: 42px;
+  line-height: 42px;
+  padding: 0 0 0 32px;
+}
+
+.adorn {
+  position: absolute;
+  left: 20px;
+  top: 9px;
+  width: 5px;
+  height: 25px;
+  background-color: #4e86fe;
+}
+
+.el-card__body {
+  height: calc(100vh - 82px);
+}
+
+.el-container {
+  height: 100%;
+  padding: 10px 0;
+}
+
+.el-main {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0px;
+}
+
+.el-table__header th {
+  background: #e0ebff;
+  font-size: 14px;
+  color: #1c5dba;
+  text-align: center;
+  padding: 8px 0;
+}
+
+.el-pagination {
+  text-align: right;
+}
+
+.el-form-item {
+  margin-bottom: 0;
+}
+
+.el-header {
+  height: unset !important;
+}
+
+.el-dialog__wrapper {
+  display: flex;
+}
+
+.el-dialog {
+  margin: auto !important;
+}
+.el-dialog__header {
+  height: 40px;
+  line-height: 40px;
+  background: #edeef4;
+  padding: 0 15px;
+  -webkit-border-radius: 6px 6px 0 0;
+  -moz-border-radius: 6px 6px 0 0;
+  border-radius: 6px 6px 0 0;
+  text-align: left;
+}
+.el-dialog__title {
+  font-size: 14px;
+}
+
+/* .el-dialog__header {
+  color: #FFF;
+  background-color: #409EFF;
+  border-color: #409EFF;
+}
+
+.el-dialog__title {
+  color: #fff;
+}
+
+.el-dialog__headerbtn .el-dialog__close {
+  color: #fff;
+} */
+
+.dialog-footer {
+  text-align: center;
+}
+
+[v-cloak] {
+  display: none;
+}
+
+tr th .cell {
+  height: 34px;
+  line-height: 32px !important;
+}
+
+.el-message-box__btns {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+}
+
+.el-message-box__btns button:nth-child(1) {
+  color: #fff;
+  background-color: #409eff;
+  border-color: #409eff;
+}
+
+.el-message-box__btns button:nth-child(1):focus,
+.el-message-box__btns button:nth-child(1):hover {
+  color: rgb(255, 255, 255);
+  background: rgb(102, 177, 255);
+  border-color: rgb(102, 177, 255);
+}
+
+.el-message-box__btns button:nth-child(2) {
+  margin-right: 10px;
+}
+
+.el-table td {
+  padding: 5px 0;
+}
+
+.el-dialog__body {
+  padding: 30px 60px 30px 20px;
+}

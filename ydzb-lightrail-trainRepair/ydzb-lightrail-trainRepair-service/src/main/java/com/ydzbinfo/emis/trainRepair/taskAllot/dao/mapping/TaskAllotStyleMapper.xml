@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.taskAllot.dao.TaskAllotStyleMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.TaskAllotStyle">
+        <id column="S_ID" property="id" />
+        <result column="S_UNITCODE" property="unitCode" />
+        <result column="S_DEPTCODE" property="deptCode" />
+        <result column="S_MODE" property="allotMode" />
+        <result column="S_RECORDTIME" property="recordTime" />
+        <result column="S_RECORDERNAME" property="recorderName" />
+        <result column="S_RECORDERCODE" property="recorderCode" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_ID, S_UNITCODE, S_DEPTCODE, S_MODE, S_RECORDTIME, S_RECORDERNAME, S_RECORDERCODE
+    </sql>
+
+</mapper>

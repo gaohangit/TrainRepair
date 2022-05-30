@@ -1,0 +1,560 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.workProcess.dao.WorkProcessMapper">
+
+    <resultMap id="oneWorkResultMap" type="com.ydzbinfo.emis.trainRepair.workprocess.model.OneWorkProcessData">
+        <id column="S_PROCESSPERSONID" property="processPersonId"/>
+        <result column="S_WORKERID" property="workerId"/>
+        <result column="S_WORKERNAME" property="workerName"/>
+        <result column="S_PROCESSID" property="processId"/>
+        <result column="S_DAYPLANID" property="dayPlanId"/>
+        <result column="S_TRAINSETNAME" property="trainsetName"/>
+        <result column="S_TRAINSETID" property="trainsetId"/>
+        <result column="S_ITEMCODE" property="itemCode"/>
+        <result column="S_ITEMNAME" property="itemName"/>
+        <result column="S_REPAIRTYPE" property="repairType"/>
+        <result column="S_ARRAGETYPE" property="arrageType"/>
+        <result column="S_TRAINSETTYPE" property="trainsetType"/>
+        <result column="S_CARNO" property="carNo"/>
+        <result column="S_UNITCODE" property="unitCode"/>
+        <result column="S_UNITNAME" property="unitName"/>
+        <result column="S_PROCESSDEPTID" property="processDeptId"/>
+        <result column="S_DEPTCODE" property="deptCode"/>
+        <result column="S_DEPTNAME" property="deptName"/>
+    </resultMap>
+    <!--查询一级修列表-->
+    <select id="getOneWorkProcessList" resultMap="oneWorkResultMap">
+        select
+        a.S_PROCESSPERSONID,
+        a.S_WORKERID,
+        a.S_WORKERNAME,
+        a.s_processid,
+        b.S_DAYPLANID,
+        b.S_TRAINSETID,
+        b.S_TRAINSETNAME,
+        b.S_ITEMCODE,
+        b.S_ITEMNAME,
+        b.S_REPAIRTYPE,
+        b.S_ARRAGETYPE,
+        b.S_TRAINSETTYPE,
+        b.S_CARNO,
+        b.S_UNITCODE,
+        b.S_UNITNAME,
+        c.s_processdeptid,
+        c.s_deptcode,
+        c.s_deptname
+        from XZY_M_PROCESSPERSON a inner join XZY_M_PROCESSCARPART b on a.s_processid=b.s_processid and
+        b.s_repairtype='0' and a.c_flag='1' and b.c_flag='1'
+        inner join XZY_M_PROCESSDEPT c on b.S_PROCESSDEPTID = c.S_PROCESSDEPTID and b.c_flag='1'
+        where 1=1
+        <if test="trainsetType!=null and trainsetType!=''">
+            and b.S_TRAINSETTYPE=#{trainsetType}
+        </if>
+        <if test="trainsetId!=null and trainsetId!=''">
+            and b.S_TRAINSETID=#{trainsetId}
+        </if>
+        <if test="trainsetName!=null and trainsetName !=''">
+            and b.S_TRAINSETNAME=#{trainsetName}
+        </if>
+        <if test="deptCode!=null and deptCode!=''">
+            and c.s_deptcode=#{deptCode}
+        </if>
+        <if test="workerId!=null and workerId!=''">
+            and a.S_WORKERID=#{workerId}
+        </if>
+        <if test="workerName!=null and workerName!=''">
+            and UPPER(a.S_WORKERNAME) like Concat(Concat('%',UPPER(#{workerName})),'%') escape '\'
+        </if>
+        <if test="unitCode!=null and unitCode!=''">
+            and b.S_UNITCODE=#{unitCode}
+        </if>
+        <if test="startTime!=null">
+            and to_date(to_char(#{startTime}, 'yyyy-MM-dd' ),'yyyy-MM-dd')&lt;=to_date(substr(b.s_dayplanid,0,10),'yyyy-MM-dd'
+            )
+        </if>
+        <if test="endTime!=null">
+            and to_date( substr(b.s_dayplanid,0,10) , 'yyyy-MM-dd' )&lt;=to_date(to_char(#{endTime}, 'yyyy-MM-dd'
+            ),'yyyy-MM-dd')
+        </if>
+        order by b.S_DAYPLANID desc , b.S_TRAINSETNAME desc , b.S_ITEMNAME desc
+    </select>
+
+
+    <select id="getRfidCardSummaryList"
+            resultType="com.ydzbinfo.emis.trainRepair.workprocess.querymodel.RfidCardSummary">
+        SELECT
+        Y.S_DAYPLANID "dayPlanId",
+        Y.S_TRAINSETID "trainsetId",
+        Y.S_ITEMCODE "itemCode",
+        Y.S_STUFFID "stuffId",
+        Y.S_ITEMNAME "itemName",
+        Y.S_STUFFNAME "stuffName",
+        Y.S_TIMETAG "timeTag",
+        Y.D_REPAIRTIME "repairTime",
+        Y.S_DEPTCODE "deptCode",
+        Y.S_DEPTNAME "deptName",
+        Y.S_CRITERTIONID "critertionId",
+        Y.D_RECORDTIME "recordTime",
+        T.S_CARNO "carNo",
+        Y.S_UNITCODE "unitCode",
+        Y.S_TRAINSETTYPE "trainsetType",
+        Y.S_DATASOURCE "dataSource"
+        FROM
+        XZY_M_RFIDCARDSUMMARY Y
+        LEFT JOIN XZY_M_PROCESSCARPART T ON Y.S_DAYPLANID = T.S_DAYPLANID
+        AND Y.S_TRAINSETID = T.S_TRAINSETID
+        AND Y.S_ITEMCODE = T.S_ITEMCODE
+        LEFT JOIN XZY_M_PROCESSPERSON N ON T.S_PROCESSID = N.S_PROCESSID
+        AND T.S_REPAIRTYPE = '0'
+        AND T.C_FLAG = '1'
+        AND N.C_FLAG = '1'
+        WHERE
+        Y.S_REPAIRTYPE = '0'
+        AND Y.C_FLAG = '1'
+        <if test="unitCode!=null and unitCode!=''">
+            and Y.S_UNITCODE=#{unitCode}
+        </if>
+        <if test="trainsetType!=null and trainsetType!=''">
+            and Y.S_TRAINSETTYPE=#{trainsetType}
+        </if>
+        <if test="trainsetName!=null and trainsetName !=''">
+            and Y.S_TRAINSETID=#{trainsetId}
+        </if>
+        <if test="deptCode!=null and deptCode!=''">
+            and Y.s_deptcode=#{deptCode}
+        </if>
+        <if test="workerId!=null and workerId!=''">
+            and Y.S_STUFFID=#{workerId}
+        </if>
+        <if test="startTime!=null">
+            AND to_date(to_char(#{startTime}, 'yyyy-MM-dd' ),'yyyy-MM-dd')&lt;=to_date(substr(Y.S_DAYPLANID,0,10),'yyyy-MM-dd'
+            )
+        </if>
+        <if test="endTime!=null">
+            AND to_date( substr(Y.S_DAYPLANID,0,10) , 'yyyy-MM-dd' )&lt;=to_date(to_char(#{endTime}, 'yyyy-MM-dd'
+            ),'yyyy-MM-dd')
+        </if>
+        order by Y.S_DAYPLANID desc, Y.S_ITEMNAME desc
+    </select>
+
+    <select id="getCarNoList" resultType="map">
+        SELECT
+        S_CARNO "carNo",
+        S_UNITCODE "unitCode",
+        S_UNITNAME "unitName",
+        S_TRAINSETNAME "trainsetName"
+        FROM
+        XZY_M_PROCESSCARPART T
+        INNER JOIN XZY_M_PROCESSPERSON N ON T .S_PROCESSID = N.S_PROCESSID
+        AND T .S_REPAIRTYPE = '0'
+        AND T .C_FLAG = '1'
+        AND N.C_FLAG = '1'
+        <if test="workerId!=null">
+            AND N.S_WORKERID = #{workerId}
+        </if>
+        <if test="dayPlanId!=null">
+            AND T .S_DAYPLANID = #{dayPlanId}
+        </if>
+        <if test="trainsetId!=null">
+            AND T .S_TRAINSETID = #{trainsetId}
+        </if>
+        <if test="trainsetId!=null">
+            AND T .S_ITEMCODE = #{itemCode}
+        </if>
+    </select>
+
+
+    <!--查询出来需要删除的人-->
+    <select id="getDelPersonList" resultType="com.ydzbinfo.emis.trainRepair.workprocess.querymodel.ProcessPerson">
+        select
+        a.S_PROCESSPERSONID as processPersonId,
+        a.S_PROCESSID as processId,
+        a.S_WORKERID as workerId
+        from XZY_M_PROCESSPERSON a inner join XZY_M_PROCESSCARPART b on a.S_PROCESSID=b.S_PROCESSID
+        inner join XZY_M_PROCESSPACKET c on b.S_PROCESSPACKETID=c.S_PROCESSPACKETID
+        where 1=1 and b.c_flag='1'
+        <if test="dayPlanId!=null and dayPlanId!=''">
+            and b.s_dayplanid=#{dayPlanId}
+        </if>
+        <if test="trainsetId!=null and trainsetId!=''">
+            and b.S_TRAINSETID = #{trainsetId}
+        </if>
+        <if test="itemCode!=null and itemCode!=''">
+            and b.S_ITEMCODE=#{itemCode}
+        </if>
+        <if test="workerId!=null and workerId!=''">
+            and a.S_WORKERID=#{workerId}
+        </if>
+        <if test="repairType!=null and repairType!=''">
+            and b.S_REPAIRTYPE=#{repairType}
+        </if>
+        <if test="packetCode!=null and packetCode!=''">
+            and c.S_PACKETCODE=#{packetCode}
+        </if>
+    </select>
+
+
+    <!--查询二级修列表-->
+    <resultMap id="twoWorkResultMap" type="com.ydzbinfo.emis.trainRepair.workprocess.model.TwoWorkProcessData">
+        <id column="S_PROCESSPERSONID" property="processPersonId"/>
+        <result column="S_WORKERID" property="workerId"/>
+        <result column="S_WORKERNAME" property="workerName"/>
+        <result column="S_PROCESSID" property="processId"/>
+        <result column="S_DAYPLANID" property="dayPlanId"/>
+        <result column="S_TRAINSETNAME" property="trainsetName"/>
+        <result column="S_TRAINSETID" property="trainsetId"/>
+        <result column="S_ITEMCODE" property="itemCode"/>
+        <result column="S_ITEMNAME" property="itemName"/>
+        <result column="S_REPAIRTYPE" property="repairType"/>
+        <result column="S_ARRAGETYPE" property="arrageType"/>
+        <result column="S_TRAINSETTYPE" property="trainsetType"/>
+        <result column="S_UNITCODE" property="unitCode"/>
+        <result column="S_UNITNAME" property="unitName"/>
+        <result column="S_DATASOURCE" property="dataSource"></result>
+        <result column="S_CARNO" property="carNo"/>
+        <result column="S_PROCESSDEPTID" property="processDeptId"/>
+        <result column="S_DEPTCODE" property="deptCode"/>
+        <result column="S_DEPTNAME" property="deptName"/>
+        <result column="S_PROCESSPACKETID" property="processPacketId"/>
+        <result column="S_PACKETCODE" property="packetCode"/>
+        <result column="S_PACKETNAME" property="packetName"/>
+    </resultMap>
+
+    <!--查询二级修列表返回值-->
+    <resultMap id="twoWorkResult2Map" type="com.ydzbinfo.emis.trainRepair.workprocess.model.TwoWorkProcessData">
+        <result column="S_STUFFID" property="workerId"/>
+        <result column="S_STUFFNAME" property="workerName"/>
+        <result column="S_PROCESSID" property="processId"/>
+        <result column="S_DAYPLANID" property="dayPlanId"/>
+        <result column="S_TRAINSETID" property="trainsetId"/>
+        <result column="S_ITEMCODE" property="itemCode"/>
+        <result column="S_ITEMNAME" property="itemName"/>
+        <result column="S_REPAIRTYPE" property="repairType"/>
+        <result column="S_ARRAGETYPE" property="arrageType"/>
+        <result column="S_TRAINSETTYPE" property="trainsetType"/>
+        <result column="S_UNITCODE" property="unitCode"/>
+        <result column="S_UNITNAME" property="unitName"/>
+        <result column="S_CARNO" property="carNo"/>
+        <result column="S_PROCESSDEPTID" property="processDeptId"/>
+        <result column="S_DEPTCODE" property="deptCode"/>
+        <result column="S_DEPTNAME" property="deptName"/>
+        <result column="S_PROCESSPACKETID" property="processPacketId"/>
+        <result column="S_PACKETCODE" property="packetCode"/>
+        <result column="S_PACKETNAME" property="packetName"/>
+        <result column="S_DATASOURCE" property="dataSource"/>
+        <result column="S_PROCESSPERSONID" property="processPersonId"/>
+
+    </resultMap>
+
+    <select id="getTwoWorkProcessList"
+            parameterType="com.ydzbinfo.emis.trainRepair.workprocess.model.TwoWorkProcessData"
+            resultMap="twoWorkResultMap">
+        select
+        a.S_PROCESSPERSONID,
+        a.S_WORKERID,
+        a.S_WORKERNAME,
+        a.s_processid,
+        b.S_DAYPLANID,
+        b.S_TRAINSETID,
+        b.S_TRAINSETNAME,
+        b.S_ITEMCODE,
+        b.S_ITEMNAME,
+        b.S_REPAIRTYPE,
+        b.S_ARRAGETYPE,
+        b.S_TRAINSETTYPE,
+        b.S_UNITCODE,
+        b.S_UNITNAME,
+        b.S_DATASOURCE,
+        c.s_processdeptid,
+        c.s_deptcode,
+        c.s_deptname,
+        d.S_PROCESSPACKETID,
+        d.S_PACKETCODE,
+        d.S_PACKETNAME
+        from XZY_M_PROCESSPERSON a inner join XZY_M_PROCESSCARPART b on a.s_processid=b.s_processid and
+        b.s_repairtype='1' and a.c_flag='1' and b.c_flag='1'
+        inner join XZY_M_PROCESSDEPT c on b.S_PROCESSDEPTID = c.S_PROCESSDEPTID and b.c_flag='1'
+        inner join XZY_M_PROCESSPACKET d on b.s_processpacketid=d.s_processpacketid
+        where 1=1
+        <if test="trainsetType!=null and trainsetType!=''">
+            and b.S_TRAINSETTYPE=#{trainsetType}
+        </if>
+        <if test="trainsetId!=null and trainsetId!=''">
+            and b.S_TRAINSETID=#{trainsetId}
+        </if>
+        <if test="trainsetName!=null and trainsetName !=''">
+            and b.S_TRAINSETNAME=#{trainsetName}
+        </if>
+        <if test="deptCode!=null and deptCode!=''">
+            and c.s_deptcode=#{deptCode}
+        </if>
+        <if test="workerId!=null and workerId!=''">
+            and a.S_WORKERID=#{workerId}
+        </if>
+        <if test="workerName!=null and workerName!=''">
+            and a.S_WORKERNAME=#{workerName}
+        </if>
+        <if test="packetCode!=null and packetCode!=''">
+            and d.S_PACKETCODE=#{packetCode}
+        </if>
+        <if test="packetName!=null and packetName!=''">
+            and UPPER(d.S_PACKETNAME) like CONCAT(CONCAT('%',UPPER(#{packetName})),'%') escape '\'
+        </if>
+        <if test="unitCode!=null and unitCode!=''">
+            and b.S_UNITCODE=#{unitCode}
+        </if>
+        <if test="startTime!=null">
+            and to_date(to_char(#{startTime}, 'yyyy-MM-dd' ),'yyyy-MM-dd')&lt;=to_date(substr(b.s_dayplanid,0,10),'yyyy-MM-dd'
+            )
+        </if>
+        <if test="endTime!=null">
+            and to_date( substr(b.s_dayplanid,0,10) , 'yyyy-MM-dd' )&lt;=to_date(to_char(#{endTime}, 'yyyy-MM-dd'
+            ),'yyyy-MM-dd')
+        </if>
+        order by b.S_DAYPLANID desc , b.S_TRAINSETNAME desc , b.S_ITEMNAME desc
+    </select>
+
+    <select id="getTwoWorkProcessList2" resultMap="twoWorkResult2Map">
+        SELECT
+        T.S_PROCESSID,
+        Y.S_DAYPLANID,
+        Y.S_TRAINSETID,
+        T.S_ITEMCODE,
+        Y.S_STUFFID,
+        T.S_ITEMNAME,
+        Y.S_STUFFNAME,
+        Y.S_TIMETAG,
+        Y.D_REPAIRTIME,
+        Y.S_DEPTCODE,
+        Y.S_DEPTNAME,
+        Y.S_CRITERTIONID,
+        Y.D_RECORDTIME,
+        Y.S_REPAIRTYPE,
+        T.S_CARNO,
+        T.S_ARRAGETYPE,
+        Y.S_UNITCODE,
+        Y.S_TRAINSETTYPE,
+        E.S_PROCESSPACKETID,
+        E.S_PACKETCODE,
+        E.S_PACKETNAME,
+        Y.S_DATASOURCE,
+        N.S_PROCESSPERSONID
+        FROM
+        XZY_M_RFIDCARDSUMMARY Y
+        LEFT JOIN XZY_M_PROCESSCARPART T ON Y.S_DAYPLANID = T.S_DAYPLANID
+        AND Y.S_TRAINSETID = T.S_TRAINSETID
+        LEFT JOIN XZY_M_PROCESSPERSON N ON T.S_PROCESSID = N.S_PROCESSID
+        LEFT JOIN XZY_M_PROCESSPACKET E ON T.S_PROCESSPACKETID = E.S_PROCESSPACKETID
+        WHERE
+        Y.S_REPAIRTYPE = '1'
+        AND Y.C_FLAG = '1'
+        AND T.S_REPAIRTYPE = '1'
+        AND T.C_FLAG = '1'
+        AND N.C_FLAG = '1'
+        <if test="trainsetType!=null and trainsetType!=''">
+            and Y.S_TRAINSETTYPE=#{trainsetType}
+        </if>
+        <if test="trainsetId!=null and trainsetId!=''">
+            and Y.S_TRAINSETID=#{trainsetId}
+        </if>
+        <if test="deptCode!=null and deptCode!=''">
+            and Y.s_deptcode=#{deptCode}
+        </if>
+        <if test="workerId!=null and workerId!=''">
+            and Y.S_STUFFID=#{workerId}
+        </if>
+        <if test="unitCode!=null and unitCode!=''">
+            and Y.S_UNITCODE=#{unitCode}
+        </if>
+        <if test="packetName!=null and packetName!=''">
+            and UPPER(E.S_PACKETNAME) like CONCAT(CONCAT('%',UPPER(#{packetName})),'%') escape '\'
+        </if>
+        <if test="startTime!=null">
+            and to_date(to_char(#{startTime}, 'yyyy-MM-dd' ),'yyyy-MM-dd')&lt;=to_date(substr(Y.S_DAYPLANID,0,10),'yyyy-MM-dd'
+            )
+        </if>
+        <if test="endTime!=null">
+            and to_date( substr(Y.S_DAYPLANID,0,10) , 'yyyy-MM-dd' )&lt;=to_date(to_char(#{endTime}, 'yyyy-MM-dd'
+            ),'yyyy-MM-dd')
+        </if>
+        ORDER BY
+            Y.S_DAYPLANID DESC,
+            Y.S_ITEMNAME DESC
+    </select>
+
+
+
+    <select id="getTwoWorkProcessData" resultMap="twoWorkResult2Map">
+        SELECT
+        T.S_PROCESSID,
+        Y.S_DAYPLANID,
+        Y.S_TRAINSETID,
+        T.S_ITEMCODE,
+        Y.S_STUFFID,
+        T.S_ITEMNAME,
+        Y.S_STUFFNAME,
+        Y.S_TIMETAG,
+        Y.D_REPAIRTIME,
+        Y.S_DEPTCODE,
+        Y.S_DEPTNAME,
+        Y.S_CRITERTIONID,
+        Y.D_RECORDTIME,
+        Y.S_REPAIRTYPE,
+        T.S_CARNO,
+        T.S_ARRAGETYPE,
+        Y.S_UNITCODE,
+        Y.S_TRAINSETTYPE,
+        E.S_PROCESSPACKETID,
+        E.S_PACKETCODE,
+        E.S_PACKETNAME,
+        Y.S_DATASOURCE,
+        N.S_PROCESSPERSONID
+        FROM
+        XZY_M_RFIDCARDSUMMARY Y
+        LEFT JOIN XZY_M_PROCESSCARPART T ON Y.S_DAYPLANID = T.S_DAYPLANID
+        AND Y.S_TRAINSETID = T.S_TRAINSETID
+        LEFT JOIN XZY_M_PROCESSPERSON N ON T.S_PROCESSID = N.S_PROCESSID
+        LEFT JOIN XZY_M_PROCESSPACKET E ON T.S_PROCESSPACKETID = E.S_PROCESSPACKETID
+        WHERE
+        Y.S_REPAIRTYPE = '1'
+        AND Y.C_FLAG = '1'
+        AND T.S_REPAIRTYPE = '1'
+        AND T.C_FLAG = '1'
+        AND N.C_FLAG = '1'
+        <if test="trainsetType!=null and trainsetType!=''">
+            and Y.S_TRAINSETTYPE=#{trainsetType}
+        </if>
+        <if test="trainsetId!=null and trainsetId!=''">
+            and Y.S_TRAINSETID=#{trainsetId}
+        </if>
+        <if test="deptCode!=null and deptCode!=''">
+            and Y.s_deptcode=#{deptCode}
+        </if>
+        <if test="workerId!=null and workerId!=''">
+            and Y.S_STUFFID=#{workerId}
+        </if>
+        <if test="unitCode!=null and unitCode!=''">
+            and Y.S_UNITCODE=#{unitCode}
+        </if>
+        <if test="packetName!=null and packetName!=''">
+            and UPPER(E.S_PACKETNAME) like CONCAT(CONCAT('%',UPPER(#{packetName})),'%') escape '\'
+        </if>
+        <if test="startTime!=null">
+            and to_date(to_char(#{startTime}, 'yyyy-MM-dd' ),'yyyy-MM-dd')&lt;=to_date(substr(Y.S_DAYPLANID,0,10),'yyyy-MM-dd'
+            )
+        </if>
+        <if test="endTime!=null">
+            and to_date( substr(Y.S_DAYPLANID,0,10) , 'yyyy-MM-dd' )&lt;=to_date(to_char(#{endTime}, 'yyyy-MM-dd'
+            ),'yyyy-MM-dd')
+        </if>
+        ORDER BY
+        Y.S_DAYPLANID DESC,
+        Y.S_ITEMNAME DESC
+    </select>
+
+
+    <!--查询一体化列表-->
+    <resultMap id="integrationMap" type="com.ydzbinfo.emis.trainRepair.workprocess.model.ProcessData">
+        <id column="S_PROCESSID" property="processId"/>
+        <result column="S_PROCESSPERSONID" property="processPersonId"/>
+        <result column="S_WORKERID" property="workerId"/>
+        <result column="S_WORKERNAME" property="workerName"/>
+        <result column="S_WORKERTYPE" property="workerType"/>
+        <result column="S_PROCESSID" property="processId"/>
+        <result column="S_DAYPLANID" property="dayPlanId"/>
+        <result column="S_TRAINSETNAME" property="trainsetName"/>
+        <result column="S_TRAINSETID" property="trainsetId"/>
+        <result column="S_ITEMCODE" property="itemCode"/>
+        <result column="S_ITEMNAME" property="itemName"/>
+        <result column="S_REPAIRTYPE" property="repairType"/>
+        <result column="S_ARRAGETYPE" property="arrageType"/>
+        <result column="S_TRAINSETTYPE" property="trainsetType"/>
+        <result column="S_CARNO" property="carNo"/>
+        <result column="S_UNITCODE" property="unitCode"/>
+        <result column="S_UNITNAME" property="unitName"/>
+        <result column="S_PROCESSDEPTID" property="processDeptId"/>
+        <result column="S_DEPTCODE" property="deptCode"/>
+        <result column="S_DEPTNAME" property="deptName"/>
+        <result column="D_TIME" property="endTime"></result>
+        <result column="S_CARNOCOUNT" property="carCount"></result>
+        <result column="S_DATASOURCE" property="dataSource"></result>
+    </resultMap>
+    <select id="getIntegrationList" parameterType="com.ydzbinfo.emis.trainRepair.workprocess.model.ProcessData"
+            resultMap="integrationMap">
+        select
+        a.S_PROCESSPERSONID,
+        a.S_WORKERID,
+        a.S_WORKERNAME,
+        a.S_WORKERTYPE,
+        a.s_processid,
+        b.S_DAYPLANID,
+        b.S_TRAINSETID,
+        b.S_TRAINSETNAME,
+        b.S_ITEMCODE,
+        b.S_ITEMNAME,
+        b.S_REPAIRTYPE,
+        b.S_ARRAGETYPE,
+        b.S_TRAINSETTYPE,
+        b.S_CARNO,
+        b.S_UNITCODE,
+        b.S_UNITNAME,
+        c.s_processdeptid,
+        c.s_deptcode,
+        c.s_deptname,
+        d.D_TIME,
+        e.S_CARNOCOUNT,
+        b.S_DATASOURCE
+        from XZY_M_PROCESSPERSON a inner join XZY_M_PROCESSCARPART b on a.s_processid=b.s_processid and
+        b.s_repairtype='6' and a.c_flag='1' and b.c_flag='1'
+        inner join XZY_M_PROCESSDEPT c on b.S_PROCESSDEPTID = c.S_PROCESSDEPTID and b.c_flag='1'
+        inner join XZY_M_PROCESSTIMERECORD d on a.s_processpersonid=d.s_processpersonid and d.c_flag='1'
+        inner join XZY_M_PROCESSPERSONCONFIRM e on a.S_PROCESSPERSONID=e.S_PROCESSPERSONID
+        where 1=1
+        <if test="trainsetType!=null and trainsetType!=''">
+            and b.S_TRAINSETTYPE=#{trainsetType}
+        </if>
+        <if test="trainsetId!=null and trainsetId!=''">
+            and b.S_TRAINSETID=#{trainsetId}
+        </if>
+        <if test="trainsetName!=null and trainsetName!=''">
+            and b.S_TRAINSETNAME=#{trainsetName}
+        </if>
+        <if test="dayPlanId!=null and dayPlanId!=''">
+            and b.S_DAYPLANID = #{dayPlanId}
+        </if>
+        <if test="deptCode!=null and deptCode!=''">
+            and c.s_deptcode=#{deptCode}
+        </if>
+        <if test="workerId!=null and workerId!=''">
+            and a.S_WORKERID=#{workerId}
+        </if>
+        <if test="workerName!=null and workerName!=''">
+            and UPPER(a.S_WORKERNAME) like Concat(Concat('%',UPPER(#{workerName})),'%') escape '\'
+        </if>
+        <if test="unitCode!=null and unitCode!=''">
+            and b.S_UNITCODE = #{unitCode}
+        </if>
+        <if test="startTime!=null">
+            and to_date(to_char(#{startTime}, 'yyyy-MM-dd' ),'yyyy-MM-dd')&lt;=to_date(substr(b.s_dayplanid,0,10),'yyyy-MM-dd'
+            )
+        </if>
+        <if test="endTime!=null">
+            and to_date( substr(b.s_dayplanid,0,10) , 'yyyy-MM-dd' )&lt;=to_date(to_char(#{endTime}, 'yyyy-MM-dd'
+            ),'yyyy-MM-dd')
+        </if>
+    </select>
+
+    <select id="getWorkCount" resultType="java.lang.Integer">
+        select count(1)
+        from XZY_M_PROCESSPERSON a inner join XZY_M_PROCESSCARPART b on a.s_processid=b.s_processid
+        inner join XZY_M_PROCESSPACKET c on b.S_PROCESSPACKETID=c.S_PROCESSPACKETID
+        inner join XZY_M_PROCESSDEPT d on b.S_PROCESSDEPTID=d.s_Processdeptid
+        where a.C_FLAG='1' and b.C_FLAG='1'
+          and a.s_workerid=#{workerId}
+          and b.s_dayplanid=#{dayplanId}
+          and b.s_trainsetid=#{trainsetId}
+          and c.s_packetcode=#{packetCode}
+          and d.s_deptcode=#{deptCode}
+    </select>
+
+</mapper>

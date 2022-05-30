@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.repairworkflow.dao.NodeRecordMapper">
+    <resultMap id="NodeRecordWithExtraInfoResultMap"
+               type="com.ydzbinfo.emis.trainRepair.repairworkflow.querymodel.extend.NodeRecordWithExtraInfo"
+               autoMapping="true">
+        <id column="id" property="id"/>
+        <collection property="nodeRecordExtraInfoList"
+                    ofType="com.ydzbinfo.emis.trainRepair.repairworkflow.querymodel.NodeRecordExtraInfo"
+                    columnPrefix="NE_"
+                    autoMapping="true">
+        </collection>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ${tableAlias}S_ID as "${columnPrefix}id",
+        ${tableAlias}S_FLOWRUNID as "${columnPrefix}flowRunId",
+        ${tableAlias}S_NODEID as "${columnPrefix}nodeId",
+        ${tableAlias}S_TYPE as "${columnPrefix}type",
+        ${tableAlias}D_RECORDTIME as "${columnPrefix}recordTime",
+        ${tableAlias}S_WORKERID as "${columnPrefix}workerId",
+        ${tableAlias}S_WORKERNAME as "${columnPrefix}workerName",
+        ${tableAlias}S_ROLEID as "${columnPrefix}roleId",
+        ${tableAlias}S_ROLENAME as "${columnPrefix}roleName",
+        ${tableAlias}S_ROLETYPE as "${columnPrefix}roleType",
+        ${tableAlias}S_TEAMCODE as "${columnPrefix}teamCode",
+        ${tableAlias}S_TEAMNAME as "${columnPrefix}teamName",
+        ${tableAlias}C_EXTRAINFOEXIST as "${columnPrefix}extraInfoExist"
+    </sql>
+
+    <select id="getNodeRecordWithExtraInfo" resultMap="NodeRecordWithExtraInfoResultMap">
+        select n.S_ID,
+        <include refid="Base_Column_List">
+            <property name="tableAlias" value="n."/>
+            <property name="columnPrefix" value=""/>
+        </include>
+        ,
+        <include refid="com.ydzbinfo.emis.trainRepair.repairworkflow.dao.NodeRecordExtraInfoMapper.Base_Column_List">
+            <property name="tableAlias" value="ne."/>
+            <property name="columnPrefix" value="NE_"/>
+        </include>
+
+        FROM
+        XZY_M_FLOWRUN f,
+        XZY_M_NODERECORD n
+        LEFT JOIN
+        XZY_M_NODERECORDEXTRAINFO ne on ne.S_NODERECORDID = n.S_id
+        where f.S_ID = n.S_FLOWRUNID
+        <if test="dayPlanId!=null and dayPlanId!=''">
+            and f.S_DAYPLANID=#{dayPlanId}
+        </if>
+        <if test="flowRunIds != null and flowRunIds.length > 0">
+            and f.S_ID in
+            <foreach collection="flowRunIds" item="flowRunId" open="(" close=")" separator=",">
+                #{flowRunId}
+            </foreach>
+        </if>
+        <if test="nodeIds != null and nodeIds.length > 0">
+            and n.S_NODEID in
+            <foreach collection="nodeIds" item="nodeId" open="(" close=")" separator=",">
+                #{nodeId}
+            </foreach>
+        </if>
+        order by n.D_RECORDTIME
+    </select>
+</mapper>

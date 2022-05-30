@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.common.bill.basetemplate.dao.BaseTemplateContentMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ${tableAlias}S_ID as "${columnPrefix}id",
+        ${tableAlias}S_TEMPLATEID as "${columnPrefix}templateId",
+        ${tableAlias}S_ROWID as "${columnPrefix}rowId",
+        ${tableAlias}S_COLID as "${columnPrefix}colId",
+        ${tableAlias}S_CONTENT as "${columnPrefix}content",
+        ${tableAlias}S_ATTRIBUTECODE as "${columnPrefix}attributeCode"
+    </sql>
+
+</mapper>

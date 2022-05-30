@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.trackPowerInfo.dao.TrackPowerInfoMapper">
+
+    <!--通用查询映射结果-->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.trainsetPostion.querymodel.TrackPowerEntity">
+        <id column="S_ID" property="id"/>
+        <result column="S_TRAINSETPOSTIONID" property="trainsetPostionId"/>
+        <result column="S_TRACKCODE" property="trackCode"/>
+        <result column="S_TRACKNAME" property="trackName"/>
+        <result column="S_TRACKPLACODE" property="trackPlaCode"/>
+        <result column="S_TRACKPLANAME" property="trackPlaName"/>
+        <result column="S_DATASOURCE" property="dataSource"/>
+        <result column="S_UNITCODE" property="unitCode"/>
+        <result column="S_UNITNAME" property="unitName"/>
+        <result column="S_STATE" property="state"/>
+        <result column="D_TIME" property="powerChangeTime"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_ID AS id,
+        S_TRACKCODE AS trackCode,
+        S_TRACKNAME AS trackName,
+        S_TRACKPLACODE AS trackPlaCode,
+        S_TRACKPLANAME AS trackPlaName,
+        S_DATASOURCE AS dataSource,
+        S_UNITCODE AS unitCode,
+        S_UNITNAME AS unitName,
+        S_STATE AS state,
+        D_TIME AS powerChangeTime
+    </sql>
+
+    <!-- 获取股道供断电信息 -->
+    <select id="getTrackPowerInfo" resultType="com.ydzbinfo.emis.trainRepair.trainsetPostion.querymodel.TrackPowerEntity">
+        select
+        <include refid="Base_Column_List"></include>
+        from XZY_M_TRACKPOWER_STATE_CUR
+        where
+        1 = 1
+        <if test="trackCodeList != null and trackCodeList.size() > 0">
+            and S_TRACKCODE in
+            <foreach collection="trackCodeList" item="trackCode" index="index" open="(" separator="," close=")">
+                #{trackCode}
+            </foreach>
+        </if>
+        <if test="unitCodeList != null and unitCodeList.size() > 0">
+            and S_UNITCODE in
+            <foreach collection="unitCodeList" item="unitCode" index="index" open="(" separator="," close=")">
+                #{unitCode}
+            </foreach>
+        </if>
+    </select>
+
+    <!-- 获取股道供断电信息 -->
+    <select id="getTrackPowerInfoByOne" resultType="com.ydzbinfo.emis.trainRepair.trainsetPostion.querymodel.TrackPowerEntity">
+        select
+        <include refid="Base_Column_List"></include>
+        from XZY_M_TRACKPOWER_STATE_CUR
+        where
+        1 = 1
+        <if test="trackCode != null and trackCode != ''">
+            and S_TRACKCODE = #{trackCode}
+        </if>
+        <if test="unitCode != null and unitCode != ''">
+            and S_UNITCODE = #{unitCode}
+        </if>
+        <if test="trackPlaCode != null and trackPlaCode !=''">
+            and S_TRACKPLACODE = #{trackPlaCode}
+        </if>
+    </select>
+
+    <!-- 根据股道获取股道供断电信息 -->
+    <select id="getTrackPowerInfoByTrackPower"
+            resultType="com.ydzbinfo.emis.trainRepair.trainsetPostion.querymodel.TrackPowerEntity">
+        select
+        <include refid="Base_Column_List"></include>
+        from XZY_M_TRACKPOWER_STATE_CUR
+        where
+        S_TRACKCODE = #{trackCode}
+        and
+        S_TRACKPLACODE = #{trackPlaCode}
+    </select>
+
+    <!-- 删除股道供断电信息 -->
+    <delete id="deleteByTrackPower" parameterType="com.ydzbinfo.emis.trainRepair.trainsetPostion.querymodel.TrackPowerEntity">
+        delete
+        from XZY_M_TRACKPOWER_STATE_CUR
+        where S_TRACKCODE = #{trackCode}
+          and S_TRACKPLACODE = #{trackPlaCode}
+    </delete>
+
+    <!-- 添加股道供断电信息 -->
+    <insert id="addTrackPowerInfo" parameterType="com.ydzbinfo.emis.trainRepair.trainsetPostion.querymodel.TrackPowerEntity">
+        insert into XZY_M_TRACKPOWER_STATE_CUR
+        (
+        S_ID,
+        <if test="trackCode != null and trackCode != ''">
+            S_TRACKCODE,
+        </if>
+        <if test="trackName != null and trackName != ''">
+            S_TRACKNAME,
+        </if>
+        <if test="trackPlaName != null and trackPlaName != ''">
+            S_TRACKPLANAME,
+        </if>
+        <if test="trackPlaCode != null and trackPlaCode != ''">
+            S_TRACKPLACODE,
+        </if>
+        <if test="state != null and state != ''">
+            S_STATE,
+        </if>
+        <if test="powerChangeTime != null">
+            D_TIME,
+        </if>
+        <if test="unitCode != null and unitCode != ''">
+            S_UNITCODE,
+        </if>
+        <if test="unitName != null and unitName != ''">
+            S_UNITNAME,
+        </if>
+        <if test="dataSource != null and dataSource != ''">
+            S_DATASOURCE,
+        </if>
+        D_RECORDTIME
+        )values (
+        #{id},
+        <if test="trackCode != null and trackCode != ''">
+            #{trackCode},
+        </if>
+        <if test="trackName != null and trackName != ''">
+            #{trackName},
+        </if>
+        <if test="trackPlaName != null and trackPlaName != ''">
+            #{trackPlaName},
+        </if>
+        <if test="trackPlaCode != null and trackPlaCode != ''">
+            #{trackPlaCode},
+        </if>
+        <if test="state != null and state != ''">
+            #{state},
+        </if>
+        <if test="powerChangeTime != null">
+            #{powerChangeTime},
+        </if>
+        <if test="unitCode != null and unitCode != ''">
+            #{unitCode},
+        </if>
+        <if test="unitName != null and unitName != ''">
+            #{unitName},
+        </if>
+        <if test="dataSource != null and dataSource != ''">
+            #{dataSource},
+        </if>
+        TO_DATE(TO_CHAR(SYSDATE,'YYYY/MM/DD HH24:MI:SS'),'YYYY/MM/DD HH24:MI:SS')
+        )
+    </insert>
+
+    <select id="selectTrackPowersFromTrackPositions"
+            resultType="com.ydzbinfo.emis.trainRepair.trainsetPostion.querymodel.TrackPowerEntity">
+        select
+        <include refid="Base_Column_List"></include>
+        from XZY_M_TRACKPOWER_STATE_CUR
+        where (S_TRACKCODE, S_TRACKPLACODE) in
+        <foreach collection="trackPositions" item="trackPosition" open="(" close=")" separator=",">
+            (#{trackPosition.trackCode}, #{trackPosition.trackPositionCode})
+        </foreach>
+    </select>
+
+</mapper>

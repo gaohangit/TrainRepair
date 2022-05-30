@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- 设置spreadjs的语言 -->
+    <meta name="spreadjs culture" content="zh-cn" />
+    <title>BillSpreadModule使用示例</title>
+    <script src="./lib/spread/gc.spread.sheets.all.13.2.0.min.js"></script>
+    <link rel="stylesheet" href="./lib/spread/gc.spread.sheets.excel2013white.13.2.0.css" />
+    <link rel="stylesheet" href="./lib/elementUI/index.css" />
+    <script src="./lib/spread/gc.spread.excelio.13.2.0.min.js"></script>
+    <script src="./lib/spread/gc.spread.sheets.resources.zh.13.2.0.min.js"></script>
+    <script src="./lib/vue/vue.js"></script>
+    <script src="./lib/elementUI/index.js"></script>
+    <script src="./lib/BillSpreadModule.js"></script>
+    <!-- <script src="./lib/jquery/jquery-1.10.2.min.js"></script> -->
+
+    <style>
+      :root {
+        --bill-border: 3px;
+      }
+
+      body {
+        margin: 0;
+        border: black var(--bill-border) solid;
+      }
+
+      #main {
+        height: calc(100vh - 22px - var(--bill-border) * 2);
+        width: calc(100vw - 1px - var(--bill-border) * 2);
+      }
+
+      .statusBar {
+        height: 22px;
+        background-color: #217346;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="main"></div>
+    <div class="statusBar"></div>
+    <script>
+      let billSpreadModuleObj2 = new BillSpreadModule();
+      let billSpreadModuleObj = new BillSpreadModule({
+        readOnly: false, // 是否只读，默认值为false
+        allowExtendOperation: false, // 20211104新增 是否允许扩展操作：撤销、单元格粘贴、dragFill(单元格右下角加号拖拽)，默认值为false
+        maxTextLength: 200, // 20211108新增 用户编辑最大字数限制，默认200
+      });
+
+      // 挂载div元素
+      billSpreadModuleObj2.mountSpread(document.getElementById("main"));
+      // 先销毁原本BillSpreadModule对象才能把旧元素绑定到新BillSpreadModule对象上
+      billSpreadModuleObj2.destroy();
+      billSpreadModuleObj.mountSpread(document.getElementById("main"));
+      // 初始化所有数据
+      billSpreadModuleObj.initAllData({
+        ssjsonDataString: null,
+        billData: {
+          cells: [
+            {
+              value: "",
+              attributeCode: "test",
+              rowId: "0",
+              colId: "0",
+              controls: [
+                {
+                  type: "2",
+                  areaNumber: 1,
+                },
+                {
+                  type: "2",
+                  rowId: "3",
+                  colId: "3",
+                },
+              ],
+            },
+            {
+              value: "",
+              attributeCode: "testSelect",
+              rowId: "10",
+              colId: "10",
+              controls: [],
+              extraOptions: ["10", "123"],
+            },
+            {
+              value: "1",
+              attributeCode: "testNumber",
+              rowId: "9",
+              colId: "9",
+              controls: [],
+            },
+            {
+              value: "",
+              attributeCode: "test",
+              rowId: "11",
+              colId: "10",
+              controls: [],
+            },
+            {
+              value: "",
+              attributeCode: "test",
+              rowId: "10",
+              colId: "11",
+              controls: [],
+            },
+            {
+              value: "",
+              attributeCode: "test",
+              rowId: "11",
+              colId: "11",
+              controls: [],
+            },
+            {
+              value: "12",
+              attributeCode: "test",
+              rowId: "12",
+              colId: "11",
+              controls: [],
+            },
+            {
+              value: "13",
+              attributeCode: "test",
+              rowId: "13",
+              colId: "11",
+              controls: [],
+            },
+            {
+              value: "点击设置默认值",
+              rowId: "8",
+              colId: "8",
+              controls: [
+                {
+                  type: "3",
+                  areaNumber: 1,
+                },
+                {
+                  type: "3",
+                  rowId: 9,
+                  colId: 9,
+                },
+                {
+                  type: "3",
+                  rowId: 4,
+                  colId: 6,
+                },
+              ],
+            },
+            {
+              id: "asd",
+              value: "",
+              attributeCode: "test",
+              rowId: "3",
+              colId: "3",
+              controls: [
+                {
+                  type: "2",
+                  rowId: "4",
+                  colId: "4",
+                },
+              ],
+            },
+            {
+              id: "asd1",
+              value: "",
+              attributeCode: "test",
+              rowId: "4",
+              colId: "2",
+              controls: [],
+            },
+            {
+              value: "",
+              code: "",
+              attributeCode: "testSign",
+              rowId: "0",
+              colId: "1",
+              controls: [
+                {
+                  type: "2",
+                  areaNumber: 1,
+                },
+              ],
+            },
+            {
+              value: "",
+              attributeCode: "testRadio",
+              rowId: "4",
+              colId: "6",
+              controls: [
+                {
+                  type: "2",
+                  rowId: "0",
+                  colId: "0",
+                },
+              ],
+            },
+            {
+              value: "2021-12-11",
+              attributeCode: "testDate",
+              rowId: "0",
+              colId: "2",
+              controls: [
+                {
+                  type: "2",
+                  rowId: "0",
+                  colId: "0",
+                },
+              ],
+            },
+            {
+              value: "",
+              attributeCode: "testDateTime",
+              rowId: "4",
+              colId: "2",
+              controls: [],
+            },
+            {
+              value: "",
+              attributeCode: "testTime",
+              rowId: "3",
+              colId: "2",
+              controls: [],
+            },
+            {
+              value: "",
+              attributeCode: "testTimeSecond",
+              rowId: "2",
+              colId: "2",
+              controls: [],
+            },
+            {
+              value: "",
+              attributeCode: "testDate",
+              rowId: "1",
+              colId: "2",
+              controls: [],
+            },
+            {
+              value: "",
+              attributeCode: "testDateTime",
+              rowId: "4",
+              colId: "20",
+              controls: [],
+            },
+          ], // 单元格数据
+          areas: [
+            {
+              leftUp: `9,9`,
+              leftDown: `9,10`,
+              rightUp: `10,9`,
+              rightDown: `10,10`,
+              type: "1",
+              number: 1,
+            },
+          ], // 区域数据
+          extraObject: {}, // 额外单据数据
+        },
+        propertyTree: [
+          {
+            attributeTypeName: "测试类型",
+            attributeTypeCode: "testType",
+            templateAttributes: [
+              {
+                attributeCode: "test",
+                attributeName: "测试属性",
+                attributeModeCode: "TextControl",
+                readOnly: "0",
+                backFillVerify: "1",
+              },
+              {
+                attributeCode: "testSelect",
+                attributeName: "测试下拉属性",
+                attributeModeCode: "DropDownControl",
+                readOnly: "0",
+                backFillVerify: "1",
+              },
+              {
+                attributeCode: "testNumber",
+                attributeName: "测试数字属性",
+                attributeModeCode: "NumberControl",
+                readOnly: "0",
+                backFillVerify: "1",
+              },
+              {
+                attributeCode: "testSign",
+                attributeName: "测试签字属性",
+                attributeModeCode: "SignControl",
+                readOnly: "0",
+                backFillVerify: "0",
+              },
+              {
+                attributeCode: "testDate",
+                attributeName: "测试日期属性",
+                attributeModeCode: "DateControl",
+                readOnly: "0",
+                backFillVerify: "0",
+              },
+              {
+                attributeCode: "testRadio",
+                attributeName: "测试单选属性",
+                attributeModeCode: "SingleChoiceControl",
+                readOnly: "0",
+                backFillVerify: "0",
+              },
+              {
+                attributeCode: "testDateTime",
+                attributeName: "测试日期时间属性",
+                attributeModeCode: "DateTimeControl",
+                readOnly: "0",
+                backFillVerify: "0",
+              },
+              {
+                attributeCode: "testTime",
+                attributeName: "测试时间属性",
+                attributeModeCode: "HourMinute",
+                readOnly: "0",
+                backFillVerify: "0",
+              },
+              {
+                attributeCode: "testTimeSecond",
+                attributeName: "测试时间（时分秒）属性",
+                attributeModeCode: "HourMinuteSecond",
+                readOnly: "0",
+                backFillVerify: "0",
+              },
+            ],
+          },
+        ], // 属性数据
+        propertyOptionList: [
+          {
+            attributeRangeValue: "1",
+            attributeCode: "test",
+          },
+          {
+            attributeRangeValue: "1",
+            attributeCode: "testSelect",
+            isDefault: "0",
+          },
+          {
+            attributeRangeValue: "2",
+            attributeCode: "testSelect",
+            isDefault: "1",
+          },
+          {
+            attributeRangeValue: "3",
+            attributeCode: "testSelect",
+            isDefault: "0",
+          },
+          {
+            attributeRangeValue: "2",
+            attributeCode: "testNumber",
+          },
+          {
+            attributeRangeValue: "12",
+            attributeCode: "testSign",
+          },
+          {
+            attributeRangeValue: "01",
+            attributeCode: "testRadio",
+            isDefault: "0",
+          },
+          {
+            attributeRangeValue: "02",
+            attributeCode: "testRadio",
+            isDefault: "1",
+          },
+          {
+            attributeRangeValue: "03",
+            attributeCode: "testRadio",
+            isDefault: "0",
+          },
+        ], // 属性选项数据
+        userData: {
+          // 用户数据
+          id: "asd",
+          name: "张三",
+          roles: [
+            {
+              code: "121",
+              name: "检修工长",
+            },
+          ],
+        },
+      });
+      /* 除了initAllData，也可分别设置数据
+      // 设置属性数据
+      this.setPropertyData({ propertyTree, propertyOptionList })
+      // 设置模板数据
+      this.setTemplateData({
+          ssjsonDataString,
+          billData: {
+              cells,
+              areas,
+              extraObject
+          },
+      })
+      this.setUserData(userData)
+      **/
+
+      // 获取当前模板数据对象(包含模板ssjson信息和记录单数据)，用于保存等需求{ ssjsonDataString, billData: { cells, areas, extraObject } }
+      let dataForSave = billSpreadModuleObj.getTemplateData();
+
+      // 20211103新增：获取当前记录单数据对象，用于保存等需求{ cells, areas, extraObject }
+      let billData = billSpreadModuleObj.getBillData();
+
+      // 20211124新增：更新单据数据
+      billSpreadModuleObj.updateBillData({
+        changedCells: [
+          {
+            id: "asd",
+            value: "asd",
+          },
+        ],
+      });
+
+      // 获取spread工作簿对象
+      let sheet = billSpreadModuleObj.getSpread().getActiveSheet();
+
+      // 因为默认样式显示不全内容，临时变更部分样式
+      sheet.setRowHeight(4, 100);
+      sheet.setColumnWidth(4, 200);
+      sheet.setColumnWidth(2, 200);
+
+      // 初始化状态栏
+      let designerStatusBar = new GC.Spread.Sheets.StatusBar.StatusBar(document.getElementsByClassName("statusBar")[0]);
+      designerStatusBar.bind(billSpreadModuleObj.getSpread());
+
+    </script>
+  </body>
+</html>

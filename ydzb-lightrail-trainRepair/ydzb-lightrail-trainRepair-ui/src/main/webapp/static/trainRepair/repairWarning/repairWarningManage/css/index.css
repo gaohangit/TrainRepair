@@ -1,0 +1,150 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+[v-cloak] {
+  display: none;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+#repairWarningManage {
+  height: 100%;
+}
+
+.el-card {
+  height: calc(100vh - 2px);
+}
+
+.el-card__header {
+  position: relative;
+  height: 42px;
+  line-height: 42px;
+  padding: 0 0 0 32px;
+}
+
+.adorn {
+  position: absolute;
+  left: 20px;
+  top: 9px;
+  width: 5px;
+  height: 25px;
+  background-color: #4e86fe;
+}
+
+.el-card__body {
+  height: calc(100vh - 82px);
+}
+
+.text-l {
+  text-align: left;
+}
+.text-r {
+  text-align: right;
+}
+.mb-form .el-form-item {
+  margin-bottom: 0;
+}
+.el-select {
+  width: 100%;
+}
+.el-input {
+  width: 100%;
+}
+
+.el-container {
+  height: 100%;
+  padding: 10px 0;
+}
+.el-header {
+  height: unset !important;
+}
+.el-main {
+  padding-top: 0px;
+  height: 100%;
+}
+.main-table {
+  height: calc(100vh - 155px);
+}
+.el-footer {
+  height: unset !important;
+}
+.center-dialog {
+  display: flex;
+}
+.center-dialog .el-dialog {
+  margin: auto;
+}
+
+.page-title {
+  position: relative;
+  padding: 0 0 10px 7px;
+  border-bottom: 1px solid #c0c4cc;
+  line-height: 18px;
+  font-size: 18px;
+  margin-bottom: 15px;
+}
+
+.page-title::before {
+  display: block;
+  content: '';
+  position: absolute;
+  left: -7px;
+  width: 7px;
+  height: 18px;
+  background-color: #409eff;
+}
+
+.el-tooltip__popper {
+  max-width: 1000px;
+}
+
+.el-date-editor {
+  width: 100% !important;
+}
+.el-date-editor .el-input__icon {
+  line-height: 28px !important;
+}
+.el-date-editor .el-range-separator {
+  line-height: 28px !important;
+}
+.mb-10-form .el-form-item {
+  margin-bottom: 10px;
+}
+
+.el-icon-edit-outline {
+  color: #5cb6ff;
+  cursor: pointer;
+  font-size: 18px;
+}
+.el-table td {
+  padding: 5px 0;
+}
+
+.warning-info {
+  display: flex;
+  margin: 0 5px;
+}
+
+tr th .cell {
+  height: 34px;
+  line-height: 32px !important;
+}
+
+.column-info {
+  display: flex;
+  flex-direction: column;
+  margin: 0 5px;
+}
+
+.hide-display {
+  display: block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  text-align: left;
+  cursor:pointer;
+}

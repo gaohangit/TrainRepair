@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.repairmanagent.dao.XzyCWorkcritertionMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.repairmanagement.querymodel.XzyCWorkcritertion">
+        <id column="S_CRITERTIONID" property="sCritertionid"/>
+        <result column="S_ITEMCODE" property="sItemcode"/>
+        <result column="S_TRAINSETTYPE" property="sTrainsettype"/>
+        <!--<result column="S_TRAINSETSUBTYPE" property="sTrainsetsubtype" />-->
+        <result column="S_CYC" property="sCyc"/>
+        <result column="S_POWERSTATE" property="sPowerstate"/>
+        <result column="S_WARNINGTIME" property="sWarningtime"/>
+        <result column="S_ITEMNAME" property="sItemname"/>
+        <result column="I_MINWORKTIME" property="iMinworktime"/>
+        <result column="I_MAXWORKTIME" property="iMaxworktime"/>
+        <result column="I_PICCOUNT" property="iPiccount"/>
+        <result column="C_ABLEFLAG" property="cAbleflag"/>
+        <result column="S_DEPOTCODE" property="sDepotcode"/>
+        <result column="S_DEPOTNAME" property="sDepotname"/>
+        <result column="S_TRAINSETID" property="sTrainsetid"/>
+        <result column="S_TRAINSETNAME" property="sTrainsetname"/>
+        <result column="S_STUFFID" property="stuffId"/>
+        <!--<result column="S_BATCH" property="sBatch" />-->
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_CRITERTIONID AS sCritertionid,
+        S_ITEMCODE AS sItemcode,
+        S_TRAINSETTYPE AS sTrainsettype,
+        S_CYC AS sCyc,
+        S_POWERSTATE AS sPowerstate,
+        S_WARNINGTIME AS sWarningtime,
+        S_ITEMNAME AS sItemname,
+        I_MINWORKTIME AS iMinworktime,
+        I_MAXWORKTIME AS iMaxworktime,
+        I_PICCOUNT AS iPiccount,
+        C_ABLEFLAG AS cAbleflag,
+        S_DEPOTCODE AS sDepotcode,
+        S_DEPOTNAME AS sDepotname,
+        S_TRAINSETID AS sTrainsetid,
+        S_TRAINSETNAME AS sTrainsetname
+    </sql>
+
+    <!-- 通用联表查询结果列 -->
+    <sql id="Base_Join_Column_List">
+        w.S_CRITERTIONID AS sCritertionid,
+        w.S_ITEMCODE AS sItemcode,
+        w.S_TRAINSETTYPE AS sTrainsettype,
+        w.S_CYC AS sCyc,
+        p.S_NAME AS sPowerstate,
+        w.S_WARNINGTIME AS sWarningtime,
+        w.S_ITEMNAME AS sItemname,
+        w.I_MINWORKTIME AS iMinworktime,
+        w.I_MAXWORKTIME AS iMaxworktime,
+        w.I_PICCOUNT AS iPiccount,
+        w.C_ABLEFLAG AS cAbleflag,
+        w.S_DEPOTCODE AS sDepotcode,
+        w.S_DEPOTNAME AS sDepotname,
+        w.S_TRAINSETID AS sTrainsetid,
+        w.S_TRAINSETNAME AS sTrainsetname
+    </sql>
+
+    <select id="getCritertionDict"
+            resultType="com.ydzbinfo.emis.trainRepair.repairmanagement.querymodel.XzyBCritertionDict">
+        select S_ROLENAME as roleName,
+               S_ROLECODE as roleCode
+        from XZY_B_CRITERTIONROLE_DICT
+    </select>
+
+    <select id="getPowerStateDict" resultType="com.ydzbinfo.emis.trainRepair.repairmanagement.querymodel.XzyBPowerDict">
+        select S_ID   as id,
+               S_NAME as name,
+               C_FLAG as flag
+        from XZY_B_POWER_DICT  where c_flag = '1'
+    </select>
+
+    <select id="getWorkContent" parameterType="Map" resultType="Map">
+        select t.S_ITEMCODE as id , t.S_ITEMNAME as name, t.S_TRAINSETID as trainsetid from XZY_C_WORKCRITERTION t
+        where 1=1
+        <if test="Trainsettype !=null and Trainsettype !=''">
+            and t.S_TRAINSETTYPE=#{Trainsettype}
+        </if>
+    </select>
+
+    <update id="updateByEntity"
+            parameterType="com.ydzbinfo.emis.trainRepair.repairmanagement.querymodel.XzyCWorkcritertion">
+        update XZY_C_WORKCRITERTION
+        <trim prefix="set" suffixOverrides=",">
+            <if test="sItemname != null and sItemname != ''">
+                S_ITEMNAME = #{sItemname},
+            </if>
+            <if test="sTrainsetid != null and sTrainsetid != ''">
+                S_TRAINSETID = #{sTrainsetid},
+            </if>
+            <if test="sTrainsetname != null and sTrainsetname != ''">
+                S_TRAINSETNAME = #{sTrainsetname},
+            </if>
+            <if test="sTrainsettype != null and sTrainsettype != ''">
+                S_TRAINSETTYPE = #{sTrainsettype},
+            </if>
+            <if test="sPowerstate != null and sPowerstate != ''">
+                S_POWERSTATE = #{sPowerstate},
+            </if>
+            <if test="sCyc != null and sCyc != ''">
+                S_CYC = #{sCyc},
+            </if>
+            <if test="iPiccount != null and iPiccount != ''">
+                I_PICCOUNT = #{iPiccount},
+            </if>
+            <if test="sWarningtime != null and sWarningtime !=''">
+                S_WARNINGTIME = #{sWarningtime},
+            </if>
+            <if test="iMinworktime != null and iMinworktime != ''">
+                I_MINWORKTIME = #{iMinworktime},
+            </if>
+            <if test="iMaxworktime != null and iMaxworktime != ''">
+                I_MAXWORKTIME = #{iMaxworktime},
+            </if>
+        </trim>
+        where S_CRITERTIONID = #{sCritertionid}
+    </update>
+    <!-- 获取 标准配置 别瞎动这个 -->
+    <select id="getWorkcritertions"
+            resultType="com.ydzbinfo.emis.trainRepair.repairmanagement.querymodel.XzyCWorkcritertion">
+        select
+        <include refid="Base_Column_List"></include>
+        from XZY_C_WORKCRITERTION
+        where 1 = 1
+        <if test="depotCode != null and depotCode != ''">
+            and S_DEPOTCODE = #{depotCode}
+        </if>
+
+        <if test="trainsetId != null and trainsetId != ''">
+            and S_TRAINSETID = #{trainsetId}
+        </if>
+        <if test="itemCode != null and itemCode != ''">
+            and S_ITEMCODE = #{itemCode}
+        </if>
+        <if test="cyc != null and cyc != ''">
+            and S_CYC = #{cyc}
+        </if>
+
+    </select>
+
+    <select id="getWorkcritertionByItemCode"
+            resultType="com.ydzbinfo.emis.trainRepair.repairmanagement.querymodel.XzyCWorkcritertion">
+        select
+        <include refid="Base_Column_List"></include>
+        from XZY_C_WORKCRITERTION
+        where S_ITEMCODE = #{itemCode}
+    </select>
+
+    <select id="getOneWorkCriterionExact"
+            resultType="com.ydzbinfo.emis.trainRepair.repairmanagement.querymodel.XzyCWorkcritertion">
+        select
+        <include refid="Base_Column_List"></include>
+        from XZY_C_WORKCRITERTION
+        where 1 = 1
+        <if test="depotCode != null and depotCode != ''">
+            and S_DEPOTCODE = #{depotCode}
+        </if>
+        <if test="trainsetType != null and trainsetType != ''">
+            and S_TRAINSETTYPE = #{trainsetType}
+        </if>
+        <if test="trainsetId != null and trainsetId != ''">
+            and S_TRAINSETID = #{trainsetId}
+        </if>
+        <if test="cyc != null and cyc != ''">
+            and S_CYC = #{cyc}
+        </if>
+        <if test="itemCode != null and itemCode != ''">
+            and S_ITEMCODE = #{itemCode}
+        </if>
+    </select>
+
+    <select id="getWorkcritertionListDelete"
+            resultType="com.ydzbinfo.emis.trainRepair.repairmanagement.querymodel.XzyCWorkcritertion">
+        SELECT DISTINCT
+        T .s_critertionid AS sCritertionid,
+        T .s_itemcode AS sItemcode,
+        T .s_itemname AS sItemname,
+        T .s_itemnameabbr AS sItemnameAbbr,
+        T .s_depotcode AS sDepotcode,
+        T .s_depotname AS sDepotname,
+        T .s_trainsetid AS sTrainsetid,
+        T .s_trainsetname AS sTrainsetname,
+        T .s_trainsettype AS sTrainsettype,
+        T .s_trainsetsubtype AS sTrainsetsubtype,
+        T .i_maxworktime AS iMaxworktime,
+        T .i_minworktime AS iMinworktime,
+        T .c_flag AS cFlag,
+        T .i_piccount AS iPiccount,
+        T .s_cyc AS sCyc,
+        T .s_warningtime AS sWarningtime,
+        T .S_POWERSTATE AS sPowerstate,
+        T .S_PERSONCOUNT AS personCount,
+        T .D_CREATETIME AS createTime,
+        Y.S_STUFFID AS stuffId
+        FROM
+        XZY_M_RFIDCARDSUMMARY y
+        LEFT JOIN XZY_C_WORKCRITERTION T ON T .S_CRITERTIONID = y.S_CRITERTIONID
+        WHERE
+        T .C_FLAG = '0'
+        <if test="trainsetType!=null and trainsetType!=''">
+            and T.S_TRAINSETTYPE=#{trainsetType}
+        </if>
+        <if test="trainsetSubType!=null and trainsetSubType!=''">
+            and T.S_TRAINSETSUBTYPE = #{trainsetSubType}
+        </if>
+        and T.S_CYC = '1'
+        and Y.S_TRAINSETID = #{trainsetId}
+
+    </select>
+
+
+    <!--获取作业标准配置列表-->
+    <select id="getWorkcritertionList"
+            resultType="com.ydzbinfo.emis.trainRepair.repairmanagement.querymodel.XzyCWorkcritertion">
+        select
+        t.s_critertionid as sCritertionid,
+        t.s_itemcode as sItemcode,
+        t.s_itemname as sItemname,
+        t.s_itemnameabbr as sItemnameAbbr,
+        t.s_depotcode as sDepotcode,
+        t.s_depotname as sDepotname,
+        t.s_trainsetid as sTrainsetid,
+        t.s_trainsetname as sTrainsetname,
+        t.s_trainsettype as sTrainsettype,
+        t.s_trainsetsubtype as sTrainsetsubtype,
+        t.i_maxworktime as iMaxworktime,
+        t.i_minworktime as iMinworktime,
+        t.c_flag as cFlag,
+        t.i_piccount as iPiccount,
+        t.s_cyc as sCyc,
+        t.s_warningtime as sWarningtime,
+        t.S_POWERSTATE as sPowerstate,
+        t.S_PERSONCOUNT as personCount,
+        t.D_CREATETIME as createTime
+        from XZY_C_WORKCRITERTION t
+        where 1=1 and t.c_flag='1'
+        <if test="trainsetType!=null and trainsetType!=''">
+            and t.S_TRAINSETTYPE=#{trainsetType}
+        </if>
+        <if test="trainsetSubType!=null and trainsetSubType!=''">
+            and t.S_TRAINSETSUBTYPE = #{trainsetSubType}
+        </if>
+        <if test="cyc != null and cyc != ''">
+            and t.S_CYC = #{cyc}
+        </if>
+        <if test="itemName != null and itemName != ''">
+            and UPPER(t.S_ITEMNAME) like '%'||UPPER(#{itemName})||'%' escape '\'
+        </if>
+        <if test="itemCode != null and itemCode != ''">
+            and t.S_ITEMCODE = #{itemCode}
+        </if>
+        order by t.s_trainsettype,s_trainsetsubtype,s_itemname
+    </select>
+    <!--获取预警角色关系集合-->
+    <select id="getWorkcritertionRoleList" parameterType="String"
+            resultType="com.ydzbinfo.emis.trainRepair.repairmanagement.querymodel.XzyCWorkcritertionRole">
+        select
+        S_ID as sId,
+        S_CRITERTIONID as sCritertionid,
+        S_ROLENAME as sRolename,
+        S_ROLECODE as sRolecode,
+        S_REMARK as sRemark,
+        C_FLAG as cFlag
+        from XZY_C_WORKCRITERTION_ROLE
+        where c_flag='1' and S_CRITERTIONID in ${sCritertionids}
+    </select>
+    <!--获取岗位角色关系集合-->
+    <select id="getWorkcritertionPostList" parameterType="String"
+            resultType="com.ydzbinfo.emis.trainRepair.repairmanagement.querymodel.XzyCWorkcritertionPost">
+        select
+        S_ID as Id,
+        S_POSTNAME as postName,
+        S_POSTCODE as postCode,
+        S_REMARK as remark,
+        C_FLAG as flag,
+        S_CRITERTIONID as sCritertionid
+        from XZY_C_WORKCRITERTION_POST where c_flag='1' and S_CRITERTIONID in ${sCritertionids}
+    </select>
+
+    <select id="getWorkcritertionPostList1" parameterType="String"
+            resultType="com.ydzbinfo.emis.trainRepair.repairmanagement.querymodel.XzyCWorkcritertionPost">
+        select
+        S_ID as Id,
+        S_POSTNAME as postName,
+        S_POSTCODE as postCode,
+        S_REMARK as remark,
+        C_FLAG as flag,
+        S_CRITERTIONID as sCritertionid
+        from XZY_C_WORKCRITERTION_POST where  S_CRITERTIONID in ${sCritertionids}
+    </select>
+
+    <!--获取优先角色关系集合-->
+    <select id="getWorkcritertionPriRoleList" parameterType="String"
+            resultType="com.ydzbinfo.emis.trainRepair.repairmanagement.querymodel.XzyCWorkritertionPriRole">
+        select
+        S_ID as Id,
+        S_PRIROLENAME as priRoleName,
+        S_PRIROLECODE as priRoleCode,
+        S_REMARK as remark,
+        C_FLAG as flag,
+        S_CRITERTIONID as sCritertionid
+        from XZY_C_WORKCRITERTION_PRIROLE where c_flag='1' and S_CRITERTIONID in ${sCritertionids}
+    </select>
+
+    <!--删除作业标准（假删除）-->
+    <update id="delWorkcritertion" parameterType="Map">
+        begin
+          update XZY_C_WORKCRITERTION set c_flag='0',S_DELUSERCODE=#{delUserCode},S_DELUSERNAME=#{delUserName},D_DELTIME=sysdate
+          where S_CRITERTIONID = #{workcriterionId};
+
+          update XZY_C_WORKCRITERTION_ROLE set c_flag='0' where S_CRITERTIONID = #{workcriterionId};
+
+          update XZY_C_WORKCRITERTION_POST set c_flag='0' where S_CRITERTIONID = #{workcriterionId};
+
+          update XZY_C_WORKCRITERTION_PRIROLE set c_flag='0' where S_CRITERTIONID = #{workcriterionId};
+
+        end;
+    </update>
+
+    <!--获取派工岗位-->
+    <select id="getPostList" resultType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.Post">
+       select
+       S_POSTID as postId,
+       S_POSTNAME as postName,
+       S_CREATEUSERCODE as createUserCode,
+       S_CREATEUSERNAME as createUserName,
+       D_CREATETIME as createTime,
+       S_DELUSERCODE as delUserCode,
+       S_DELUSERNAME as delUserName,
+       D_DELTIME as delTime,
+       C_FLAG as flag
+       from XZY_C_POST where C_FLAG='1'
+    </select>
+</mapper>

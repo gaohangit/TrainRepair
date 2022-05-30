@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.repairworkflow.dao.FlowExtraInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.repairworkflow.querymodel.FlowExtraInfo">
+        <result column="S_FLOWID" property="flowId" />
+        <result column="S_TYPE" property="type" />
+        <result column="S_VALUE" property="value" />
+        <result column="C_SYNFLAG" property="synFlag" />
+        <result column="D_SYNDATE" property="synDate" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_FLOWID, S_TYPE, S_VALUE, C_SYNFLAG, D_SYNDATE
+    </sql>
+    <update id="setDefaultType" parameterType="java.lang.String">
+        update XZY_C_FLOWEXTRAINFO set S_VALUE=#{defaultType}
+        where S_FLOWID=#{flowId} and S_TYPE='DEFAULT'
+    </update>
+
+</mapper>

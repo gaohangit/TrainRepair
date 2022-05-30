@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>作业流程处理记录查询</title>
+    <script src="${publicStaticPath}/IE/babel-browser.min.js"></script>
+
+    <link rel="stylesheet" href="${publicStaticPath}/elementUI/index.css" />
+    <script src="${publicStaticPath}/vue/vue.js"></script>
+    <script src="${publicStaticPath}/elementUI/index.js"></script>
+    <script src="${ctxPath}/static/lib/day/day.js"></script>
+    <script src="${publicStaticPath}/vue/axios.min.js"></script>
+
+    <script src="${ctxPath}/static/config/index.js"></script>
+    <script src="${ctxPath}/static/utils/GeneralUtil.js"></script>
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/workRepairFlowRecord/api/index.js"></script>
+
+    <link rel="stylesheet" href="${publicStaticPath}/common/base.css" />
+    <link rel="stylesheet" href="${ctxPath}/static/trainRepair/workRepairFlow/workRepairFlowRecord/css/index.css" />
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/workRepairFlowRecord/js/FileSaver.js"></script>
+
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/workRepairFlowRecord/js/gc.spread.sheets.all.13.2.0.min.js"></script>
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/workRepairFlowRecord/js/gc.spread.excelio.13.2.0.min.js"></script>
+
+    <script>
+      const flowPageCode = '${flowPageCode}';
+      // console.log(flowPageCode)
+    </script>
+  </head>
+  <body>
+    <div id="workRepairFlowRecord" v-cloak v-loading='loading'>
+      <el-card class="box-card">
+        <div slot="header">
+          <span class="adorn"></span><h2>{{pageTitle}}</h2>
+        </div>
+
+        <el-form ref="queryForm" :model="queryModel" :rules="queryRules" label-width="130px">
+          <el-row>
+            <el-col :span="6">
+              <el-form-item label="时间范围：" prop="time">
+                <el-date-picker
+                  v-model="queryModel.time"
+                  type="daterange"
+                  value-format="yyyy-MM-dd"
+                  range-sparator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  :picker-options="pickerOptions"
+                  \@change="getTrainsetByDateAndFlowTypeCode"
+                ></el-date-picker>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="班次：" prop="dayPlanCode">
+                <el-select v-model="queryModel.dayPlanCode" filterable clearable>
+                  <el-option
+                    v-for="item in dayPlanList"
+                    :key="item.code"
+                    :value="item.code"
+                    :label="item.name"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="车组：" prop="trainsetId">
+                <el-select v-model="queryModel.trainsetId" filterable clearable>
+                  <el-option
+                    v-for="item in trainsetList"
+                    :key="item.trainsetid"
+                    :value="item.trainsetid"
+                    :label="item.trainsetname"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="流程类型：" prop="flowTypeCode">
+                <el-select
+                  v-model="queryModel.flowTypeCode"
+                  \@change="flowTypeCodeChange"
+                  filterable
+                  clearable
+                >
+                  <el-option
+                    v-for="item in flowTypeList"
+                    :key="item.code"
+                    :value="item.code"
+                    :label="item.name"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="6">
+              <el-form-item label="流程名称：" prop="flowId">
+                <el-select v-model="queryModel.flowId" filterable clearable>
+                  <el-option v-for="item in flowList" :key="item.id" :value="item.id" :label="item.name"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="作业班组：" prop="teamCode">
+                <el-select
+                  v-model="queryModel.teamCode"
+                  \@focus="getWorkTeamsByUnitCode"
+                  \@change="getPersonByDept"
+                  clearable
+                  filterable
+                >
+                  <el-option
+                    v-for="item in workTeamList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="作业人员：" prop="workId">
+                <el-select v-model="queryModel.workId" clearable filterable>
+                  <el-option
+                    v-for="item in workList"
+                    :key="item.workId"
+                    :label="item.workName"
+                    :value="item.workId"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="流程运行状态：" prop="flowRunState">
+                <el-select v-model="queryModel.flowRunState" filterable clearable>
+                  <el-option
+                    v-for="item in stateList"
+                    :key="item.id"
+                    v-if="flowRunStateShow(item.value)"
+                    :value="item.value"
+                    :label="item.label"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="6" class="queryPastFlow">
+              <el-form-item label="是否显示失效流程：" prop="queryPastFlow">
+                <el-switch
+                v-model="queryModel.queryPastFlow"
+                >
+                </el-switch>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6" class="queryPastFlow">
+              <el-form-item label="是否显示节点全部记录：" prop="nodeAllRecord">
+                <el-switch
+                v-model="queryModel.nodeAllRecord"
+                >
+                </el-switch>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12" class="text-r">
+              <el-form-item label-width="0">
+                </el-switch>
+                <el-button type="primary" size="mini" \@click="getFlowRunRecordList">查询</el-button>
+                <el-button type="primary" size="mini" \@click="resetQueryModel">重置</el-button>
+                <el-button type="primary" size="mini" \@click="exportExcel">导出</el-button>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <el-table id="out-table" :data="tableData" :span-method="spanMethod" ref="multipleTable" \@sort-change="changeTableSort" border height="calc(100% - 195px)">
+          <el-table-column label="日期" sortable="custom" prop="startTime" v-if="queryModel.flowTypeCode == 'PLANLESS_KEY'" show-overflow-tooltip width="250"></el-table-column>
+          <el-table-column label="日期" sortable="custom" prop="dayPlanId" v-else-if="queryModel.flowTypeCode != 'PLANLESS_KEY'" show-overflow-tooltip width="250"></el-table-column>
+          <el-table-column label="车组" sortable="custom" prop="trainsetName" show-overflow-tooltip width="150">
+            <!-- <template v-slot="{row}"> {{trainsetIdNameMap[row.trainsetId]}} </template> -->
+          </el-table-column>
+          <el-table-column
+            label="车组位置"
+            :formatter="trainPosition"
+            show-overflow-tooltip
+            width="150"
+          ></el-table-column>
+          <el-table-column label="流程名称" prop="flowName" show-overflow-tooltip width="150"></el-table-column>
+          <el-table-column label="辆序" show-overflow-tooltip width="150" v-if="queryModel.flowTypeCode == 'PLANLESS_KEY'">
+            <template v-slot="{row}">
+              <div>{{row.carNoList}}</div>
+            </template>
+          </el-table-column>
+          <el-table-column label="作业内容" prop="content" show-overflow-tooltip width="250" v-if="queryModel.flowTypeCode == 'PLANLESS_KEY'"></el-table-column>
+          <el-table-column label="作业节点名称" prop="nodeName" show-overflow-tooltip width="150"></el-table-column>
+          <el-table-column label="作业人员" prop="workerName" show-overflow-tooltip width="150"></el-table-column>
+          <el-table-column label="记录时间" prop="recordTime" show-overflow-tooltip width="250"></el-table-column>
+          <el-table-column label="作业身份" prop="roleName" show-overflow-tooltip width="150"></el-table-column>
+          <el-table-column label="作业班组" prop="teamName" show-overflow-tooltip width="150"></el-table-column>
+          <el-table-column label="附件" width="150">
+            <template v-slot="{row}">
+              <el-button
+                v-if="row.pictureUrls.length>0"
+                type="primary"
+                icon="el-icon-search"
+                size="mini"
+                \@click="lookDetail(row)"
+                >查看附件</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+        <div>{{toolltip}}</div>
+      </el-card>
+      <!-- 节点详细处理记录 -->
+      <el-dialog
+        title="节点详细处理记录"
+        width="80%"
+        :visible.sync="nodeDealDetailDialog.visible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        class="center-dialog"
+        top="auto"
+      >
+        <el-card style="max-height: 500px; overflow: scroll">
+          <el-row>{{nodeDealDetailDialog.detailInfo.title}}</el-row>
+          <el-row class="before-img">
+            <el-upload
+              ref="upload"
+              action="#"
+              :auto-upload="false"
+              list-type="picture-card"
+              :file-list="nodeDealDetailDialog.detailInfo.pics"
+            >
+              <i class="el-icon-plus"></i>
+              <template v-slot:file="{file}">
+                <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
+                <span class="el-upload-list__item-actions">
+                  <span class="el-upload-list__item-preview" \@click="previewPicture(file)">
+                    <i class="el-icon-zoom-in"></i>
+                  </span>
+                </span>
+              </template>
+            </el-upload>
+          </el-row>
+          <el-row style="text-align: center;">
+            <el-button type="primary" size="mini" \@click="nodeDealDetailDialog.visible = false">关闭</el-button>
+          </el-row>
+          <el-image ref="myImg" :src="imgUrl" :preview-src-list="nodeDealDetailDialog.detailInfo.prePics"></el-image>
+        </el-card>
+      </el-dialog>
+    </div>
+    <script
+      type="text/babel"
+      src="${ctxPath}/static/trainRepair/workRepairFlow/workRepairFlowRecord/js/index.js"
+    ></script>
+  </body>
+</html>

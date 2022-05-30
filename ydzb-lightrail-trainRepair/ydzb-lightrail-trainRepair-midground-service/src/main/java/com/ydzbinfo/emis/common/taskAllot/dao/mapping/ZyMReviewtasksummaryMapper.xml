@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.common.taskAllot.dao.ZyMReviewtasksummaryMapper">
+
+    <!--通用查询映射结果-->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.ZyMReviewtasksummary">
+        <result column="S_REVIEWTASKSUMMARYID" property="reviewtasksummaryid"/>
+        <result column="S_DAYPLANID" property="dayplanid"/>
+        <result column="S_TRAINSETNAME" property="trainsetname"/>
+        <result column="S_REVIEWTASKNAME" property="reviewtaskname"/>
+        <result column="C_TYPE" property="type"/>
+        <result column="C_SUBTYPE" property="subtype"/>
+        <result column="S_DEPTCODE" property="deptcode"/>
+        <result column="S_DEPTNAME" property="deptname"/>
+        <result column="S_CHECKLISTNO" property="checklistno"/>
+        <result column="C_BACKFILLSTATE" property="backfillstate"/>
+        <result column="S_CREATESTAFFCODE" property="createstaffcode"/>
+        <result column="S_CREATESTAFFNAME" property="createstaffname"/>
+        <result column="S_FOREMANSGINCODE" property="foremansgincode"/>
+        <result column="S_FOREMANSGINNAME" property="foremansginname"/>
+        <result column="S_QUALITYINSPECTORSCODE" property="qualityinspectorscode"/>
+        <result column="S_QUALITYINSPECTORSNAME" property="qualityinspectorsname"/>
+        <result column="S_DISPATCHERCODE" property="dispatchercode"/>
+        <result column="S_DISPATCHERNAME" property="dispatchername"/>
+        <result column="S_PUBLISHCODE" property="publishcode"/>
+        <result column="D_CREATETIME" property="createtime"/>
+        <result column="D_UPDATETIME" property="updatetime"/>
+        <result column="S_REMARKS" property="remarks"/>
+    </resultMap>
+
+</mapper>

@@ -1,0 +1,150 @@
+#app{
+  background: #ECF0F6;
+}
+
+.el-row .el-input__inner{
+  height: 34px;
+  line-height: 34px;
+}
+.el-row .el-input__icon{
+  line-height: 34px;
+}
+.cardItem{
+  background: #fff;
+  border-radius: 6px;
+  padding: 0 15px;
+  margin-bottom: 15px;
+}
+.el-row{
+  line-height: 40px;
+}
+.el-popper[x-placement^=bottom] {
+  margin-top: 5px;
+}
+
+.el-cascader {
+  width: 60% !important;
+}
+.el-cascader .el-input{
+  width: 100% !important;
+}
+
+
+
+.el-select{
+  width: 100%;
+}
+.bcDay{
+  width: 80px !important;
+}
+.bcDate{
+  width: calc(100% - 85px) !important;
+}
+.el-row label{
+  display: inline-block;
+  width: 72px;
+  text-align: right;
+  margin-right: 8px;
+}
+.searchBtnGroup{
+  padding-right: 40px;
+  margin-top: 4px;
+}
+.titleB {
+  background: url(/webTrainRepair/static/img/cardtitle.png) no-repeat 0px center;
+  padding-left: 30px;
+  line-height: 42px;
+  height: 42px;
+  font-size: 14px;
+  color: #013F9A;
+  border-bottom: 1px solid #EAF0F7;
+  margin-bottom: 10px;
+}
+.header{
+  background: #fff;
+  padding: 10px 15px 8px 15px;
+}
+.el-table__expanded-cell[class*=cell] {
+  padding: 0px 0px 0px 55px;
+}
+.content{
+  padding: 0px 15px;
+  background: #fff;
+}
+.quickQuery .el-input__inner{
+  height: 30px;
+}
+.el-input__suffix{
+  right: 0;
+}
+.treeBox{
+  height: 400px;
+  overflow: auto;
+  margin-top: 5px;
+}
+.peopleDialog .el-dialog__body{
+  padding: 15px 20px;
+}
+.treeMenu{
+  position: fixed;
+  display: block;
+  z-index: 20000;
+  background: #fff;
+  padding: 5px 0;
+  border: 1px solid #ebeef5;
+  border-radius: 6px;
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+}
+.treeMenu li{
+  padding: 0 15px;
+  font-size: 14px;
+  line-height: 30px;
+  cursor: pointer;
+}
+.treeMenu li:hover{
+  background: #ebeef5;
+}
+.el-avatar{
+  width: 19px;
+  height: 19px;
+  line-height: 19px;
+  margin-right: 4px;
+}
+.el-avatar--icon {
+  font-size: 14px;
+}
+
+.el-table__expanded-cell{
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+.el-pagination__sizes .el-input ,.el-pagination__jump .el-input {
+  line-height: 26px;
+}
+.el-table__body-wrapper{
+  overflow-y: auto;
+}
+.img_people{
+  width: 19px;
+  height: 19px;
+  margin-right: 6px;
+}
+.notWork{
+  line-height: 30px;
+  background: #fff;
+  padding: 0 20px;
+}
+.el-dialog__body{
+  padding: 0 20px;
+}
+.el-input--suffix .el-input__inner{
+  padding-right: 20px;
+}
+.bcDay .el-input--suffix .el-input__inner{
+  padding-left: 10px;
+}
+
+.date-popper{
+  left: 0px!important;
+  height: unset!important;
+}

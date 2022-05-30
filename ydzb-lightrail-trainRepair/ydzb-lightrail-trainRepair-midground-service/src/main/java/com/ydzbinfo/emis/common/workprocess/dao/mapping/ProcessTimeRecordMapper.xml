@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.common.workprocess.dao.ProcessTimeRecordMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.workprocess.querymodel.ProcessTimeRecord">
+        <id column="S_PROCESSID" property="processId" />
+        <result column="D_ITEMTIMESTATE" property="itemTimeState" />
+        <result column="D_TIME" property="time" />
+        <result column="S_PROCESSPERSONID" property="processPersonId" />
+        <result column="C_FLAG" property="flag" />
+        <result column="D_DELTIME" property="delTime" />
+        <result column="S_DELUSERCODE" property="delUserCode" />
+        <result column="S_DELUSERNAME" property="delUserName" />
+        <result column="S_RECORDTIME" property="recordTime" />
+        <result column="S_RECORDERNAME" property="recorderName" />
+        <result column="S_RECORDERCODE" property="recorderCode" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_PROCESSID, D_ITEMTIMESTATE, D_TIME, S_PROCESSPERSONID, C_FLAG, D_DELTIME, S_DELUSERCODE, S_DELUSERNAME, S_RECORDTIME, S_RECORDERNAME, S_RECORDERCODE
+    </sql>
+
+</mapper>

@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.common.trainMonitor.dao.ITrainsetPostIonCurMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.TrainsetPostionCur">
+        <id column="S_TRAINSETPOSTIONID" property="trainsetPostionId" />
+        <result column="S_TRAINSETID" property="trainsetId" />
+        <result column="S_TRAINSETNAME" property="trainsetName" />
+        <result column="S_TRACKCODE" property="trackCode" />
+        <result column="S_TRACKNAME" property="trackName" />
+        <result column="C_ISLONG" property="isLong" />
+        <result column="C_ISCONNECT" property="isConnect" />
+        <result column="D_INTIME" property="inTime" />
+        <result column="D_OUTTIME" property="outTime" />
+        <result column="S_DATASOURCE" property="dataSource" />
+        <result column="S_UNITCODE" property="unitCode" />
+        <result column="S_UNITNAME" property="unitName" />
+        <result column="S_HEADDIRECTION" property="headDirection" />
+        <result column="S_HEADDIRECTIONPLACODE" property="headDirectionPlaCode" />
+        <result column="S_HEADDIRECTIONPLA" property="headDirectionPla" />
+        <result column="S_TAILDIRECTION" property="tailDirection" />
+        <result column="S_TAILDIRECTIONPLACODE" property="tailDirectionPlaCode" />
+        <result column="S_TAILDIRECTIONPLA" property="tailDirectionPla" />
+        <result column="D_RECORDTIME" property="recordTime" />
+        <result column="S_RECORDUSERCODE" property="recordUserCode" />
+        <result column="S_RECORDUSERNAME" property="recordUserName" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_TRAINSETPOSTIONID, S_TRAINSETID, S_TRAINSETNAME, S_TRACKCODE, S_TRACKNAME, C_ISLONG, C_ISCONNECT, D_INTIME, D_OUTTIME, S_DATASOURCE, S_UNITCODE, S_UNITNAME, S_HEADDIRECTION, S_HEADDIRECTIONPLACODE, S_HEADDIRECTIONPLA, S_TAILDIRECTION, S_TAILDIRECTIONPLACODE, S_TAILDIRECTIONPLA, D_RECORDTIME, S_RECORDUSERCODE, S_RECORDUSERNAME
+    </sql>
+
+    <select id="getTrainsetPostion"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from XZY_M_TRAINSETPOSTION_CUR
+        where S_UNITCODE in
+        <foreach collection="unitCodes" item="unitCode" index="index" open="(" separator="," close=")">
+            #{unitCode}
+        </foreach>
+        <if test="trackCodes != null and trackCodes.size() > 0">
+            and S_TRACKCODE in
+            <foreach collection="trackCodes" item="trackCode" index="index" open="(" separator="," close=")">
+                #{trackCode}
+            </foreach>
+        </if>
+            <if test="trainsetNames != null and trainsetNames.size() > 0">
+            and S_TRAINSETNAME in
+            <foreach collection="trainsetNames" item="trainsetName" index="index" open="(" separator="," close=")">
+                #{trainsetName}
+            </foreach>
+        </if>
+    </select>
+
+
+    <select id="getTrainsetPostionByTrackCode"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from XZY_M_TRAINSETPOSTION_CUR
+        where S_TRACKCODE = #{trackCode}
+    </select>
+
+
+    <!-- 更新车组位置信息 -->
+    <update id="updateTrainsetPostion"
+            parameterType="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.TrainsetPostionCur">
+        update XZY_M_TRAINSETPOSTION_CUR
+        <set>
+            <if test="headDirection != null and headDirection != ''">
+                S_HEADDIRECTION = #{headDirection},
+            </if>
+            <if test="headDirectionPla != null and headDirectionPla != ''">
+                S_HEADDIRECTIONPLA = #{headDirectionPla},
+            </if>
+            <if test="headDirectionPlaCode != null and headDirectionPlaCode != ''">
+                S_HEADDIRECTIONPLACODE = #{headDirectionPlaCode},
+            </if>
+            <if test="tailDirection != null and tailDirection != ''">
+                S_TAILDIRECTION = #{tailDirection},
+            </if>
+            <if test="tailDirectionPla != null and tailDirectionPla != ''">
+                S_TAILDIRECTIONPLA = #{tailDirectionPla},
+            </if>
+            <if test="tailDirectionPlaCode != null and tailDirectionPlaCode != ''">
+                S_TAILDIRECTIONPLACODE = #{tailDirectionPlaCode},
+            </if>
+            <if test="trainsetName != null and trainsetName != ''">
+                S_TRAINSETNAME = #{trainsetName},
+            </if>
+            <if test="trackName != null and trackName != ''">
+                S_TRACKNAME = #{trackName},
+            </if>
+            <if test="trackCode != null and trackCode != ''">
+                S_TRACKCODE = #{trackCode},
+            </if>
+            <if test="inTime != null">
+                D_INTIME = #{inTime},
+            </if>
+            <if test="outTime != null">
+                D_OUTTIME = #{outTime},
+            </if>
+            D_RECORDTIME = TO_DATE(TO_CHAR(SYSDATE,'YYYY/MM/DD HH24:MI:SS'),'YYYY-MM-DD HH24:MI:SS')
+        </set>
+        where S_TRAINSETPOSTIONID = #{trainsetPostionId}
+    </update>
+
+
+    <!-- 添加车组位置信息 -->
+    <insert id="addTrainsetPostion"
+            parameterType="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.TrainsetPostionCur">
+        insert into XZY_M_TRAINSETPOSTION_CUR
+        (
+        S_TRAINSETPOSTIONID,
+        <if test="trainsetId != null and trainsetId != ''">
+            S_TRAINSETID,
+        </if>
+        <if test="trainsetName != null and trainsetName != ''">
+            S_TRAINSETNAME,
+        </if>
+        <if test="trackCode != null and trackCode != ''">
+            S_TRACKCODE,
+        </if>
+        <if test="trackName != null and trackName != ''">
+            S_TRACKNAME,
+        </if>
+        <if test="isLong != null and isLong != ''">
+            C_ISLONG,
+        </if>
+        <if test="isConnect != null and isConnect != ''">
+            C_ISCONNECT,
+        </if>
+
+        <if test="outTime != null">
+            D_OUTTIME,
+        </if>
+        <if test="dataSource != null and dataSource != ''">
+            S_DATASOURCE,
+        </if>
+        <if test="unitCode != null and unitCode != ''">
+            S_UNITCODE,
+        </if>
+        <if test="unitName != null and unitName != ''">
+            S_UNITNAME,
+        </if>
+        <if test="headDirection != null and headDirection != ''">
+            S_HEADDIRECTION,
+        </if>
+
+        <if test="headDirectionPlaCode != null and headDirectionPlaCode != ''">
+            S_HEADDIRECTIONPLACODE,
+        </if>
+        <if test="headDirectionPla != null and headDirectionPla != ''">
+            S_HEADDIRECTIONPLA,
+        </if>
+        <if test="tailDirection != null and tailDirection != ''">
+            S_TAILDIRECTION,
+        </if>
+        <if test="tailDirectionPlaCode != null and tailDirectionPlaCode != ''">
+            S_TAILDIRECTIONPLACODE,
+        </if>
+        <if test="tailDirectionPla != null and tailDirectionPla != ''">
+            S_TAILDIRECTIONPLA,
+        </if>
+
+        <if test="recordUserCode != null and recordUserCode != ''">
+            S_RECORDUSERCODE,
+        </if>
+        <if test="recordUserName != null and recordUserName != ''">
+            S_RECORDUSERNAME,
+        </if>
+        D_RECORDTIME,
+        D_INTIME
+
+        )
+        values (
+        #{trainsetPostionId},
+        <if test="trainsetId != null and trainsetId != ''">
+            #{trainsetId},
+        </if>
+        <if test="trainsetName != null and trainsetName != ''">
+            #{trainsetName},
+        </if>
+        <if test="trackCode != null and trackCode != ''">
+            #{trackCode},
+        </if>
+        <if test="trackName != null and trackName != ''">
+            #{trackName},
+        </if>
+        <if test="isLong != null and isLong != ''">
+            #{isLong},
+        </if>
+        <if test="isConnect != null and isConnect != ''">
+            #{isConnect},
+        </if>
+        <if test="outTime != null">
+            #{outTime},
+        </if>
+        <if test="dataSource != null and dataSource != ''">
+            #{dataSource},
+        </if>
+        <if test="unitCode != null and unitCode != ''">
+            #{unitCode},
+        </if>
+        <if test="unitName != null and unitName != ''">
+            #{unitName},
+        </if>
+        <if test="headDirection != null and headDirection != ''">
+            #{headDirection},
+        </if>
+
+        <if test="headDirectionPlaCode != null and headDirectionPlaCode != ''">
+            #{headDirectionPlaCode},
+        </if>
+        <if test="headDirectionPla != null and headDirectionPla != ''">
+            #{headDirectionPla},
+        </if>
+        <if test="tailDirection != null and tailDirection != ''">
+            #{tailDirection},
+        </if>
+        <if test="tailDirectionPlaCode != null and tailDirectionPlaCode != ''">
+            #{tailDirectionPlaCode},
+        </if>
+        <if test="tailDirectionPla != null and tailDirectionPla != ''">
+            #{tailDirectionPla},
+        </if>
+
+        <if test="recordUserCode != null and recordUserCode != ''">
+            #{recordUserCode},
+        </if>
+        <if test="recordUserName != null and recordUserName != ''">
+            #{recordUserName},
+        </if>
+        TO_DATE(TO_CHAR(SYSDATE,'YYYY/MM/DD
+        HH24:MI:SS'),'YYYY-MM-DD HH24:MI:SS'),
+        TO_DATE(TO_CHAR(SYSDATE,'YYYY/MM/DD
+        HH24:MI:SS'),'YYYY-MM-DD HH24:MI:SS')
+        )
+    </insert>
+
+
+    <select id="getTrainsetPositionById" parameterType="String"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from XZY_M_TRAINSETPOSTION_CUR
+        where
+        S_TRAINSETID = #{trainsetId}
+    </select>
+
+
+    <!-- 删除车组位置信息 -->
+    <delete id="deleteTrainsetPostion"
+            parameterType="java.lang.String">
+        delete
+        from XZY_M_TRAINSETPOSTION_CUR
+        where S_TRAINSETID = #{trainsetId}
+    </delete>
+
+    <update id="setTrainsetState" parameterType="com.ydzbinfo.emis.trainRepair.trainMonitor.model.TrainsetIsConnect">
+    update XZY_M_TRAINSETPOSTION_CUR set C_ISCONNECT=#{status}
+    where S_TRAINSETPOSTIONID in
+        <foreach collection="trainsetPostIonIds" item="trainsetPostIonId" index="index" open="(" separator="," close=")">
+            #{trainsetPostIonId}
+        </foreach>
+    </update>
+
+    <select id="getOutTime" resultType="java.util.Date">
+        select D_OUTTIME from XZY_M_TRAINSETPOSTION_CUR
+        where S_TRACKCODE!=#{trackCode}
+        and  D_OUTTIME>"TO_DATE"(#{nowDate}, 'yyyy-mm-dd hh24:mi:ss')
+       and rownum &lt;=1
+    </select>
+
+    <update id="updTrackCode"   parameterType="com.ydzbinfo.emis.trainRepair.trainMonitor.querymodel.TrainsetPostionCur">
+    update XZY_M_TRAINSETPOSTION_CUR
+    set S_TRACKCODE=#{trackCode},S_TRACKNAME=#{trackName}
+    where S_TRAINSETPOSTIONID=#{trainsetPostionId}
+
+    </update>
+
+</mapper>

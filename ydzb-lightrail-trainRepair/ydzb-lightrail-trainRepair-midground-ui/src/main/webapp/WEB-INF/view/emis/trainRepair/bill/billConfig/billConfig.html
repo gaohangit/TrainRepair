@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>记录单配置</title>
+    <!-- 引用vue -->
+    <script src="${publicStaticPath}/vue/vue.min.js"></script>
+    <!-- 引用axios -->
+    <script src="${publicStaticPath}/vue/axios.min.js"></script>
+
+    <!-- 引用elementUI -->
+    <script src="${publicStaticPath}/elementUI/index.js"></script>
+    <link rel="stylesheet" href="${publicStaticPath}/elementUI/index.css" />
+    <script src="${ctxPath}/static/lib/elementUI/el-table-fix.js"></script>
+
+    <!-- IE支持 -->
+    <script src="${publicStaticPath}/IE/babel-browser.min.js"></script>
+
+    <!-- 引用公共资源 -->
+    <script src="${publicStaticPath}/jquery/jquery-1.10.2.min.js"></script>
+    <script src="${publicStaticPath}/common/common.js"></script>
+    <script src="${ctxPath}/static/utils/GeneralUtil.js"></script>
+    <link rel="stylesheet" href="${publicStaticPath}/common/base.css" />
+
+    <!-- 引用本地css -->
+    <link rel="stylesheet" href="${ctxPath}/static/trainRepair/bill/billConfig/css/billConfig.css" />
+    <script>
+      var billConfigEditorUrl = "/webTrainRepairMidGround/static/sheetsDesigner/index/index.html";
+      var depotCode = "${depotCode}"; //段编码
+      var depotName = "${depotName}"; //段编码
+      var bureauCode = "${bureaCode}"; // 局编码
+      var bureauName = "${bureaName}"; // 局名称
+    </script>
+  </head>
+
+  <body>
+    <div class="" id="billConfig" v-cloak>
+      <el-card class="box-card" v-loading="cardLoading">
+        <div slot="header">
+          <span class="adorn"></span>
+          <h2>{{pageTitle}}</h2>
+        </div>
+        <div style="display: flex;height: 100%;width: 100%;flex-direction: column;">
+          <el-form class="noMarginForm indexForm" ref="indexFormRef" :model="query.indexForm" label-width="110px">
+            <el-row type="flex" style="flex-flow: wrap;">
+              <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+                <el-form-item label="运用所：" prop="unitCode">
+                  <el-select v-model="query.indexForm.unitCode" filterable clearable placeholder="请选择">
+                    <el-option
+                      v-for="item in departments"
+                      :key="item.unitCode"
+                      :label="item.unitName"
+                      :value="item.unitCode"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+                <el-form-item label="车型：" prop="trainsetType">
+                  <el-select v-model="query.indexForm.trainsetType" filterable clearable placeholder="请选择">
+                    <el-option
+                      v-for="item in query.trainsetType.options"
+                      :key="item"
+                      :label="item"
+                      :value="item"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+                <el-form-item label="批次：" prop="batch">
+                  <el-select v-model="query.indexForm.batch" filterable clearable placeholder="请选择">
+                    <el-option
+                      v-for="item in query.batch.options"
+                      :key="item.traintempid"
+                      :label="item.traintempid"
+                      :value="item.traintempid"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <!-- <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+                <el-form-item label="车组：" prop="trainsetId">
+                  <el-select v-model="query.indexForm.trainsetId" filterable clearable placeholder="请选择">
+                    <el-option v-for="item in query.trainsetId.options" :key="item.trainsetid"
+                      :label="item.trainsetname" :value="item.trainsetid"></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col> -->
+              <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+                <el-form-item label="状态：" style="position: relative;" prop="state">
+                  <el-select :disabled="disableStateSelect" v-model="finalState" placeholder="请选择">
+                    <el-option v-for="item in billStates" :key="item.value" :label="item.text" :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+                <el-form-item label="单据类型：" style="position: relative;" prop="billType">
+                  <el-select v-model="query.indexForm.billType" filterable clearable placeholder="请选择">
+                    <el-option
+                      v-for="item in query.billType.options"
+                      :key="item.templateTypeCode"
+                      :label="item.templateTypeName"
+                      :value="item.templateTypeCode"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+                <el-form-item label="单据子类型：" style="position: relative;" prop="billSubType">
+                  <!-- :rules="query.indexForm.billType && !query.indexForm.billName?{ required: true, message: '请选择单据子类型', trigger: 'change' } : {}" -->
+                  <el-select v-model="query.indexForm.billSubType" filterable clearable placeholder="请选择">
+                    <el-option
+                      v-for="item in query.billSubType.options"
+                      :key="item.templateTypeCode"
+                      :label="item.templateTypeName"
+                      :value="item.templateTypeCode"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+                <el-form-item label="单据名称：" style="position: relative;" prop="billName">
+                  <el-select v-model="query.indexForm.billName" filterable clearable placeholder="请选择">
+                    <el-option
+                      v-for="item in query.billName.options"
+                      :key="item.templateTypeCode"
+                      :label="item.templateTypeName"
+                      :value="item.templateTypeCode"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+                <el-form-item label="编组数量：" style="position: relative;" prop="marshalCount">
+                  <el-select v-model="query.indexForm.marshalCount" filterable clearable placeholder="请选择">
+                    <el-option v-for="item in marshalCountOptions" :key="item" :label="item" :value="item"></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+                <el-form-item label="项目名称：" prop="itemName">
+                  <el-input v-model.trim="query.indexForm.itemName" clearable></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col v-if="!isSystem" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+                <el-form-item label="单据管理模式：" prop="manageType">
+                  <el-select v-model="query.indexForm.manageType">
+                    <el-option v-for="item in manageTypes" :key="item.value" :label="item.text" :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="24" style="display: flex;">
+                <el-form-item style="margin-left: auto;">
+                  <el-button type="primary" size="mini" v-on:click="search">查询</el-button>
+                  <el-button type="primary" size="mini" v-on:click="resetFormFields('indexFormRef')">重置</el-button>
+                  @if(shiro.hasPermission("billConfig:edit")){
+                  <el-button type="primary" size="mini" v-on:click="addItem">新增</el-button>
+                  @}
+                  @if(shiro.hasPermission("billConfig:release")){
+                  <el-button type="primary" size="mini" v-on:click="handlePublish">发布</el-button>
+                  @}
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row></el-row>
+          </el-form>
+          <div style="display: flex;flex-direction: column;flex: auto;">
+            <el-table
+              :data="indexTable"
+              v-on:selection-change="handleSelectionChange"
+              border
+              style="margin-top: 5px;flex: auto;"
+              height="auto"
+            >
+              <el-table-column type="selection" align="center"></el-table-column>
+              <el-table-column type="index" label="序号" width="50px" align="center"></el-table-column>
+              <el-table-column label="运用所" prop="unitName" align="center" show-overflow-tooltip width="120px">
+              </el-table-column>
+              <el-table-column
+                label="单据名称"
+                prop="templateTypeName"
+                sortable
+                align="center"
+                show-overflow-tooltip
+                width="180px"
+              >
+              </el-table-column>
+              <!-- <el-table-column label="模板名称" prop="templateName" align="center" show-overflow-tooltip width="180px"></el-table-column> -->
+              <el-table-column label="车型" prop="trainsetType" align="center" show-overflow-tooltip width="120px">
+              </el-table-column>
+              <el-table-column label="批次" prop="batch" align="center" show-overflow-tooltip width="100px">
+              </el-table-column>
+              <el-table-column label="编组数量" prop="marshalCount" align="center" show-overflow-tooltip width="50px">
+              </el-table-column>
+              <el-table-column
+                label="项目名称"
+                prop="itemName"
+                sortable
+                width="120px"
+                align="center"
+                show-overflow-tooltip
+              >
+              </el-table-column>
+              <el-table-column label="状态" prop="itemName" align="center" show-overflow-tooltip width="120px">
+                <template v-slot="scope"> {{ scope.row.state === '1'?'已发布':'编辑' }}</template>
+              </el-table-column>
+              <el-table-column
+                label="单据编组形式"
+                prop="marshallingTypeName"
+                align="center"
+                show-overflow-tooltip
+                width="100px"
+              >
+              </el-table-column>
+              <el-table-column label="创建人" prop="createUser" align="center" show-overflow-tooltip width="110px">
+              </el-table-column>
+              <el-table-column
+                label="创建时间"
+                prop="createTime"
+                sortable
+                align="center"
+                show-overflow-tooltip
+                width="180px"
+              >
+              </el-table-column>
+              <el-table-column label="版本号" prop="version" sortable align="center" show-overflow-tooltip width="130px">
+              </el-table-column>
+              <el-table-column label="操作" align="center" min-width="120px">
+                <template v-slot="scope">
+                  <el-button type="text" size="mini" v-on:click="checkitem(scope.row)">查看</el-button>
+                  @if(shiro.hasPermission("billConfig:edit")){
+                  <el-button
+                    type="text"
+                    size="mini"
+                    :disabled="scope.row.isUpdate === '0'"
+                    v-on:click="handleEdit(scope.row)"
+                    >编辑
+                  </el-button>
+                  @}
+                </template>
+              </el-table-column>
+            </el-table>
+            <div style="display: flex;">
+              <el-pagination
+                v-on:size-change="handleSizeChange"
+                v-on:current-change="handlePageChange"
+                :current-page="query.indexForm.page"
+                :page-sizes="[10, 20, 50, 100]"
+                :page-size="query.indexForm.limit"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="indexTableTotal"
+                style="margin-top: 5px; margin-left: auto;"
+              >
+              </el-pagination>
+            </div>
+          </div>
+        </div>
+      </el-card>
+
+      <!-- 新增记录配置 -->
+      <el-dialog
+        :visible.sync="billBasicInfoDialog.visible"
+        title="记录单配置--新增"
+        v-on:closed="onDialogClose"
+        :show-close="false"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        width="50%"
+        top="10vh"
+        style="padding-bottom: 150px;"
+      >
+        <el-form :model="billBasicInfoDialog.baseForm" ref="baseFormRef" label-width="130px">
+          <el-form-item label="单据类型：" prop="billType">
+            <el-select
+              v-model="billBasicInfoDialog.baseForm.billType"
+              placeholder="请选择"
+              filterable
+              clearable
+              v-on:change="changeDialogBillType"
+            >
+              <el-option
+                v-for="item in billBasicInfoDialog.billType.options"
+                :key="item.templateTypeCode"
+                :label="item.templateTypeName"
+                :value="item.templateTypeCode"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="单据子类型：" prop="billSubType">
+            <el-select
+              v-model="billBasicInfoDialog.baseForm.billSubType"
+              filterable
+              clearable
+              placeholder="请选择"
+              v-on:change="changeDialogBillSubType"
+            >
+              <el-option
+                v-for="item in billBasicInfoDialog.billSubType.options"
+                :key="item.templateTypeCode"
+                :label="item.templateTypeName"
+                :value="item.templateTypeCode"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="单据名称：" prop="billName">
+            <el-select
+              v-model="billBasicInfoDialog.baseForm.billName"
+              placeholder="请选择"
+              filterable
+              clearable
+              v-on:change="changeDialogBillName"
+            >
+              <el-option
+                v-for="item in billBasicInfoDialog.billName.options"
+                :key="item.templateTypeCode"
+                :label="item.templateTypeName"
+                :value="item.templateTypeCode"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            v-for="conditionItem in billConfigConditions" :key="conditionItem.queryCode"
+            :label="conditionItem.queryName + '：'"
+            :prop="conditionItem.enumProperties.property"
+          >
+            <template v-if="conditionItem.queryCode === QueryConditionEnum.ITEM">
+              <el-input
+                :value="billBasicInfoDialog.baseForm.itemName"
+                style="width: 217px;"
+                disabled
+              ></el-input>
+              <el-button type="primary" size="mini" v-on:click="goSelectItem">选择项目</el-button>
+            </template>
+            <template v-else-if="conditionItem.queryCode === QueryConditionEnum.UNIT">
+              <el-select v-model="billBasicInfoDialog.baseForm.unitCode" filterable clearable placeholder="请选择">
+                <el-option
+                  v-for="item in departments"
+                  :key="item.unitCode"
+                  :label="item.unitName"
+                  :value="item.unitCode"
+                ></el-option>
+              </el-select>
+            </template>
+            <template v-else-if="conditionItem.queryCode === QueryConditionEnum.TRAINSET_TYPE">
+              <el-select
+                v-model="billBasicInfoDialog.baseForm.trainsetType"
+                filterable
+                clearable
+                :disabled="billBasicInfoDialog.trainsetTypeDisabled"
+                placeholder="请选择"
+              >
+                <el-option
+                  v-for="item in billBasicInfoDialog.trainsetType.options"
+                  :key="item"
+                  :label="item"
+                  :value="item"
+                ></el-option>
+              </el-select>
+            </template>
+            <template v-else-if="conditionItem.queryCode === QueryConditionEnum.BATCH">
+              <el-select
+                v-model="billBasicInfoDialog.baseForm.batch"
+                filterable
+                clearable
+                :disabled="billBasicInfoDialog.batchDisabled"
+                placeholder="请选择"
+              >
+                <el-option
+                  v-for="item in billBasicInfoDialog.batch.options"
+                  :key="item.traintempid"
+                  :label="item.traintempid"
+                  :value="item.traintempid"
+                >
+                </el-option>
+              </el-select>
+            </template>
+            <template v-else-if="conditionItem.queryCode === QueryConditionEnum.TRAINSET">
+              <el-select v-model="billBasicInfoDialog.baseForm.trainsetId" filterable clearable placeholder="请选择">
+                <el-option
+                  v-for="item in billBasicInfoDialog.trainsetId.options"
+                  :key="item.trainsetid"
+                  :label="item.trainsetname"
+                  :value="item.trainsetid"
+                ></el-option>
+              </el-select>
+            </template>
+            <template v-else-if="conditionItem.queryCode === QueryConditionEnum.MARSHAL_COUNT">
+              <el-select 
+                v-model="billBasicInfoDialog.baseForm.marshalCount" 
+                filterable 
+                clearable 
+                placeholder="请选择"
+                :disabled="billBasicInfoDialog.marshalCountDisabled"
+              >
+                <el-option v-for="item in marshalCountOptions" :key="item" :label="item" :value="item"></el-option>
+              </el-select>
+            </template>
+          </el-form-item>
+        </el-form>
+        <span slot="footer">
+          <el-button type="primary" size="mini" v-on:click="handleSave()">确定</el-button>
+          <el-button type="primary" size="mini" v-on:click="closeDialog">取 消</el-button>
+        </span>
+      </el-dialog>
+
+      <!-- 记录单模板编辑 -->
+      <el-dialog
+        :visible.sync="billEditorDialog.visible"
+        fullscreen
+        custom-class="bill-editor-dialog"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+      >
+        <iframe v-if="billEditorDialog.visible" :src="billEditorDialog.url" frameborder="0"></iframe>
+      </el-dialog>
+
+      <!-- 选择项目界面 -->
+      <el-dialog
+        title="记录单配置--选择项目"
+        :visible.sync="itemSelectDialog.visible"
+        width="85%"
+        top="2vh"
+        v-on:closed="closeProgremDialog"
+      >
+        <div style="position: absolute; top: 45px; left: 40px; color: #f56c6c;">双击项目进行选择</div>
+        <el-card id="item-select-card">
+          <div class="item-select-card-body">
+            <el-form
+              class="noMarginForm"
+              :model="itemSelectDialog.configForm"
+              ref="configForm"
+              label-width="130px"
+              :rules="{trainType: [{ required: true, message: '车型不能为空' }]}"
+              :inline-message="true"
+            >
+              <el-row type="flex" style="flex-flow: wrap;">
+                <!-- <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+            <el-form-item label="运用所：" prop="unitCode">
+              <el-select v-model="itemSelectDialog.configForm.unitCode" clearable placeholder=" 请选择">
+                <el-option v-for="item in departments" :key="item.unitCode" :label="item.unitName"
+                  :value="item.unitCode"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col> -->
+                <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+                  <el-form-item label="车型：" prop="trainType">
+                    <el-select
+                      v-model="itemSelectDialog.configForm.trainType"
+                      filterable
+                      clearable
+                      placeholder=" 请选择"
+                    >
+                      <el-option
+                        v-for="item in itemSelectDialog.trainsetType.options"
+                        :key="item"
+                        :label="item"
+                        :value="item"
+                      ></el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+
+                <el-col v-if="useNewItem" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+                  <el-form-item label="批次：" prop="trainSubType">
+                    <el-select
+                      v-model="itemSelectDialog.configForm.trainSubType"
+                      filterable
+                      clearable
+                      placeholder=" 请选择"
+                    >
+                      <el-option
+                        v-for="item in itemSelectDialog.batch.options"
+                        :key="item.traintempid"
+                        :label="item.traintempid"
+                        :value="item.traintempid"
+                      >
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+
+                <!-- <el-col v-if="useNewItem" :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+                  <el-form-item label="车组：" prop="trainSetIdList">
+                    <el-select
+                      v-model="itemSelectDialog.configForm.trainSetIdList"
+                      filterable
+                      multiple
+                      clearable
+                      collapse-tags
+                      placeholder=" 请选择"
+                    >
+                      <el-option
+                        v-for="item in itemSelectDialog.trainsetId.options"
+                        :key="item.trainsetid"
+                        :label="item.trainsetname"
+                        :value="item.trainsetid"
+                      ></el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col> -->
+                <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+                  <el-form-item label="配置状态：" prop="allocatedTempStatus">
+                    <el-select v-model="itemSelectDialog.configForm.allocatedTempStatus" placeholder=" 请选择">
+                      <el-option label="全部" value=""></el-option>
+                      <el-option label="未配置" value="0"></el-option>
+                      <el-option label="已配置" value="1"></el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col>
+                <el-col :xs="24" :sm="12" :md="12" :lg="6" :xl="6">
+                  <el-form-item label="项目：" prop="itemName">
+                    <el-input v-model.trim="itemSelectDialog.configForm.itemName" clearable>
+                    </el-input>
+                  </el-form-item>
+                </el-col>
+                <el-col style="flex: auto; width: auto; min-width: 50%;">
+                  <el-form-item style="width: 300px; margin-left: auto;">
+                    <el-button type="primary" size="mini" v-on:click="searchProjectList">查询</el-button>
+                    <el-button type="primary" size="mini" v-on:click="resetFormFields('configForm')">重置</el-button>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </el-form>
+            <div style="flex: auto; display: flex; flex-direction: column;">
+              <el-table
+                :data="itemSelectDialog.billProjectList"
+                border
+                v-on:row-dblclick="selectRow"
+                height="auto"
+                style="margin-top: 20px; flex: auto;"
+                :row-class-name="tableRowClassName"
+              >
+                <el-table-column type="index" label="序号" width="50px" align="center"></el-table-column>
+                <el-table-column label="单位名称" prop="unitName" sortable show-overflow-tooltip align="center">
+                </el-table-column>
+                <el-table-column
+                  label="项目名称"
+                  prop="itemName"
+                  sortable
+                  show-overflow-tooltip
+                  align="center"
+                  width="240"
+                >
+                <template v-slot="scope">
+                  <span v-scroll-into-view="getRowScrollIntoViewConfig(scope.row)">{{ scope.row.itemName }}</span>
+                </template>
+                </el-table-column>
+                <el-table-column label="项目编码" prop="itemCode" sortable show-overflow-tooltip width="160">
+                </el-table-column>
+                <!-- <el-table-column label="技术平台" prop="plantForm" show-overflow-tooltip align="center"></el-table-column> -->
+                <el-table-column label="车型" prop="trainType" sortable show-overflow-tooltip align="center">
+                </el-table-column>
+                <el-table-column
+                  v-if="useNewItem"
+                  label="批次"
+                  prop="trainBatch"
+                  sortable
+                  show-overflow-tooltip
+                  align="center"
+                >
+                </el-table-column>
+                <el-table-column
+                  v-if="useNewItem"
+                  label="适用车组"
+                  prop="trainsetName"
+                  show-overflow-tooltip
+                  align="center"
+                >
+                </el-table-column>
+                <el-table-column
+                  v-if="useNewItem"
+                  label="非适用车组"
+                  prop="notTrainsetName"
+                  show-overflow-tooltip
+                  align="center"
+                >
+                </el-table-column>
+                <el-table-column
+                  label="功能分类"
+                  prop="funcSysName"
+                  show-overflow-tooltip
+                  align="center"
+                ></el-table-column>
+                <!-- <el-table-column label="维修性质" prop="mainTainNature" show-overflow-tooltip align="center"></el-table-column> -->
+                <el-table-column
+                  label="配置状态"
+                  prop="allocatedTempStatus"
+                  sortable
+                  show-overflow-tooltip
+                  align="center"
+                >
+                  <template v-slot="scope">
+                    <span>{{ scope.row.allocatedTempStatus === '1' ? '已配置' : '未配置' }}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="维修卡片编号" prop="mainTainCardNo" show-overflow-tooltip align="center">
+                </el-table-column>
+              </el-table>
+              <el-row style="flex: none;">
+                <el-col style="display: flex; justify-content: end;">
+                  <el-pagination
+                    v-on:size-change="handleSecondSizeChange"
+                    v-on:current-change="handleSecondCurrentChange"
+                    :current-page="itemSelectDialog.configForm.page"
+                    :page-sizes="[10, 20, 50, 100]"
+                    :page-size="itemSelectDialog.configForm.limit"
+                    layout="total, sizes, prev, pager, next, jumper"
+                    :total="itemSelectDialog.projectTotal"
+                    style="margin-top: 20px;"
+                  >
+                  </el-pagination>
+                </el-col>
+              </el-row>
+            </div>
+          </div>
+        </el-card>
+      </el-dialog>
+    </div>
+    <script src="${ctxPath}/static/lib/localStorageParamsBus.js" type="text/javascript"></script>
+    <!-- 引用本地js -->
+    <script src="${ctxPath}/static/trainRepair/bill/billConfig/js/billConfig.js"></script>
+  </body>
+</html>

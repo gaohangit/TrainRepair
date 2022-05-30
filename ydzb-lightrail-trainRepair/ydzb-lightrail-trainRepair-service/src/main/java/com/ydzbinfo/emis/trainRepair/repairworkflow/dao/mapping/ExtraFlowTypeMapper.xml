@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.repairworkflow.dao.ExtraFlowTypeMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.repairworkflow.querymodel.ExtraFlowType">
+        <id column="S_CODE" property="code"/>
+        <result column="S_NAME" property="name"/>
+        <result column="S_PARENTFLOWTYPECODE" property="parentFlowTypeCode"/>
+        <result column="S_CONFIGTYPE" property="configType"/>
+        <result column="S_COMMENT" property="comment"/>
+        <result column="S_UNITCODE" property="unitCode"/>
+        <result column="C_SYNFLAG" property="synFlag"/>
+        <result column="D_SYNDATE" property="synDate"/>
+        <result column="I_SORT" property="sort"/>
+        <result column="S_PAGETYPE" property="pageType"/>
+    </resultMap>
+
+    <resultMap id="ExtraFlowTypeWithPacketMap"
+               type="com.ydzbinfo.emis.trainRepair.repairworkflow.querymodel.extend.ExtraFlowTypeWithPackets">
+        <id column="S_CODE" property="code"/>
+        <result column="S_NAME" property="name"/>
+        <result column="S_PARENTFLOWTYPECODE" property="parentFlowTypeCode"/>
+        <result column="S_CONFIGTYPE" property="configType"/>
+        <result column="S_COMMENT" property="comment"/>
+        <result column="S_UNITCODE" property="unitCode"/>
+        <result column="C_SYNFLAG" property="synFlag"/>
+        <result column="D_SYNDATE" property="synDate"/>
+        <result column="I_SORT" property="sort"/>
+        <collection property="extraFlowTypePackets"
+                    ofType="com.ydzbinfo.emis.trainRepair.repairworkflow.querymodel.ExtraFlowTypePacket">
+            <id column="S_ID" property="id"/>
+            <result column="S_EXTRAFLOWTYPECODE" property="extraFlowTypeCode"/>
+            <result column="S_PACKETCODE" property="packetCode"/>
+        </collection>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+         S_CODE, S_NAME, S_PARENTFLOWTYPECODE, S_CONFIGTYPE, S_COMMENT, S_UNITCODE, C_SYNFLAG, D_SYNDATE, I_SORT
+    </sql>
+    <select id="getExtraFlowTypeWithPacket" parameterType="java.lang.String" resultMap="ExtraFlowTypeWithPacketMap">
+        select * from XZY_C_EXTRAFLOWTYPE e
+        left join XZY_C_EXTRAFLOWTYPEPACKET ce on e.S_CODE=ce.S_EXTRAFLOWTYPECODE
+        where 1=1
+        <if test="unitCode !=null and unitCode!='' ">
+            and (e.S_UNITCODE=#{unitCode} or e.S_UNITCODE is null)
+        </if>
+
+        <if test="codeList.size() > 0">
+            and e.S_CODE in
+            <foreach collection="codeList" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="parentFlowTypeCode">
+            and S_PARENTFLOWTYPECODE=#{parentFlowTypeCode}
+        </if>
+        order by e.I_SORT
+    </select>
+
+    <select id="getExtraFlowTypeByCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select * from XZY_C_EXTRAFLOWTYPE  WHERE S_CODE=#{code}
+    </select>
+    <select id="getPacketCodeForConfigurablePacketList" resultType="java.lang.String" parameterType="java.lang.String">
+    select S_PACKETCODE as packetCode from (
+        select * from  XZY_C_EXTRAFLOWTYPE e
+    left join XZY_C_EXTRAFLOWTYPEPACKET ce on e.S_CODE=ce.S_EXTRAFLOWTYPECODE
+    where e.S_UNITCODE=#{unitCode}  and e.S_PARENTFLOWTYPECODE=#{parentFlowTypeCode} or e.S_CONFIGTYPE='PACKET_INDEPENDENT')
+  where S_CODE!=#{flowTypeCode}
+     </select>
+    <select id="getExtraFlowTypeList" resultMap="BaseResultMap">
+        select * from XZY_C_EXTRAFLOWTYPE e
+        where e.S_PARENTFLOWTYPECODE=#{code}
+        <if test="unitCode!=null and unitCode!=''">
+            and (S_UNITCODE=#{unitCode} or S_UNITCODE is null)
+        </if>
+        order by e.I_SORT
+    </select>
+
+    <select id="getPacketIndependent" resultMap="BaseResultMap">
+        select e.* from XZY_C_EXTRAFLOWTYPE e,XZY_C_EXTRAFLOWTYPEPACKET ep
+        where e.S_CODE=ep.S_EXTRAFLOWTYPECODE and e.S_CONFIGTYPE='PACKET_INDEPENDENT' and ep.S_PACKETCODE=#{packetCode} and e.S_UNITCODE=#{unitCode}
+    </select>
+
+    <select id="getPacketNarrow" resultMap="ExtraFlowTypeWithPacketMap">
+        select * from XZY_C_EXTRAFLOWTYPE e,XZY_C_EXTRAFLOWTYPEPACKET ce where e.S_CODE=ce.S_EXTRAFLOWTYPECODE
+        and e.S_UNITCODE=#{unitCode} and  e.S_CONFIGTYPE='PACKET_NARROW'
+        ORDER BY ce.S_PACKETCODE
+    </select>
+
+    <select id="getExtraFlowTypeByUnitCode" resultMap="BaseResultMap">
+        select * from XZY_C_EXTRAFLOWTYPE where 1=1
+        <if test="unitCode!=null and unitCode !=''">
+            and S_UNITCODE=#{unitCode}
+        </if>
+    </select>
+</mapper>

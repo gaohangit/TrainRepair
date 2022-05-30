@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>一级修作业过程管理</title>
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<script src="${publicStaticPath}/vue/vue.min.js"></script>
+<link rel="stylesheet" href="${publicStaticPath}/elementUI/index.css">
+<script src="${publicStaticPath}/elementUI/index.js"></script>
+<script src="${ctxPath}/static/lib/elementUI/el-table-fix.js"></script>
+<script src="${publicStaticPath}/vue/axios.min.js"></script>
+<script src="${ctxPath}/static/lib/vue/vue-resource.js"></script>
+<script src="${publicStaticPath}/IE/babel-browser.min.js"></script>
+<script src="${ctxPath}/static/lib/image_url.js"></script>
+<script>
+    var ctxpath = "${ctxPath}";
+    var thirdOrganCode = "${thirdOrganCode}";
+</script>
+<script src="${publicStaticPath}/jquery/jquery-1.10.2.min.js"></script>
+
+<link rel="stylesheet"
+    href="${ctxPath}/static/depot/workManagement/oneWorkManagementDepot/css/oneWorkManagementDepot.css">
+</head>
+
+<body class="body">
+    <div id="one">
+        <el-container class="container" v-cloak>
+
+            <!-- 头部以及搜索框 -->
+            <el-header class="header">
+                <!-- <div class="nowPosition" style="line-height: 30px; color: #666; ">
+                    当前位置:检修管理&gt;
+                    <span style=" font-weight: bold; color: #000;">一级修作业管理</span>
+                </div> -->
+                <div class="common_title">
+                    <div class="flex">
+                        <div class="tag"></div>
+                        <h3 class="title">一级修作业过程管理</h3>
+                    </div>
+                    <div class="timeBox"></div>
+                </div>
+                <div>
+                    <el-row>
+                        <el-col :span="5">
+                            <template>
+                                <label>运用所：</label>
+                                <el-select v-model="operationDepot" clearable filterable placeholder="请选择" size="mini">
+                                    <el-option v-for="item in operationDepotList" :key="item.unitCode"
+                                        :label="item.unitName" :value="item.unitCode">
+                                    </el-option>
+                                </el-select>
+                            </template>
+                        </el-col>
+                        <el-col :span="5">
+                            <template>
+                                <label>开始日期：</label>
+                                <el-date-picker v-model="starTime" size="mini" value-format="yyyy-MM-dd" type="date"
+                                    placeholder="选择日期">
+                                </el-date-picker>
+                            </template>
+                        </el-col>
+                        <el-col :span="5">
+                            <template>
+                                <label>结束日期：</label>
+                                <el-date-picker class="endtime" size="mini" v-model="endTime" value-format="yyyy-MM-dd"
+                                    type="date" placeholder="选择日期">
+                                </el-date-picker>
+                            </template>
+                        </el-col>
+                        <el-col :span="5">
+                            <template>
+                                <label>车型：</label>
+                                <el-select v-model="trainsetType" size="mini" placeholder="请选择" clearable filterable
+                                    v-on:change=chezuHHandle()>
+                                    <el-option v-for="item in trainTypeList" :key="item" :label="item" :value="item">
+                                    </el-option>
+                                </el-select>
+                            </template>
+                        </el-col>
+                        <el-col :span="5">
+                            <template>
+                                <label>车组：</label>
+                                <el-select v-model="chezuH" size="mini" placeholder="请选择" clearable filterable>
+                                    <el-option v-for="item in chezuHList" :key="item" :label="item" :value="item">
+                                    </el-option>
+                                </el-select>
+                            </template>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="5">
+                            <template>
+                                <label>作业班组：</label>
+                                <el-select v-model="zyBz" size="mini" placeholder="请选择" clearable filterable
+                                    v-on:change="zyPeopleHandle">
+                                    <el-option v-for="item in zyBzList" :key="item.id" :label="item.name"
+                                        :value="item.id">
+                                    </el-option>
+                                </el-select>
+                            </template>
+                        </el-col>
+                        <el-col :span="5">
+                            <template>
+                                <label>作业人员：</label>
+                                <el-select v-model="zyPeople" size="mini" placeholder="请选择" clearable filterable>
+                                    <el-option v-for="item in zyPeopleList" :key="item.workId" :label="item.workName"
+                                        :value="item.workId">
+                                    </el-option>
+                                </el-select>
+                            </template>
+                        </el-col>
+                        <el-col :span="5">
+                            <template>
+                                <label>作业状态：</label>
+                                <el-select v-model="timeStatus" size="mini" placeholder="请选择" clearable>
+                                    <el-option label="超时" value="超时">
+                                    </el-option>
+                                    <el-option label="欠时" value="欠时">
+                                    </el-option>
+                                    <el-option label="正常" value="正常">
+                                    </el-option>
+                                </el-select>
+                            </template>
+                        </el-col>
+                        <el-col :span="9" class="searchBtnBox">
+                            <template>
+                                <el-button type="primary" size="mini" v-on:click="clickList">查询</el-button>
+                                <el-button type="primary" size="mini" v-on:click="repeatHandle">重置</el-button>
+                            </template>
+                        </el-col>
+                    </el-row>
+                </div>
+            </el-header>
+            <!-- 表格以及分页 -->
+            <el-main class="main" style="padding: 20px 20PX 0 20PX;">
+                <el-table :data="tableData" stripe :height="scrollHeight" v-on:sort-change="changeSortHandle"
+                    :header-cell-style="{background:'#d4e3ff',color:'#000'}" :row-class-name="tableRowClassName"
+                    :default-sort="{prop: 'sortable', order: 'descending'}" style="width: 100%;" class="listTable">
+                    <el-table-column align="center" type="index" label="序号" width="50"> </el-table-column>
+                    <el-table-column align="center" sortable prop="unitName" label="运用所" width="100"></el-table-column>
+                    <el-table-column align="center" label="作业班次" width="80">
+                        <template slot-scope="scope">
+                            {{scope.row.dayPlanId | operationShift}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column align="center" sortable prop="trainsetId" label="车组号" width="100">
+                    </el-table-column>
+                    <el-table-column align="center" sortable prop="itemName" label="作业内容"> </el-table-column>
+                    <el-table-column align="center" prop="deptName" label="作业班组" width="80px"> </el-table-column>
+                    <el-table-column align="center" sortable prop="workerName" label="作业人员"></el-table-column>
+                    <el-table-column align="center" sortable prop="startTime" label="开始时间"> </el-table-column>
+                    <el-table-column align="center" sortable prop="endTime" label="结束时间"></el-table-column>
+                    <el-table-column prop="carNos" label="作业辆序" width="80px">
+                        <template slot-scope="scope">
+                            {{scope.row.carNos | carNosFilter}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column align="center" prop="totalTime" label="作业时长" width="80px">
+                        <template slot-scope="scope">
+                            <span \@click="WorkTimeHandle(scope.row)"
+                                style="cursor: pointer;color:#409eff;text-decoration: underline;">{{scope.row.totalTime}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column align="center" prop="suspendedTime" label="暂停时长"></el-table-column>
+                    <el-table-column align="center" prop="timeStatus" label="超欠时状态">
+                    </el-table-column>
+                    <!-- <el-table-column prop="timeStatus" label="超欠时状态">
+    					<template slot-scope="scope">
+                            <span v-if="scope.row.timeStatus == 0">欠时 </span>
+                            <span v-if="scope.row.timeStatus == 1">正常 </span>
+                            <span v-if="scope.row.timeStatus == 2">超时 </span>
+                            <span v-if="scope.row.timeStatus == 3">异常 </span>
+                        </template>
+    				</el-table-column> -->
+                    <el-table-column align="center" prop="standardPicCount" label="标准图片数量"> </el-table-column>
+                    <el-table-column align="center" prop="actualPicCount" label="实际图片数量">
+                        <template slot-scope="scope">
+                            <span \@click="ClickPicCount(scope.row)"
+                                style="cursor: pointer;color: #409eff;">{{scope.row.actualPicCount}}</span>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <div class="block" style="text-align: center;">
+                    <el-pagination \@size-change="handleSizeChange" \@current-change="handleCurrentChange"
+                        :current-page="pageNum" :page-sizes="[10, 20, 30, 40,100]" :page-size="pageSize"
+                        layout="total, sizes, prev, pager, next, jumper" :total="total">
+                    </el-pagination>
+                </div>
+            </el-main>
+
+            <!-- 点击列表的作业时长 -->
+            <el-dialog title="消息详情" :visible.sync="dialogVisibleWorkTime" width="40%" :before-close="handleClose">
+                <table class="dialNews">
+                    <tr>
+                        <td>作业班次：{{workLong.dayPlanId | operationShift}}</td>
+                        <td>车组号：{{workLong.trainsetId}}</td>
+                    </tr>
+                    <tr>
+                        <td>作业内容：{{workLong.itemName}}</td>
+                        <td>作业时长：{{workLong.totalTime}}</td>
+                    </tr>
+                </table>
+                <span class="diaSpan">
+                    <span v-for="item in workDeteil" :key="item.recordId" class="dia">{{item.repairTime}}<label
+                            :class="{startAndEnd : item.timeTag == '0' || item.timeTag == '3'}"
+                            style="float: right; padding-right: 70px;">{{item.timeTag | timeTagFilter}}</label></span>
+                </span>
+                <span slot="footer" class="dialog-footer">
+                    <el-button type="primary" v-on:click="dialogVisibleWorkTime = false">确 定</el-button>
+                    <el-button type="primary" v-on:click="dialogVisibleWorkTime = false">取 消</el-button>
+                </span>
+            </el-dialog>
+
+            <!--点击列表的实际图片数量  -->
+            <el-dialog title="一级修作业管理 -- 实际图片数量" :visible.sync="dialogVisiblePicCount" width="50%"
+                :before-close="handleClose">
+                <div class="picAll">
+                    <p>图片展示：</p>
+                    <div style="height: 275px; background: #f5f5f5;">
+                        <ul class="picUl">
+                            <li class="picLi" v-for="(item,index) in ZYLXList" :key="imgKey">
+                                <span class="picLiOne">{{item | carNosFilter}}车</span>
+                                <div class="img-list">
+                                    <div v-for="(img, imgIndex) in imgList[item]" :key="img">
+                                        <img :src="img" :alt="img.name">
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <span slot="footer" class="dialog-footer">
+                    <el-button size="mini" type="primary" v-on:click="dialogVisiblePicCount = false">确 定</el-button>
+                    <el-button size="mini" type="primary" v-on:click="dialogVisiblePicCount = false">取 消</el-button>
+                </span>
+            </el-dialog>
+
+        </el-container>
+    </div>
+
+
+    <script src="${ctxPath}/static/depot/workManagement/oneWorkManagementDepot/js/oneWorkManagementDepot.js"
+        type="text/babel"></script>
+</body>
+
+</html>

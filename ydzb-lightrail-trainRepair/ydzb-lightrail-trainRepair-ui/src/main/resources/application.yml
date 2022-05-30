@@ -1,0 +1,210 @@
+############################## 项目启动信息配置 开始  ##############################
+#http:
+#  port: 8080
+server:
+  port: 8082
+  tomcat:
+    port-header: HEAD,DELETE,OPTIONS,TRACE,COPY,SEARCH,PROPFIND,BOGUS
+    min-spare-threads: 20
+    max-threads: 500
+    max-connections: 10000
+  servlet:
+    context-path: /webTrainRepair
+  max-http-header-size: 1024KB
+#  ssl:
+#     key-store: ydzbcwgl.keystore
+#     key-store-type: JKS
+#     key-store-password: cwgl_93296
+#     key-alias: ydzbcwglf
+#     key-password: 93296cw
+
+############################## 项目启动信息配置 结束  ##############################
+############################## spring配置 开始  ##############################
+spring:
+  application:
+    name: webTrainRepair
+  jmx:
+    default-domain: webTrainRepair
+  main:
+    allow-bean-definition-overriding: true
+  profiles:
+    active: @profiles.active@
+  resources:
+    cache:
+      cachecontrol:
+        no-cache: true # 禁用浏览器强制缓存，使用协商缓存
+  mvc:
+    static-path-pattern: /static/**         # 静态资源路径
+    view:
+      prefix: /WEB-INF/view                 # 页面文件路径
+  http:
+    converters:
+      preferred-json-mapper: fastjson       # Json转换器
+  servlet:
+    multipart:
+      max-request-size: 100MB               # 最大请求大小
+      max-file-size: 100MB                  # 最大文件大小
+  devtools:
+    restart:
+      enabled: true                         # 是否开启开发者工具（true/false）
+      additional-paths:
+      exclude:
+  aop:
+    proxy-target-class: true                #false为启用jdk默认动态代理,true为cglib动态代理
+#  activiti:
+#    check-process-definitions: false
+############################## spring配置 结束  ##############################
+
+############################## 日志配置 开始  ##############################
+logging:
+  config: classpath:log4j2.xml          # 详细日志配置文件
+  level:
+    root: INFO                         # 日志默认输出级别
+############################## 日志配置 结束  ##############################
+
+############################## ydzbinfo 移动装备 配置 开始  ##############################
+ydzb:
+  ukey-open: false                       # 是否开启登录时验证U盾 (true/false)
+############################## ydzbinfo 移动装备 配置 结束  ##############################
+
+############################## hussar配置 开始  ##############################
+hussar:
+  swagger-open: true
+  check-CsrfOpen: true                        # 是否开启csrf跨域调用验证，默认为true
+  spring-session-open: false                # 是否开启spring session,如果是多机环境需要开启(true/false)
+  stand-alone: true                         # true 为单机环境  false 是集群环境
+  welcome-page: /                           # 配置项目访问路径
+  login-upper-open: true                    # 是否区分登录账号大小写 (true/false)
+  ############## 登录密码传输加密的加密方式 默认提供三种加密方式  非对称RSA、对称AES 、Base64；存储加密方式默认提供SM4（国密4算法）、MD5哈希算法，可自行扩展其他算法
+  encrypt-type:
+    type: RSA                       # 登录传输加密的加密方式 不区分大小写
+    db-encrypt-type: sm4            # SM4 存储加密的加密方式 不区分大小写 默认提供国密4算法；！！！！！！！！ 修改该配置，需要重置数据库中密码所有密码！！！！！
+    secret-free-ip: 192.168.1.1
+
+  ############################## 外部接口配置  ##############################
+  open-orgservice: false            #是否启用组织机构外部接口
+  totp-offset-min: 0                #totp 验证允许时间偏差 ，单位 min 分钟， 默认0，无偏差验证，必须保证手机端和服务器时间误差在30s之内才能准确验证
+
+  ############## JWT认证所需参数
+  jwt:
+    auth-path: /auth                # 认证请求的路径
+    ############################## 以下配置为系统默认配置  ##############################
+  #    header: Authorization           # http请求头所需要的字段
+  #    secret: mySecret                # jwt秘钥
+  #    expiration: 604800              # 7天 单位:秒
+  #    md5-key: randomKey              # md5加密混淆key
+  static-version: 20190815                      # 项目自定义静态文件版本  在引入静态文件后加上 XXX.js?v=${h_version}
+  muti-datasource-open: false              # 是否开启多数据源
+  #  useJNDI: false                            # 是否开启JNDI（默认为false）
+  #  swagger-open: true                        # 是否开启swagger (true/false)
+  kaptcha-open: false                       # 是否开启登录时验证码 (true/false)
+  totp-open: false                       # 是否开启登录时动态密码验证 (true/false)
+  #  file-upload-path-windows: e:/hussar          # 文件上传目录(不配置的话为java.io.tmpdir目录)
+  #  file-upload-path-linux: /usr/local/hussar
+  #  file-upload-path-mac:   /tmp/hussar
+  #  file-date-split: true                     # 上传路径日期区分
+  session-invalidate-time: 1800             # session失效时间  单位：秒 默认1800s
+  session-validation-interval: 100          # 多久检测一次失效的session(只在单机环境下生效) 单位：秒
+  firewall-xss-level: B                     # XSS过滤级别，共ABC三级，过滤严格程度依次增强，建议默认开启B级
+  #  xss-whitelist:                                #XSS过滤白名单
+  #  - /notice/update
+  #  - /notice/add
+  #  login-html: /login.html                  # 登录页html
+  #  index-config: false                        #是否开启欢迎页配置 true开启 false不开启
+  #  default-index: /default/index      #默认欢迎页访问路径
+  shiro: # shiro 通用配置
+    login-url: /login                       # 登录页面URL
+    unauthorized-url: /global/403           # 授权失败跳转地址
+    security-whitelist: # 权限拦截白名单（可以配置多项）
+      - /static/**
+      - /login2
+      - /swagger-ui.html
+      - /swagger/**
+      - /webjars/**
+      - /swagger-resources/**
+      - /v2/**
+
+  ############## rest请求 jwt认证开关 默认关闭rest请求认证，开启后，需要认证
+  rest:
+    #    auth-open: true                 # jwt鉴权机制是否开启(true或者false)
+    sign-open: true                 # 签名机制是否开启(true或false)
+    swagger-open: false              # 是否开启swagger (true/false)
+#    url-pattern: /hussarrest/*      # rest请求路径 : 默认/rest/*
+#    token-header-code: Hussar       # 请求头识别码
+
+############################## hussar配置 结束  ##############################
+
+############################## 系统监控配置 开始  ##############################
+#  monitor:
+#    stat-view-servlet:
+#      hosts: 127.0.0.1:8080
+#      enabled: true
+#      local: 127.0.0.1:8080
+#      url-pattern: /smon
+#    web-stat-filter:
+#      enabled: true
+#      url-pattern: /smon
+############################## 系统监控配置 结束  ##############################
+
+############################## beetl配置 开始  ##############################
+#beetl:
+#  delimiter-statement-start: \@   # 开始结束标签(yaml不允许@开头)
+#  delimiter-statement-end: null
+#  resource-tagroot: common/tags   # 自定义标签文件Root目录和后缀
+#  resource-tagsuffix: tag
+#  resource-auto-check: true       # 是否检测文件变化,开发用true合适，但线上要改为false
+############################## beetl配置 结束  ##############################
+
+############################## global配置开始  ##############################
+global:
+  ############################## 登录限制设置配置  ##############################
+  login-time-limit: false                   # 是否开启登录时间限制
+  login-ip-limit: false                     # 是否开启登录ip限制
+  domain: HUSSAR_V8
+  create-user-send-email: false             #创建用户时是否发送邮件
+  create-user-use-default-pass: false       #创建用户是否使用默认密码，true使用默认密码，false使用密码规则生成的密码。为方式生成的密码无法得知，当create_user_send_email==false时也使用默认密码
+  title: FaultUiWeb              #当前项目名，当在一台服务器上部署多个V8项目时，务必修改此配置以防止cookie冲突
+  #  default-password: 123456     # 用户默认密码
+  #系统缺省密码规则（"最小长度，最大长度，密码强度"）,缺省规则是( 4,16,1 )最小不能小于4位，最大不能大于16位，强度为1
+  #密码强度规则分1-3级，各级的含义如下：
+  #级别1：如果密码只由数字、小写字母、大写字母或其它特殊符号当中的一种组成,则认为这是一个弱密码.
+  #级别2：如果密码由数字、小写字母、大写字母或其它特殊符号当中的两种组成,则认为这是一个中度安全的密码
+  #级别3：如果密码由数字、小写字母、大写字母或其它特殊符号当中的三种以上组成,则认为这是一个比较安全的密码.
+  pwd-rule: 8,16,1
+  pwd-rule-message: 密码最小不能小于%s位，最大不能大于%s位，强度需符合级别%s要求!
+  pwd-rule-custom: false # 用户自定义密码复杂度，true 自定义,pwd-complexity-regular 自定义正则表达式，unmatched-hint 自定义返回消息；false 使用平台自带规则
+  #  pwd-complexity-regular: /^[\S]{6,12}$/          #密码复杂度正则
+  #  unmatched-hint: 密码必须6到12位，且不能出现空格    #不满足时的提示信息
+  #  force-change-pwd: true    # 是否在第一次登录或一段时间后强制用户修改密码
+  #  password-hist: 90            # 密码生命周期 多少天后强制修改密码  单位（天）
+  #  pwd-repeat-time: 2            # 密码不能和前几次相同
+  #  try-login-time: 3             # 用户尝试登陆次数
+  #  lock-time: 1                 # 多次登陆失败后锁定时间（单位：小时）
+  session-limit: true         # 是否开启会话限制
+  kickout-after: false         # 会话超出限制时，是否踢出后者（true剔除后者即新登录用户不能登录，，false，剔除最先登录的）
+  #  system-max-session: 300             # 系统最大会话数,session-limit: true、kickout-after: true 同时配置时才生效，配置为-1为不限制会话数量，不配置默认是1000000L
+  #  default-theme: default      # 默认皮肤主题，目前已有的主题（default生命绿，blue科技蓝）
+  #  change-theme: true          # 是否允许用户更换皮肤
+  critical-operations-audit: false    #关键操作是否需要审核
+  organ-audit: false                   # 组织机构操作是否需要审核
+  user-audit: false                   # 用户操作是否需要审核
+  role-audit: false                   # 用户角色是否需要审核
+  #  tree-lazy-load: true          # jsTree是否为懒加载
+  user-on-one-emp: true          # 用户人员一对一
+  #  operate-staff-with-user: true       #操作人员同时操作用户（新增、修改、删除、转移）
+  anti-replay-timeout: 1          # 默认-1 ，不开启防止重复提交，设置为秒数 例如2 则表示2秒内重复提交相同数据认为是冲突提交，进行拦截
+#  encrypt-sign-open: false        #加密传输是否开启签名验证，为了性能，默认不开启，三级安全测试建议开启
+#  exception-alert: false            #是否开启异常报警
+#  securitylog-count-alert: 100000  #审计日志报警条数，超过此条数时报警，只能输入正整数
+#  exception-alert-email:            #异常报警接收邮件邮箱，多个使用,隔开
+############################## global配置 结束  ##############################
+
+############################## 连监控配置 开始接池  ##############################
+#druid:
+#  merge-sql: false
+#  need-login: true               #连接池监控页面是否需要登陆
+#  login-username: druid     #连接池监控页面用户名（需要登陆时有效）
+#  login-password: hussar      #连接池监控页面密码（需要登陆时有效）
+#  slow-sql-millis:  2000          #慢SQL时间（单位:毫秒；执行时间超过此时间的sql会被标红）
+#  log-slow-sql: false               #慢SQL是否记录日志
+############################## 连接池监控配置 结束  ##############################

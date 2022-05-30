@@ -1,0 +1,683 @@
+[v-cloak] {
+  display: none !important;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+}
+
+ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+html {
+  font-size: 2.22vh;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+/* 正常方式打开网页 */
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: url(../img/monitor_bg-1.jpg) no-repeat;
+  background-size: 100% 100%;
+}
+
+/* 头部——标题 */
+.header {
+  width: 100%;
+  height: 6.5%;
+  background: url(../img/monitor_head.png) no-repeat;
+  background-size: 100% 100%;
+  text-align: center;
+  position: relative;
+}
+
+.header .title {
+  display: inline-block;
+  font-size: 1.5rem;
+  /* color: #00e4fe; */
+  color: #333333;
+  font-weight: 600;
+}
+
+.header .title_time {
+  position: absolute;
+  right: 2%;
+  top: 0.1vh;
+  font-size: 2.5vh;
+  color: #4c82ff;
+}
+
+.requiredSpan {
+  color: rgb(248, 53, 53);
+}
+
+/* 图表部分 */
+.body {
+  padding: 0 1%;
+  flex-direction: column;
+  overflow: hidden;
+  height: 88%;
+}
+
+/* 图表上半部分 */
+
+/* 图表下半部分 */
+.bottom {
+  height: 43vh;
+  /* background-color: green; */
+  background: url(../img/monitor-box1.png) no-repeat;
+  background-size: 100% 100%;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 1%;
+  height: 5%;
+}
+
+.footer div {
+  display: flex;
+  align-items: center;
+  line-height: 350%;
+}
+
+.footer .left {
+  display: flex;
+  font-size: 1.5vh;
+  text-align: right;
+}
+
+.footer .left div {
+  position: relative;
+  margin: 0 2.5rem 0 0;
+}
+
+.footer .left .legend {
+  width: 2rem;
+}
+
+.footer .left span {
+  position: absolute;
+  top: 0.8rem;
+  left: -1.3rem;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 0.5rem;
+}
+
+.appFull .footer .right .el-pagination.is-background .el-pager li {
+  color: #1682cb;
+  background-color: #0f3562;
+}
+.appFull .footer .right .el-pagination.is-background .el-pager li:not(.disabled).active {
+  color: #000000;
+  background-color: #00e4fd;
+}
+
+.appFull .footer .right .el-pagination.is-background .btn-next,
+.appFull .footer .right .el-pagination.is-background .btn-prev,
+.appFull .footer .right .el-pagination.is-background .el-pager li {
+  background-color: #0f3562;
+}
+
+/* 一级修 */
+.footer .left .completed span {
+  background-color: #43e866;
+}
+.footer .left .incomplete span {
+  background-color: #979797;
+}
+.footer .left .partially span {
+  background-color: #8b93fe;
+}
+
+/* 二级修 */
+.footer .left .normal span {
+  background-color: #53cf16;
+}
+.footer .left .malfunction span {
+  background-color: #f70034;
+}
+
+.footer .center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.footer .center img {
+  height: 50%;
+}
+
+.footer .right .el-pager {
+  display: flex;
+  align-items: center;
+}
+
+/* 右键菜单 */
+#list {
+  padding: 10px 0;
+  border-radius: 2px;
+  background-color: #fff;
+  box-shadow: 1px 1px 3px 0 #ccc;
+  display: none;
+  /*一定要用绝对定位*/
+  position: absolute;
+  font-family: Courier New, Courier, monospace;
+}
+#list li {
+  line-height: 100%;
+  font-size: 12px;
+  text-align: center;
+}
+
+#list li:hover {
+  background-color: #2894f8;
+}
+
+#list .option {
+  margin: 0 20px;
+  padding: 5px 10px;
+}
+
+/* 配置弹窗 */
+.el-dialog {
+  border-radius: 6px;
+}
+
+.el-dialog__title {
+  color: #fff;
+}
+
+.el-dialog__headerbtn {
+  top: 12px;
+}
+
+.el-dialog__headerbtn .el-dialog__close {
+  color: #fff;
+}
+
+.dialog-body {
+  margin-bottom: 20px;
+}
+
+.table tbody td {
+  padding: 4px 0;
+  text-align: left;
+  padding-left: 30px;
+}
+
+.dialog-body table label {
+  width: 160px;
+  font-size: 12px;
+  display: inline-block;
+  text-align: right;
+}
+
+.workContent-copy .el-input {
+  width: 240px !important;
+  max-width: 240px !important;
+}
+
+.workContent-copy .el-select {
+  max-width: 240px !important;
+}
+
+.el-input__inner {
+  height: 34px;
+  line-height: 34px;
+}
+
+.el-input__icon {
+  line-height: 34px;
+}
+
+.el-tabs--border-card > .el-tabs__header {
+  border-radius: 8px 8px 0 0;
+}
+
+.el-tabs__nav-wrap {
+  border-radius: 8px 8px 0 0;
+}
+
+.el-tabs--border-card > .el-tabs__content {
+  padding: 0 15px;
+}
+
+.el-popper[x-placement^='bottom'] {
+  margin-top: 2px;
+}
+
+.el-select-dropdown__wrap {
+  margin-bottom: 0 !important;
+}
+
+.popper__arrow {
+  display: none;
+}
+
+.el-message-box__btns {
+  text-align: center;
+}
+
+.el-select {
+  width: 66%;
+  max-width: 180px;
+}
+
+.el-input {
+  max-width: 180px;
+}
+
+.el-dialog .el-input {
+  max-width: 210px;
+}
+
+.el-dialog .el-select {
+  width: 66%;
+  max-width: 210px;
+}
+
+.dialog-body .el-select {
+  width: 240px;
+}
+
+.el-table .sort-caret.descending {
+  bottom: 6px;
+}
+
+.el-table .sort-caret.ascending {
+  top: 7px;
+}
+
+.el-table .sort-caret {
+  left: 0;
+}
+
+.el-scrollbar__wrap {
+  overflow-x: hidden;
+}
+
+.el-dialog__header {
+  padding: 5px;
+  text-align: left;
+  height: 20px;
+  line-height: 20px;
+  background: #409eff;
+  border-radius: 6px 6px 0 0;
+}
+
+.el-dialog__title {
+  font-size: 14px;
+  line-height: 14px;
+  color: #fff;
+}
+
+.el-dialog__headerbtn {
+  top: 6px;
+}
+
+.el-dialog {
+  border-radius: 6px;
+}
+
+.el-dialog__headerbtn .el-dialog__close {
+  color: #fff;
+}
+
+.el-dialog__headerbtn:focus .el-dialog__close,
+.el-dialog__headerbtn:hover .el-dialog__close {
+  color: #000;
+}
+
+.el-dialog__body {
+  padding: 20px 20px;
+}
+
+.el-input__icon {
+  line-height: 30px;
+}
+
+.el-input--mini .el-input__inner {
+  height: 25px;
+  line-height: 25px;
+}
+
+.el-popper[x-placement^='bottom'] {
+  margin-top: 0;
+}
+
+.dialog-body .el-input {
+  width: 160px;
+}
+
+.dialog-body .lastTd .el-input {
+  width: calc(100% - 145px);
+}
+
+.el-select .el-tag {
+  min-width: 80px;
+}
+
+.el-col {
+  margin-bottom: 6px;
+}
+
+.el-row .el-col label {
+  width: 70px;
+  display: inline-block;
+  text-align: right;
+}
+
+.copyDialog .list {
+  line-height: 30px;
+  margin-bottom: 20px;
+}
+
+.copyDialog .list label {
+  width: 80px;
+  display: inline-block;
+  text-align: right;
+}
+
+.copyDialog .list .el-input {
+  max-width: 180px;
+}
+
+.el-dialog .trainType-copy .el-select {
+  max-width: 190px;
+}
+
+.el-dialog .trainGroup-copy .el-select {
+  max-width: 190px;
+}
+
+.el-dialog--center .el-dialog__body {
+  padding: 25px 6px 30px;
+}
+
+.el-table {
+  border: 1px solid #d4e1ff;
+}
+
+.el-autocomplete-suggestion__wrap {
+  padding: 0 0 20px 0;
+}
+
+.el-table .caret-wrapper {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  height: 34px;
+  width: 24px;
+  vertical-align: middle;
+  cursor: pointer;
+  overflow: initial;
+  position: relative;
+}
+
+.projectName {
+  max-width: 180px;
+  width: 66%;
+}
+
+.el-input__inner[disabled] {
+  background-color: #f5f7fa;
+  border-color: #e4e7ed;
+  color: #c0c4cc;
+  cursor: not-allowed;
+}
+
+.el-checkbox__label {
+  display: none;
+}
+
+.tableTrackName {
+  height: 2rem;
+  line-height: 2rem;
+}
+
+/* 显示股道选项 */
+
+.track tr th,
+.track tr td {
+  border: 1px solid #ccc;
+  padding: 5px 0;
+}
+
+.track tr th {
+  background-color: #f9f9f9;
+}
+
+.track tr td {
+  border-top: 0;
+}
+
+.track tr th:first-child,
+.track tr td:first-child {
+  border-right: 0;
+}
+
+.track tr th:nth-child(2) {
+  border-left: 0;
+  border-right: 0;
+}
+
+.track tr th:last-child,
+.track tr td:last-child {
+  border-left: 0;
+}
+
+.track tbody {
+  display: block;
+  height: 200px;
+  overflow-y: auto;
+  text-align: center;
+}
+
+.track thead {
+  width: calc(100%-30px);
+}
+
+.track thead,
+.track tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.track thead {
+  background: #e4e8f3;
+  color: black;
+}
+
+.track thead tr th {
+  text-align: center;
+}
+
+/* 故障弹窗 */
+.FaultList .el-dialog__header,
+.FaultList .el-dialog__body,
+.FaultList .el-table__empty-block {
+  background: #4a70a1;
+}
+
+.FaultList .el-dialog {
+  height: 80%;
+}
+
+.FaultList .el-dialog__body {
+  height: 89%;
+}
+
+.FaultList .dialog-body {
+  height: 100%;
+}
+
+/* .FaultList .el-table {
+  height: 100%;
+} */
+
+.FaultList .el-dialog__header {
+  height: 40px;
+  text-align: center;
+}
+
+.FaultList .el-dialog__header .el-dialog__title {
+  display: inline-block;
+  width: 100%;
+  height: 30px;
+  padding-top: 10px;
+  font-size: 18px;
+  background: url(../img/subtitle.png) no-repeat;
+  background-size: auto 100%;
+  background-position: center center;
+}
+
+.FaultList .el-table__body-wrapper {
+  height: 100%;
+  background-color: #071a32;
+}
+
+/* 全屏模式 */
+#app.appFull {
+  background: url(../img/bg.jpg) no-repeat;
+  background-size: 100% 100%;
+}
+
+.appFull .header {
+  background: none;
+}
+
+.appFull .header .title {
+  color: #00e4fe;
+}
+
+.appFull .footer .left span {
+  top: 0.8rem;
+}
+
+/* 表格颜色 */
+
+.el-table {
+  color: #fff;
+}
+
+.el-table .warning-row {
+  background: #335078;
+}
+
+.el-table .success-row {
+  background: #2e4360;
+}
+
+.FaultList .el-table--enable-row-hover .el-table__body tr:hover > td {
+  background-color: #142841;
+}
+/* 正常方式打开网页 */
+
+/* 流程节点弹窗 */
+.el-image {
+  display: block;
+}
+
+.el-image-viewer__wrapper {
+  z-index: 20000 !important;
+}
+.el-image-viewer__close {
+  color: #ffffff;
+}
+
+.el-image__inner {
+  display: none;
+}
+.el-image__error {
+  display: none;
+}
+
+.el-upload-list__item {
+  transition: none !important;
+}
+
+.reconnect-dialog.el-dialog {
+  background-color: #4a70a1;
+}
+.reconnect-dialog .el-dialog__title {
+  color: #ffffff;
+}
+.reconnect-dialog .el-dialog__headerbtn i {
+  color: #fff !important;
+}
+
+.reconnect-dialog .el-dialog__header {
+  padding: 10px 0;
+}
+.reconnect-dialog .el-dialog__headerbtn .el-dialog__close {
+  color: #46e6fe;
+}
+.reconnect-dialog .el-dialog__header .el-dialog__title {
+  width: 200px;
+  display: inline-block;
+}
+
+.el-card {
+  border: 1px solid #000000;
+  background-color: #335078;
+}
+
+.before-img .el-upload.el-upload--picture-card {
+  display: none;
+}
+
+.dialog-title-text {
+  color: #799cf0;
+  margin: 20px 0;
+}
+.dialog-title-text .el-input {
+  width: 100px;
+}
+.dialog-title-text .el-input__inner {
+  background-color: #22395b;
+  border: 1px solid #22395b;
+  color: #fff;
+}
+
+.switch {
+  display: inline;
+  position: relative;
+  width: 50px;
+}
+
+#main {
+  height: 100%;
+  background: url(../img/bgThird.jpg) no-repeat;
+  background-size: 100% 100%;
+}
+
+.checkTrack {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.checkTrack label {
+  width: auto !important;
+}
+
+.checkTrack_title {
+  margin-left: 5px;
+}

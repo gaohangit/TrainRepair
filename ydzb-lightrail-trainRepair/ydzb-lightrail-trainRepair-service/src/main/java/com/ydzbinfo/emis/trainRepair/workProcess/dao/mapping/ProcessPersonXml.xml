@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.workProcess.dao.ProcessPersonMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_PROCESSPERSONID, S_WORKERID, S_WORKERNAME, S_WORKERTYPE, S_ITEMPUBLCISHED, S_PROCESSID
+    </sql>
+
+    <select id="selectByTrainset" resultType="com.ydzbinfo.emis.trainRepair.mobile.model.ProcessPersonInfo">
+        select
+            t.S_PROCESSPERSONID as processPersonId,
+            t.S_WORKERID as workerId,
+            t.S_WORKERNAME as workerName,
+            t.S_WORKERTYPE as workerType,
+            t.S_ITEMPUBLCISHED as itemPublcished,
+            t.S_PROCESSID as processId,
+            p.S_ITEMCODE as itemCode
+        from XZY_M_PROCESSPERSON t
+        inner join XZY_M_PROCESSCARPART p
+        on t.S_PROCESSID = p.S_PROCESSID
+        where
+            p.S_DAYPLANID = #{dayplanId}
+        and p.S_TRAINSETID = #{trainsetId}
+        and p.S_REPAIRTYPE = #{repairType}
+        and t.S_WORKERID = #{stuffId}
+    </select>
+
+    <select id="getDelPersonList" parameterType="list" resultType="com.ydzbinfo.emis.trainRepair.workprocess.querymodel.ProcessPerson">
+        select
+        S_PROCESSPERSONID as processPersonId
+        from
+        XZY_M_PROCESSPERSON
+        where 1=1
+        <bind name="values" value="list"/>
+        <include refid="com.ydzbinfo.emis.base.dao.YdzbBaseMapper.And_Huge_Size_In">
+            <property name="column" value="S_PROCESSID"/>
+        </include>
+    </select>
+
+</mapper>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.common.taskAllot.dao.PzMTaskApplyPositionMapper">
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.PzMTaskApplyPosition">
+        <id column="S_ID" property="id"/>
+        <result column="S_APPLYID" property="applyid"/>
+        <result column="S_CAR" property="car"/>
+        <result column="S_POSITIONCODE" property="positioncode"/>
+        <result column="S_POSITIONNAME" property="positionname"/>
+        <result column="S_LOCATIONCODE" property="locationcode"/>
+        <result column="S_LOCATIONNAME" property="locationname"/>
+        <result column="S_KEYPARTTYPEID" property="keyparttypeid"/>
+        <result column="S_MODELID" property="modelid"/>
+        <result column="S_MODELNAME" property="modelname"/>
+        <result column="C_STATUS" property="status"/>
+        <result column="S_REMARK" property="remark"/>
+        <result column="S_TRANSPORTSTATUS" property="transportstatus"/>
+        <result column="S_TRANSPORTDATE" property="transportdate"/>
+        <result column="S_RELATEITEMCODE" property="relateitemcode"/>
+        <result column="S_RELATEITEMNAME" property="relateitemname"/>
+    </resultMap>
+</mapper>

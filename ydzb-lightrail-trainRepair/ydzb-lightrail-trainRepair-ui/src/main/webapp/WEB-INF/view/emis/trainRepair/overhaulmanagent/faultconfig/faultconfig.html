@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>故障配置查询</title>
+  <link href="${ctxPath}/static/lib/animate.css" rel="stylesheet" />
+  <script src="${publicStaticPath}/jquery/jquery-1.10.2.min.js"></script>
+  <script src="${publicStaticPath}/common/common.js"></script>
+  <!--使IE支持Promise-->
+  <script src="${publicStaticPath}/IE/babel-browser.min.js"></script>
+  <!--时间处理工具-->
+  <script src="${publicStaticPath}/moment/moment.min.js"></script>
+  <!--Vue相关-->
+  <script src="${publicStaticPath}/vue/axios.min.js"></script>
+  <script src="${publicStaticPath}/vue/vue.min.js"></script>
+  <!--elementUi-->
+  <link href="${publicStaticPath}/elementUI/index.css" rel="stylesheet" />
+  <script src="${publicStaticPath}/elementUI/index.js"></script>
+  <script src="${ctxPath}/static/lib/elementUI/el-table-fix.js"></script>
+
+  <link href="${publicStaticPath}/common/base.css" rel="stylesheet" />
+  <!-- scope.css -->
+  <link href="${ctxPath}/static/lib/baseWorkProcess.css" rel="stylesheet" />
+  <link rel="stylesheet" href="${ctxPath}/static/lib/input_word_limit.css" />
+  <link href="${ctxPath}/static/trainRepair/overhaulmanagent/faultconfig/css/faultconfig.css" rel="stylesheet" />
+  <script type="text/javascript">
+    var ctxPath = "${ctxPath}";
+  </script>
+</head>
+
+<body class="body">
+  <!-- <div class="nowPosition pane">当前位置: 检修管理><span style="font-weight: bold;color: #000;">故障配置</span></div> -->
+  <div class="container pane" v-cloak v-loading="loading" id="faultConfigQuery">
+    <div class="header">
+      <div class="common_title">
+        <div class="flex">
+          <div class="tag"></div>
+          <h3 class="title">故障快速录入配置</h3>
+        </div>
+      </div>
+      <div class="searchList">
+        <el-row>
+          <el-col :span="5">
+            <template>
+              <label>关键字：</label>
+              <el-input class="fix-count-in fix-height" maxlength="20" show-word-limit v-model.trim="search.keyword" clearable placeholder="请输入关键字"></el-input>
+            </template>
+          </el-col>
+          <el-col :span="5">
+            <template>
+              <label>功能分类：</label>
+              <el-input class="fix-count-in fix-height" maxlength="20" show-word-limit v-model.trim="search.featureClassify" clearable placeholder="请输入功能分类"></el-input>
+            </template>
+          </el-col>
+          <el-col :span="5">
+            <template>
+              <label>故障模式：</label>
+              <el-input class="fix-count-in fix-height" maxlength="20" show-word-limit v-model.trim="search.faultPattern" clearable placeholder="请输入故障模式"></el-input>
+            </template>
+          </el-col>
+          <el-col :span="5">
+            <template>
+              <label>故障等级：</label>
+              <el-select v-model="search.faultLevel" clearable placeholder="请选择">
+                <el-option v-for="item in search.faultLevelList" :key="item.faultCode" :label="item.faultGrade"
+                  :value="item.faultCode">
+                </el-option>
+              </el-select>
+            </template>
+          </el-col>
+          <el-col :span="4" class="searchBtnBox">
+            <template>
+              <el-button type="primary" size="mini" v-on:click.stop="onSearch">查询</el-button>
+              <el-button type="primary" size="mini" v-on:click.stop="onEmpty">重置</el-button>
+              <el-button type="primary" size="mini" v-on:click.stop="onAdd">新增</el-button>
+            </template>
+          </el-col>
+        </el-row>
+      </div>
+    </div>
+    <div class="main">
+      <el-table class="listTable"
+        :data="main.tableData" stripe
+        :height="main.scrollHeight" :default-sort="{prop: 'faultNo', order: 'descending'}" style="width: 100%;">
+        <el-table-column align="center" label="序号"  width="180">
+          <template slot-scope="scope">
+            {{scope.$index + 1}}
+          </template>
+        </el-table-column>
+        <el-table-column align="center" prop="key" label="关键字" width="240">
+        </el-table-column>
+        <el-table-column align="center" prop="functionTypeName" label="功能分类" width="240">
+        </el-table-column>
+        <el-table-column align="center" prop="faultModeName" label="故障模式" width="240">
+        </el-table-column>
+        <el-table-column align="center" prop="faultLevelName" label="故障等级" width="240">
+        </el-table-column>
+        <el-table-column align="center" label="操作">
+          <template slot-scope="scope">
+            <el-button \@click.native.prevent="changeRow(scope.$index, main.tableData)" type="text" title="修改"
+              size="mini">
+              <i class="iconBtn el-icon-edit-outline"></i>
+            </el-button>
+            <el-button \@click.native.prevent="deleteRow(scope.$index, main.tableData)" type="text" title="删除"
+              size="mini">
+              <i class="iconBtn el-icon-delete"></i>
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="block">
+        <el-pagination style="text-align: center;" v-on:size-change="handleSizeChange" v-on:current-change="handleCurrentChange"
+          :current-page="main.currentPage" :page-sizes="[10, 20, 30, 40,100]" :page-size="main.pageSize"
+          layout="total, sizes, prev, pager, next, jumper" :total="main.total">
+        </el-pagination>
+      </div>
+    </div>
+    <el-dialog :visible.sync="dialog.dialogTableVisible" width="820px" top="15%" max-height="60%" show-close="false"
+      center="true" \@close="onCancel" :close-on-click-modal="false" :title="dialog.dialogTitleName">
+      <div class="dialog-body">
+        <table class="table">
+          <tbody>
+            <tr>
+              <td class="workTimes">
+                <label><span class="requiredSpan">*</span>关键字：</label>
+                <el-input class="fix-count-out" maxlength="20" show-word-limit v-model.trim="dialog.keyword" :disabled="dialog.dialogCode == 'update'" clearable placeholder="请输入关键字"></el-input>
+              </td>
+              <td>
+                <label><span class="requiredSpan">*</span>功能分类：</label>
+                <el-cascader ref="Cascader" :options="dialog.funClassificationList" :props="dialog.optionsProps" clearable :show-all-levels="false"
+                  v-model="dialog.selectedfunClassification" \@change="getFaultDict" change-on-select></el-cascader>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label><span class="requiredSpan">*</span>故障模式：</label>
+                <el-select v-model="dialog.faultPattern" clearable filterable placeholder="请选择"  value-key="faultAppCode"
+                  \@change="getFaultLevel">
+                  <el-option v-for="(item,index) in dialog.faultPatternList" :code="item.faultAppCode" :key="item.faultAppCode"
+                    :label="item.faultAppName" :value="item">
+                  </el-option>
+                </el-select>
+              </td>
+              <td class="workTimes">
+                <label><span class="requiredSpan">*</span>故障等级：</label>
+                <el-select v-model="dialog.faultLevel" clearable filterable value-key="faultCode" placeholder="请选择">
+                  <el-option v-for="item in dialog.faultLevelList" :key="item.faultCode" :label="item.faultGrade"
+                    :value="item">
+                  </el-option>
+                </el-select>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="textCenter saveBtnBox">
+        <el-button type="primary" size="mini" v-on:click.stop="onSave">
+          确定
+        </el-button>
+        <el-button type="danger" size="mini" v-on:click.stop="onCancel">
+          取消
+        </el-button>
+      </div>
+    </el-dialog>
+    <div class="footer"></div>
+  </div>
+  <script src="${ctxPath}/static/trainRepair/overhaulmanagent/faultconfig/js/faultconfig.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.repairworkflow.dao.FlowMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.repairworkflow.querymodel.Flow">
+        <id column="S_ID" property="id"/>
+        <result column="S_NAME" property="name"/>
+        <result column="S_FLOWTYPECODE" property="flowTypeCode"/>
+        <result column="D_CREATETIME" property="createTime"/>
+        <result column="S_CREATEWORKERID" property="createWorkerId"/>
+        <result column="S_CREATEWORKERNAME" property="createWorkerName"/>
+        <result column="C_USABLE" property="usable"/>
+        <result column="C_DELETED" property="deleted"/>
+        <result column="D_DELETETIME" property="deleteTime"/>
+        <result column="S_DELETEWORKERID" property="deleteWorkerId"/>
+        <result column="S_DELETEWORKERNAME" property="deleteWorkerName"/>
+        <result column="S_UNITCODE" property="unitCode"/>
+        <result column="C_SYNFLAG" property="synFlag"/>
+        <result column="D_SYNDATE" property="synDate"/>
+    </resultMap>
+
+    <resultMap id="taskFlowMap" type="com.ydzbinfo.emis.trainRepair.repairworkflow.querymodel.extend.FlowWithExtraInfo">
+        <id column="S_ID" property="id"/>
+        <result column="S_NAME" property="name"/>
+        <result column="S_FLOWTYPECODE" property="flowTypeCode"/>
+        <result column="D_CREATETIME" property="createTime"/>
+        <result column="S_CREATEWORKERID" property="createWorkerId"/>
+        <result column="S_CREATEWORKERNAME" property="createWorkerName"/>
+        <result column="C_USABLE" property="usable"/>
+        <result column="C_DELETED" property="deleted"/>
+        <result column="D_DELETETIME" property="deleteTime"/>
+        <result column="S_DELETEWORKERID" property="deleteWorkerId"/>
+        <result column="S_DELETEWORKERNAME" property="deleteWorkerName"/>
+        <result column="S_UNITCODE" property="unitCode"/>
+        <result column="C_SYNFLAG" property="synFlag"/>
+        <result column="D_SYNDATE" property="synDate"/>
+        <collection property="flowExtraInfoList"
+                    ofType="com.ydzbinfo.emis.trainRepair.repairworkflow.querymodel.FlowExtraInfo">
+            <result column="S_FLOWID" property="flowId"/>
+            <result column="S_TYPE" property="type"/>
+            <result column="S_VALUE" property="value"/>
+            <result column="C_SYNFLAG1" property="synFlag"/>
+            <result column="D_SYNDATE1" property="synDate"/>
+        </collection>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_ID, S_NAME, S_FLOWTYPECODE, D_CREATETIME, S_CREATEWORKERID, S_CREATEWORKERNAME, C_USABLE, C_DELETED, D_DELETETIME, S_DELETEWORKERID, S_DELETEWORKERNAME, S_UNITCODE, C_SYNFLAG, D_SYNDATE
+    </sql>
+
+    <select id="getFlowWithExtraInfoList" resultMap="taskFlowMap">
+        select * from XZY_C_FLOW f
+        LEFT JOIN XZY_C_FLOWEXTRAINFO fi on f.S_ID=fi.S_FLOWID
+        <where>
+            <if test="orFlowIds != null and orFlowIds.length > 0">
+                or f.S_ID in
+                <foreach collection="orFlowIds" item="item" index="index" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+            <trim prefixOverrides="and |or " prefix="or (" suffix=")">
+                <if test="flowIds != null and flowIds.length > 0">
+                    and f.S_ID in
+                    <foreach collection="flowIds" item="item" index="index" open="(" close=")" separator=",">
+                        #{item}
+                    </foreach>
+                </if>
+
+                <if test="flowName !=null and flowName !=''">
+                    and UPPER(f.S_NAME) like CONCAT(CONCAT('%',UPPER(#{flowName})),'%') escape '\'
+                </if>
+
+                <if test="flowTypeCodes != null and flowTypeCodes.length >0">
+                    and f.S_FLOWTYPECODE in
+                    <foreach collection="flowTypeCodes" item="item" index="index" open="(" close=")" separator=",">
+                        #{item}
+                    </foreach>
+                </if>
+
+                <if test="excludeSubflow">
+                    and f.S_FLOWTYPECODE != 'SUBFLOW'
+                </if>
+                <if test="!showDeleted">
+                    and f.C_DELETED = '0'
+                </if>
+                <if test="unitCode !=null and unitCode !=''">
+                    and f.S_UNITCODE = #{unitCode}
+                </if>
+                <if test="usable != null and usable != ''">
+                    and f.C_USABLE = #{usable}
+                </if>
+            </trim>
+        </where>
+        order by f.D_CREATETIME desc
+
+    </select>
+    <select id="getFlowFirstName" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select f.* from XZY_C_FLOW f
+        LEFT JOIN XZY_C_FLOWEXTRAINFO fi on f.S_ID=fi.S_FLOWID
+        where f.C_DELETED='0'
+        and FI.S_TYPE='CONDITION' and FI.S_VALUE=#{conditionId}
+        and f.S_ID!=#{flowId} and ROWNUM &lt; 2  ORDER BY f.D_CREATETIME
+    </select>
+
+    <select id="getFlowFirstDefaultName" resultMap="BaseResultMap">
+    select * from
+    XZY_C_FLOW f
+        LEFT JOIN XZY_C_FLOWEXTRAINFO fi on f.S_ID=fi.S_FLOWID
+        where FI.S_FLOWID in(     select f.S_ID from XZY_C_FLOW f
+        LEFT JOIN XZY_C_FLOWEXTRAINFO fi on f.S_ID=fi.S_FLOWID
+        where f.C_DELETED='0'
+        and FI.S_TYPE='CONDITION' and FI.S_VALUE=#{condition}  and FI.S_FLOWID!=#{flowId} )  and FI.S_TYPE='DEFAULT' and  FI.S_VALUE='1'
+
+    </select>
+
+    <select id="getFlowListByFlow" resultType="com.ydzbinfo.emis.trainRepair.repairworkflow.querymodel.Flow" resultMap="BaseResultMap">
+        select * from XZY_C_FLOW
+        where S_UNITCODE = #{unitCode}
+        <if test="flowTypeCode!=null and flowTypeCode!=''">
+            and S_FLOWTYPECODE = #{flowTypeCode}
+        </if>
+        <if test="deleted !=null and deleted!=''">
+            and C_DELETED = #{deleted}
+        </if>
+        ORDER BY C_DELETED,D_CREATETIME DESC
+    </select>
+
+    <select id="getConditionFlowsByFlowId" resultType="com.ydzbinfo.emis.trainRepair.repairworkflow.querymodel.Flow" resultMap="BaseResultMap">
+        select * from XZY_C_FLOW  f where f.S_ID in(
+            select t.S_FLOWID from XZY_C_FLOWEXTRAINFO  t where t.S_TYPE='CONDITION' and t.S_VALUE in(
+            select t.S_VALUE from XZY_C_FLOWEXTRAINFO t  where t.S_FLOWID=#{flowId}  and t.S_TYPE='CONDITION')
+        and f.C_DELETED='0' and f.S_ID!=#{flowId}
+        <if test="unitCode !=null and unitCode!=''">
+            and f.S_UNITCODE=#{unitCode}
+        </if>
+        and f.C_DELETED='0'
+        )
+    </select>
+
+</mapper>

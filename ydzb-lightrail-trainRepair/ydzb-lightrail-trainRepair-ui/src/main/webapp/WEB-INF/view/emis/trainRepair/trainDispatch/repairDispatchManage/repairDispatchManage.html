@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>检修派工管理</title>
+    <script src="${publicStaticPath}/IE/babel-browser.min.js"></script>
+    <script src="${publicStaticPath}/moment/moment.min.js"></script>
+    <link rel="stylesheet" href="${publicStaticPath}/elementUI/index.css" />
+    <script src="${publicStaticPath}/jquery/jquery-1.10.2.min.js"></script>
+    <script src="${publicStaticPath}/vue/vue.js"></script>
+    <script src="${publicStaticPath}/elementUI/index.js"></script>
+    <script src="${ctxPath}/static/lib/day/day.js"></script>
+    <script src="${publicStaticPath}/vue/axios.min.js"></script>
+    <script src="${ctxPath}/static/utils/GeneralUtil.js"></script>
+    <script src="${ctxPath}/static/trainRepair/trainDispatch/repairDispatchManage/config/index.js"></script>
+    <script src="${ctxPath}/static/trainRepair/trainDispatch/teamPostTypeConfig/api/apiTrainRepair/postRequest.js"></script>
+    <script src="${ctxPath}/static/trainRepair/trainDispatch/repairDispatchManage/api/apiTrainRepair/reCheckTaskRequest.js"></script>
+    <script src="${ctxPath}/static/trainRepair/trainDispatch/repairDispatchManage/api/apiTrainRepair/xzyCAllotbranchConfigRequest.js"></script>
+    <script src="${ctxPath}/static/trainRepair/trainMonitor/api/apiTrainRepair/configRequest.js?v1"></script>
+    <script src="${ctxPath}/static/trainRepair/trainDispatch/repairDispatchManage/api/apiTrainRepair/taskAllotStyleRequest.js"></script>
+
+    <link rel="stylesheet" href="${ctxPath}/static/lib/input_word_limit.css" />
+    <link rel="stylesheet" href="${publicStaticPath}/common/base.css" />
+    <link rel="stylesheet" href="${ctxPath}/static/trainRepair/trainDispatch/repairDispatchManage/css/index.css" />
+    <link rel="stylesheet" href="${ctxPath}/static/components/contextMenuHover/contextMenuHover.css" />
+    <script src="${ctxPath}/static/components/contextMenuHover/contextMenuHover.js"></script>
+    <script>
+      var ctxPath = '${ctxPath}';
+    </script>
+  </head>
+
+  <body>
+    <div id="app" v-cloak>
+      <el-card class="box-card">
+        <div slot="header">
+          <span class="adorn"></span>
+          <h2>{{pageTitle}}</h2>
+        </div>
+        <div :style="contentStyle" v-loading="loading">
+          <div class="header">
+            <el-row>
+              <el-col :span="5" class="flex">
+                <label>班次</label>
+                <div class="item flex1">
+                  <!-- \@change="handelChangeLimit('date')" -->
+                  <el-date-picker
+                    v-model="search.bcDate"
+                    class="bcDate"
+                    type="date"
+                    placeholder="选择日期"
+                    popper-class="date-popper"
+                    :clearable="false"
+                    \@change="searchBcDate"
+                  >
+                  </el-date-picker>
+                  <!-- \@change="handelChangeLimit('day')" -->
+                  <el-select  \@change="searchBcDayDate" v-model="search.bcDay" filterable placeholder="请选择" class="bcDay">
+                    <el-option v-for="item in search.bcDayList" :key="item.id" :label="item.name" :value="item.id">
+                    </el-option>
+                  </el-select>
+                </div>
+              </el-col>
+              <el-col :span="5" class="flex">
+                <label>班组</label>
+                <div class="item flex1">
+                  <!-- \@change="handelChangeLimit('bzData')" -->
+                  <el-select v-model="search.bzData" filterable placeholder="请选择">
+                    <el-option v-for="item in search.bzDataList" :key="item.id" :label="item.name" :value="item.id">
+                    </el-option>
+                  </el-select>
+                </div>
+              </el-col>
+              <el-col :span="5" class="flex">
+                <label>车型</label>
+                <div class="item flex1">
+                  <el-select
+                    v-model="search.trainsetTypeCode"
+                    filterable
+                    clearable
+                    placeholder="请选择"
+                    \@change="trainsetTypeCodeChange"
+                  >
+                    <el-option
+                      v-for="item in search.trainTypeList"
+                      :key="item.trainsetTypeCode"
+                      :label="item.trainsetTypeName"
+                      :value="item.trainsetTypeCode"
+                    >
+                    </el-option>
+                  </el-select>
+                </div>
+              </el-col>
+              <el-col :span="5" class="flex">
+                <label>车组</label>
+                <div class="item flex1">
+                  <el-select
+                    v-model="search.trainsetId"
+                    filterable
+                    clearable
+                    placeholder="请选择"
+                    \@change="trainGroupChange"
+                  >
+                    <el-option
+                      v-for="item in search.trainGroupList"
+                      :key="item.trainsetId"
+                      :label="item.trainsetName"
+                      :value="item.trainsetId"
+                    >
+                    </el-option>
+                  </el-select>
+                </div>
+              </el-col>
+            </el-row>
+            <el-row>
+              <el-col :span="5" class="flex">
+                <label>作业类型</label>
+                <div class="item flex1">
+                  <el-select v-model="search.workTypeCode" filterable clearable placeholder="请选择">
+                    <el-option
+                      v-for="item in search.worktypeList"
+                      :key="item.sTaskallottypecode"
+                      :label="item.sTaskallottypename"
+                      :value="item.sTaskallottypecode"
+                    >
+                    </el-option>
+                  </el-select>
+                </div>
+              </el-col>
+              <el-col :span="5" class="flex">
+                <label>作业任务</label>
+                <div class="item flex1">
+                  <el-select v-model="search.workTaskName" filterable clearable placeholder="请选择">
+                    <el-option
+                      v-for="item in search.worktaskList"
+                      :key="item.workTaskCode"
+                      :label="item.workTaskName"
+                      :value="item.workTaskName"
+                    >
+                    </el-option>
+                  </el-select>
+                </div>
+              </el-col>
+              <el-col :span="5" class="flex">
+                <label>派工状态</label>
+                <div class="item flex1">
+                  <el-select
+                    v-model="search.allotStateCode"
+                    multiple
+                    collapse-tags
+                    filterable
+                    clearable
+                    placeholder="请选择"
+                  >
+                    <el-option
+                      v-for="item in search.workStatusList"
+                      :key="item.code"
+                      :label="item.name"
+                      :value="item.code"
+                    >
+                    </el-option>
+                  </el-select>
+                </div>
+              </el-col>
+              <el-col :span="5" class="flex">
+                <label>显示方式</label>
+                <div class="item flex1">
+                  <el-select v-model="search.showWay" \@change="showWayChange" filterable placeholder="请选择">
+                    <el-option
+                      v-for="item in search.showWayList"
+                      :key="item.id"
+                      :label="item.label"
+                      :value="item.value"
+                    >
+                    </el-option>
+                  </el-select>
+                </div>
+              </el-col>
+              <el-col :span="4" class="flex" style="padding-top: 5px; justify-content: flex-end">
+                <el-button type="primary" size="mini" \@click="handleSearch">查询</el-button>
+                <el-button type="primary" size="mini" \@click="handleReset">重置</el-button>
+              </el-col>
+            </el-row>
+            @if(shiro.hasPermission('allotTask:edit')){
+            <el-row class="showButton">
+              <el-col
+                :xs="24"
+                :sm="24"
+                :md="24"
+                :lg="24"
+                :xl="24"
+                class="flex"
+                style="padding-top: 5px; justify-content: flex-end"
+              >
+                <el-button
+                  :type="getButtonType(reCheckFilterDone)"
+                  size="mini"
+                  \@click="openReCheckedTaskDialog"
+                  v-if="wholeConfigObj.CheckFault==='1'"
+                  >复核任务</el-button
+                >
+                <el-button
+                  :type="getButtonType(faultFilterDone)"
+                  size="mini"
+                  \@click="getfaultTask"
+                  v-if="wholeConfigObj.ReceiveFault==='1'"
+                  >故障认领
+                </el-button>
+                <el-button type="primary" size="mini" \@click="openChooseWorkerDialog">人员选择/调整</el-button>
+                <el-button type="primary" size="mini" \@click="onSave">派工</el-button>
+                <el-button type="primary" size="mini" \@click="clearWorker">人员清空</el-button>
+              </el-col>
+            </el-row>
+            @}
+          </div>
+          <div class="content">
+            <el-table
+              :data="nowPageTableList"
+              height="calc(100vh - 215px)"
+              row-key="id"
+              ref="maintableRef"
+              highlight-current-row
+              style="width: 100%"
+              \@expand-change="expandChange_main"
+              \@selection-change="mainSelectChange"
+            >
+              <el-table-column
+                type="selection"
+                :reserve-selection="true"
+                :selectable="checkSelectable1"
+              ></el-table-column>
+              <!-- <el-table-column label="选择" width="50px">
+                <template slot="header">
+                  <el-checkbox v-model="mainAllSelect"></el-checkbox>
+                </template>
+                <template slot-scope="scope">
+                  <el-checkbox
+                    \@change="checked=>handleCheck(checked,scope.row,'mainTable')"
+                    class="mainCheckBox"
+                    :data-id="scope.row.id"
+                  ></el-checkbox>
+                </template>
+              </el-table-column> -->
+              <el-table-column type="expand">
+                <template
+                  slot-scope="scope"
+                  v-if="scope.row.showMode == 'ShowCarPart' || scope.row.showMode == 'NoCarPartMore'"
+                >
+                  <el-table
+                    :ref="scope.row.id.slice(0,8)"
+                    id="mainTable"
+                    class="listTable"
+                    :data="scope.row.packet.taskallotItemList"
+                    row-key="id"
+                    style="width: 100%"
+                    \@expand-change="expandChange_sub"
+                    \@selection-change="sub1SelectChange($event,scope.row.id)"
+                  >
+                    <el-table-column type="selection" :reserve-selection="true" :selectable="checkSelectable2">
+                    </el-table-column>
+
+                    <!-- <el-table-column label="选择" width="50px">
+                      <template slot-scope="scope">
+                        <el-checkbox
+                          \@change="checked=>handleCheck(checked,scope.row,'subTable1')"
+                          class="sub1CheckBox"
+                          :data-id="scope.row.id"
+                        ></el-checkbox>
+                      </template>
+                    </el-table-column> -->
+                    <el-table-column type="expand">
+                      <template slot-scope="scope3" v-if="scope.row.showMode == 'ShowCarPart'">
+                        <el-table
+                          id="mainTable"
+                          :ref="scope3.row.id.slice(0,8)"
+                          class="listTable"
+                          row-key="processId"
+                          :data="scope3.row.xzyMTaskcarpartList"
+                          :data-id="scope3.row.newItem=='1'"
+                          style="width: 100%"
+                          \@selection-change="sub2SelectChange($event,scope3.row.id)"
+                        >
+                          <!-- <el-table-column label="选择" width="50px">
+                            <template slot-scope="scope4">
+                              <el-checkbox
+                                \@change="checked=>handleCheck(checked,scope4.row,'subTable2', scope3.row)"
+                                class="sub2CheckBox"
+                                :data-id="scope4.row.id"
+                              ></el-checkbox>
+                            </template>
+                          </el-table-column> -->
+                          <el-table-column
+                            type="selection"
+                            :reserve-selection="true"
+                            :selectable="function(){return checkSelectable3(scope3.row)}"
+                          ></el-table-column>
+
+                          <el-table-column align="center" show-overflow-tooltip label="辆序/部件" width="350">
+                            <template slot-scope="{row}">
+                              <span style="color: red" v-if="row.workerList.length===0"
+                                >{{row.displayCarPartName}}</span
+                              >
+                              <span v-if="row.workerList.length!==0">{{row.displayCarPartName}}</span>
+                            </template>
+                          </el-table-column>
+                          <el-table-column
+                            align="center"
+                            prop="workerList"
+                            show-overflow-tooltip
+                            label="人员"
+                            :formatter="formatWorker"
+                            min-width="160"
+                          >
+                          </el-table-column>
+                          <!--<el-table-column-->
+                          <!--align="center"-->
+                          <!--prop="factmcode"-->
+                          <!--label="操作"-->
+                          <!--width="120">-->
+                          <!--<template slot-scope="scope">-->
+                          <!--<el-button type="text" size="mini" \@click="edit(scope.row)">编辑</el-button>-->
+                          <!--</template>-->
+                          <!--</el-table-column>-->
+                        </el-table>
+                      </template>
+                    </el-table-column>
+                    <el-table-column align="left" prop="displayItemName" show-overflow-tooltip label="项目" width="280">
+                      <template slot-scope="scope2">
+                        <!-- <span style="color: red" v-if="scope2.row.workerList.length===0">new</span> -->
+                        <span style="color: red" v-if="scope2.row.newItem=='1'">new</span>
+                        <!-- <span style="color: red"
+                        v-if="scope2.row.workerList.length===0">{{scope2.row.displayItemName}}</span>
+                      <span v-if="scope2.row.workerList.length!==0">{{scope2.row.displayItemName}}</span> -->
+                        <span style="color: red" v-if="scope2.row.newItem=='1'">{{scope2.row.displayItemName}}</span>
+                        <span v-if="scope2.row.newItem!='1'">{{scope2.row.displayItemName}}</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      align="center"
+                      prop="workerList"
+                      show-overflow-tooltip
+                      label="人员"
+                      :formatter="formatWorker"
+                      min-width="160"
+                    >
+                    </el-table-column>
+                    <el-table-column v-if="scope.row.workTypeCode == 5" align="center" label="操作" width="120">
+                      <template slot-scope="scope1">
+                        <el-button
+                          :disabled="scope1.row.newItem!='1'"
+                          type="text"
+                          size="mini"
+                          \@click="removeFault(scope1.$index, scope.row.packet.taskallotItemList,scope.$index,scope.row)"
+                          >删除
+                        </el-button>
+                      </template>
+                    </el-table-column>
+                    <el-table-column v-if="scope.row.workTypeCode == 11" align="center" label="操作" width="120">
+                      <template slot-scope="scope1">
+                        <el-button
+                          :disabled="scope1.row.newItem!='1'"
+                          type="text"
+                          size="mini"
+                          \@click="removeReChecked(scope1.$index, scope.row.packet.taskallotItemList,scope.$index,scope.row)"
+                        >
+                          删除</el-button
+                        >
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                </template>
+              </el-table-column>
+              <el-table-column label="车组" prop="trainsetName" sortable width="200px"> </el-table-column>
+              <el-table-column label="作业类型" prop="workTypeName" show-overflow-tooltip width="160px">
+              </el-table-column>
+              <el-table-column label="作业任务" prop="workTaskName" show-overflow-tooltip min-width="160px">
+              </el-table-column>
+              <el-table-column label="派工状态" prop="allotStateName" width="160px"> </el-table-column>
+              <el-table-column
+                label="人员"
+                prop="workerList"
+                :formatter="formatWorker"
+                show-overflow-tooltip
+                min-width="160px"
+              >
+              </el-table-column>
+              <!--<el-table-column-->
+              <!--label="操作"-->
+              <!--width="80px">-->
+              <!--<template slot-scope="scope">-->
+              <!--<a href="javascript:;">修改</a>-->
+              <!--</template>-->
+              <!--</el-table-column>-->
+            </el-table>
+            <div class="block flex">
+              <div class="notWork">
+                共
+                <span style="color: #fbbf5e">{{notWorkNum.trainset}}</span>个车组、<span style="color: #fbbf5e"
+                  >{{notWorkNum.task}}</span
+                >个任务未分配人员
+              </div>
+              <el-pagination
+                class="flex1"
+                \@size-change="handleSizeChange"
+                \@current-change="handleCurrentChange"
+                :current-page="mainTableData.currentPage"
+                :page-sizes="[10, 30, 50,100]"
+                :page-size="mainTableData.pageSize"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="tableDataFilter.length"
+              >
+              </el-pagination>
+            </div>
+          </div>
+          <!-- 故障认领 -->
+          <el-dialog
+            top="15vh"
+            \@closed="closeFault"
+            width="80%"
+            :visible.sync="dialogVisibleTask"
+            :close-on-click-modal="false"
+            title="故障认领"
+          >
+            <div class="header-dialog">
+              <el-row>
+                <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
+                  <label>运用所：</label>
+                  <span>${thirdOrganName}</span>
+                </el-col>
+                <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
+                  <label>班次：</label>
+                  <span>{{faultTask.workTimes | workTimesFilter}}</span>
+                </el-col>
+                <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
+                  <label>班组：</label>
+                  <span>{{faultTask.workTeam}}</span>
+                </el-col>
+                <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6" class="filter-item">
+                  <label>车组号：</label>
+                  <el-select
+                    v-model="faultFilterTrainsetId"
+                    filterable
+                    clearable
+                    \@change="faultFilterTrainsetIdChange"
+                  >
+                    <el-option
+                      v-for="item in faultFilterTrainsetList"
+                      :key="item.id"
+                      :label="item.label"
+                      :value="item.value"
+                    ></el-option>
+                  </el-select>
+                </el-col>
+              </el-row>
+            </div>
+            <div>
+              <el-table
+                id="mainTable"
+                class="listTable"
+                :data="faultDataShow"
+                stripe
+                height="260px"
+                ref="faultTableList"
+                style="width: 100%"
+                row-key="faultId"
+                \@selection-change="faultSelectChange"
+              >
+                <el-table-column type="selection" :reserve-selection="true"></el-table-column>
+                <!-- <el-table-column label="选择" width="50px">
+                  <template slot-scope="scope">
+                    <el-checkbox
+                      ref="faultTaskCheckBox"
+                      \@change="checked=>handleCheck(checked,scope.row,'faultTask')"
+                      class="faultTaskCheckBox"
+                      :data-id="scope.row.faultId"
+                    ></el-checkbox>
+                  </template>
+                </el-table-column> -->
+                <el-table-column type="index" :index="indexNum" label="序号" align="center" width="80">
+                </el-table-column>
+                <el-table-column align="center" prop="trainsetName" label="车组" width="160"> </el-table-column>
+                <el-table-column align="center" prop="carNo" label="辆序" width="150"> </el-table-column>
+                <el-table-column
+                  align="center"
+                  prop="faultDescription"
+                  label="故障描述"
+                  min-width="150"
+                  show-overflow-tooltip
+                >
+                </el-table-column>
+              </el-table>
+
+              <div class="block">
+                <el-pagination
+                  \@size-change="handleSizeChange_task"
+                  \@current-change="handleCurrentChange_task"
+                  :current-page="faultTask.tableData.currentPage"
+                  :page-sizes="[5,10, 30, 50,100]"
+                  :page-size="faultTask.tableData.pageSize"
+                  layout="total, sizes, prev, pager, next, jumper"
+                  :total="faultDataFilter.length"
+                >
+                </el-pagination>
+              </div>
+            </div>
+            <span slot="footer" class="dialog-footer">
+              <el-button size="mini" \@click="saveFaultTask" type="primary">确定</el-button>
+            </span>
+          </el-dialog>
+          <!-- 复核任务 -->
+          <el-dialog
+            top="15vh"
+            width="80%"
+            :visible.sync="reCheckedTaskdialogVisible"
+            :close-on-click-modal="false"
+            title="复核任务"
+            \@close="reCheckedTaskdialogClose"
+            custom-class="pd-20"
+          >
+            <div class="header-dialog">
+              <el-row>
+                <el-col class="lp-col" :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
+                  <label>车组号：</label>
+                  <el-select v-model="recheckFilterTrainsetId" filterable clearable \@change="recheckFilterChange">
+                    <el-option
+                      v-for="item in reCheckFilterTrainsetList"
+                      :key="item.id"
+                      :label="item.label"
+                      :value="item.value"
+                    ></el-option>
+                  </el-select>
+                </el-col>
+                <el-col class="lp-col" :xs="24" :sm="12" :md="8" :lg="6" :xl="6">
+                  <label>项目名称：</label>
+                  <el-input v-model.trim="recheckFilterItem" clearable \@change="recheckFilterChange" placeholder="请输入">
+                  </el-input>
+                </el-col>
+              </el-row>
+            </div>
+            <el-table
+              :data="recheckDataShow"
+              stripe
+              height="260px"
+              style="width: 100%"
+              class="recheck-table"
+              row-key="id"
+              ref="reCheckTable"
+              \@selection-change="reCheckedTaskSelectionChange"
+            >
+              <el-table-column type="selection" :reserve-selection="true"></el-table-column>
+              <el-table-column type="index" label="序号" align="center" width="50"> </el-table-column>
+              <el-table-column align="center" prop="trainsetName" label="车组号" width="200" show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column align="center" prop="carNo" label="辆序" width="100" show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column align="center" label="受电弓编号/轮对位置" width="100" show-overflow-tooltip>
+                <template v-slot="{row}"> {{row.pantoCode||row.wheelSetPosition}} </template>
+              </el-table-column>
+              <el-table-column align="center" label="滑板编号/轮饼位置" width="100" show-overflow-tooltip>
+                <template v-slot="{row}"> {{row.skaCode||row.wheelPosition}} </template>
+              </el-table-column>
+              <el-table-column align="center" prop="checkValue" label="检验值" width="100" show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column align="center" prop="recheckType" label="复核类型" width="100" show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column align="center" prop="checkItemName" label="复核项目" width="100" show-overflow-tooltip>
+              </el-table-column>
+              <el-table-column align="center" prop="checkTime" label="检测时间" show-overflow-tooltip>
+              </el-table-column>
+            </el-table>
+
+            <el-pagination
+              \@size-change="reCheckedTaskTablePageSizeChange"
+              \@current-change="reCheckedTaskTablePageNumChange"
+              :current-page="reCheckedTaskTablePageNum"
+              :page-sizes="[5,10, 30, 50,100]"
+              :page-size="reCheckedTaskTablePageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="recheckDataFilter.length"
+            >
+            </el-pagination>
+
+            <span slot="footer" class="dialog-footer">
+              <el-button size="mini" \@click="confirmReCheckedTask" type="primary">确定</el-button>
+            </span>
+          </el-dialog>
+          <!-- 人员分配 -->
+          <el-dialog
+            top="12vh"
+            \@closed="closeChooseWorkerDialog"
+            width="600px"
+            :visible.sync="chooseWorkerVisible"
+            :close-on-click-modal="false"
+            title="人员分配"
+          >
+            <div class="header-dialog">
+              <div class="flex" style="line-height: 30px">
+                <div class="flex1">
+                  <label>运用所：</label>
+                  <span>${thirdOrganName}</span>
+                </div>
+                <div class="flex1">
+                  <label>班组：</label>
+                  <span>{{workTeamInfoMap.name}}</span>
+                </div>
+              </div>
+              <div class="flex">
+                <label style="line-height: 30px">人员快速搜索：</label>
+                <el-input v-model.trim="quickQueryWorkersText" placeholder="请输入姓名" class="quickQuery flex1"></el-input>
+                <!--<el-button type="primary" size="mini" \@click="quickQuery" class="textRight">搜索</el-button>-->
+              </div>
+            </div>
+            <div class="treeBox">
+              <el-scrollbar class="tree-scrollbar" style="height: 100%">
+                <el-tree
+                  :data="workersTreeData"
+                  :props="defaultProps"
+                  show-checkbox
+                  default-expand-all
+                  node-key="id"
+                  ref="workersTree"
+                  :key="workersTreeKey"
+                  :filter-node-method="quickQueryWorkers"
+                  \@check-change="workersTreeCheckTree"
+                  \@node-click="workersTreeNodeClick"
+                  \@node-contextmenu="workersTreeRightClick"
+                >
+                  <div slot-scope="{node,data}" style="margin-left: 5px; display: flex; align-items: center">
+                    <img :src="baseImgPath+'/ren.png'" v-if="data.workerFlag==1" alt="" />
+                    <img :src="baseImgPath+'/zu.png'" v-if="data.workerFlag!=1" alt="" />
+                    <span
+                      style="margin-left: 5px; font-size: 14px; color: #1c5dba; font-weight: bold"
+                      v-if="data.workerFlag!=1"
+                      >{{data.label}}</span
+                    >
+                    <span style="margin-left: 5px" v-if="data.workerFlag==1">{{data.label}}</span>
+                    <span>{{data.post}}</span>
+                    <span v-if="data.partTime==1">(兼职)</span>
+                  </div>
+                </el-tree>
+              </el-scrollbar>
+            </div>
+            <span slot="footer" class="dialog-footer">
+              <el-button size="mini" \@click="addWorkers" type="primary">确定</el-button>
+            </span>
+          </el-dialog>
+          <!-- 右键菜单 -->
+          <div class="contextmenu-wrap" v-show="contextmenuWrapStatus" :style="contextmenuWrapStyle">
+            <context-menu
+              ref="context-menu"
+              \@select="select"
+              :menu="contextMenuList"
+              :posts="selectPost"
+              :axis="axis"
+              \@post-change="postChange"
+            ></context-menu>
+          </div>
+          <!-- 维护小组信息 -->
+          <el-dialog
+            top="20vh"
+            width="500px"
+            append-to-body
+            :visible.sync="groupDialogVisible"
+            :close-on-click-modal="false"
+            class="peopleDialog"
+            title="维护小组信息"
+          >
+            <div class="flex">
+              <label style="width: 70px; line-height: 40px">小组名：</label>
+              <el-input
+                v-model.trim="groupName"
+                clearable
+                placeholder="请输入小组名"
+                maxlength="25"
+                show-word-limit
+                class="fix-count-in fix-height"
+                v-focus
+              ></el-input>
+            </div>
+            <span slot="footer" class="dialog-footer">
+              <el-button size="mini" \@click="confirmGroupName" type="primary">确定</el-button>
+            </span>
+          </el-dialog>
+        </div>
+      </el-card>
+    </div>
+    <script
+      type="text/babel"
+      src="${ctxPath}/static/trainRepair/trainDispatch/repairDispatchManage/js/index.js?v4"
+    ></script>
+  </body>
+</html>

@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+        namespace="com.ydzbinfo.emis.common.general.dao.CommonMapper">
+    <!-- 获取单据类型 -->
+    <select id="getBillTypes" resultType="com.ydzbinfo.emis.trainRepair.bill.querymodel.attribute.TemplateType">
+        SELECT
+        <include refid="com.ydzbinfo.emis.common.bill.typeconfig.dao.TemplateTypeMapper.Base_Column_List">
+            <property name="tableAlias" value="t."/>
+            <property name="columnPrefix" value=""/>
+        </include>
+        FROM
+        XZY_C_TEMPLATETYPE t
+        where
+        t.C_FLAG = '1'
+        <if test="type !=null and type !=''">
+            and t.S_TYPE=#{type}
+        </if>
+        <if test="fatherTypeCode !=null and fatherTypeCode !=''">
+            and t.S_FATHERTYPECODE=#{fatherTypeCode}
+        </if>
+        <if test="itemType !=null and itemType !=''">
+            and t.s_itemtype=#{itemType}
+        </if>
+        <if test="!showCustomTemplate">
+            and t.C_SYSTEMPLATE <![CDATA[<>]]> '1'
+        </if>
+        <if test="!showSystemTemplate">
+            and t.C_SYSTEMPLATE <![CDATA[<>]]> '0'
+        </if>
+    </select>
+
+
+    <!--通过查询s_paramnames_paramvalue获取配置信息-->
+    <select id="getXzyCConfigs" resultType="com.ydzbinfo.emis.trainRepair.common.querymodel.XzyCConfig">
+        select
+        t.S_ID as configId,
+        t.s_type as type,
+        t.s_paramname as paramName,
+        t.s_paramvalue as paramValue
+        from xzy_c_config t
+        where 1=1
+        <if test="name !=null and name !=''">
+            and t.s_paramname=#{name}
+        </if>
+        <if test="value !=null and value !=''">
+            and t.s_paramvalue=#{value}
+        </if>
+        <if test="type !=null and type !=''">
+            and t.s_type=#{type}
+        </if>
+        <if test="unitCode !=null and unitCode !=''">
+            and t.S_UNITCODE=#{unitCode}
+        </if>
+    </select>
+
+
+    <!-- 获取单据属性getConfigAttr -->
+    <!--<select id="getTemplateAttributes" parameterType="Map"-->
+    <!--resultType="com.ydzbinfo.emis.trainRepair.vo.bill.TemplateAttributeData">-->
+    <!--SELECT-->
+    <!--t.S_ATTRIBUTECODE as attributeCode,-->
+    <!--t.S_ATTRIBUTENAME as-->
+    <!--attributeName,-->
+    <!--t.C_LINKATTR as linkAttr,-->
+    <!--t.S_SORT as sort,-->
+    <!---->
+    <!--t2.-->
+    <!--S_ATTRIBUTETYPECODE as attributeTypeCode,-->
+    <!--t2.S_ATTRIBUTETYPENAME as-->
+    <!--attributeTypeName,-->
+    <!--t2.S_SORT as typeSort-->
+
+    <!--FROM-->
+    <!--XZY_B_TEMPLATEATTRIBUTE-->
+    <!--t,-->
+    <!--XZY_C_TEMPLATELINKATTR t1,-->
+    <!--XZY_B_TEMPLATEATTRIBUTETYPE t2-->
+    <!--where-->
+    <!--t.S_ATTRIBUTECODE=t1.S_ATTRIBUTECODE-->
+    <!--and t.S_ATTRIBUTETYPECODE-->
+    <!--=t2.S_ATTRIBUTETYPECODE-->
+
+    <!--<if test="billTypeCode !=null and billTypeCode !=''">-->
+    <!--and t1.S_TEMPLATETYPECODE=#{billTypeCode}-->
+    <!--</if>-->
+    <!--</select>-->
+
+
+    <!--&lt;!&ndash; 单据模板类型和属性关系TemplateLinkAttr &ndash;&gt;-->
+    <!--<select id="getTemplateLinkAttrs" parameterType="Map"-->
+    <!--resultType="com.ydzbinfo.emis.trainRepair.vo.bill.TemplateLinkAttr">-->
+    <!--SELECT-->
+    <!--ID ,-->
+    <!--S_ATTRIBUTECODE as attributeCode,-->
+    <!--S_TEMPLATETYPECODE as-->
+    <!--attributeTypeCode,-->
+    <!--S_REMARK as remark,-->
+    <!--S_CREATETIME as createTime,-->
+    <!--S_CREATEUSER as createUser,-->
+    <!--C_ISCHANGE as isChange-->
+    <!--FROM-->
+    <!--XZY_C_TEMPLATELINKATTR t-->
+
+    <!--where 1=1-->
+    <!--<if test="attributeCode !=null and attributeCode !=''">-->
+    <!--and t.S_ATTRIBUTECODE=#{attributeCode}-->
+    <!--</if>-->
+    <!--<if test="attributeTypeCode !=null and attributeTypeCode !=''">-->
+    <!--and t.S_TEMPLATETYPECODE=#{attributeTypeCode}-->
+    <!--</if>-->
+    <!--</select>-->
+
+    <resultMap id="TemplateAttributeTypeInfoResultMap"
+               type="com.ydzbinfo.emis.trainRepair.bill.querymodel.attribute.TemplateAttributeTypeInfo"
+               autoMapping="true">
+        <id column="attributeTypeCode" property="attributeTypeCode"/>
+        <collection property="templateAttributes"
+                    ofType="com.ydzbinfo.emis.trainRepair.bill.querymodel.attribute.TemplateAttribute"
+                    autoMapping="true" columnPrefix="A_">
+            <id column="id" property="id"/>
+        </collection>
+    </resultMap>
+
+    <!--&lt;!&ndash; 单据模板属性类型字典表 &ndash;&gt;-->
+    <select id="getTemplateAttributeTypesByTemplateType" resultMap="TemplateAttributeTypeInfoResultMap">
+        SELECT
+        t1.S_ID,
+        <include refid="com.ydzbinfo.emis.common.bill.typeconfig.dao.TemplateAttributeTypeMapper.Base_Column_List">
+            <property name="tableAlias" value="t."/>
+            <property name="columnPrefix" value=""/>
+        </include>
+        ,
+        <include refid="com.ydzbinfo.emis.common.bill.typeconfig.dao.TemplateAttributeMapper.Base_Column_List">
+            <property name="tableAlias" value="t1."/>
+            <property name="columnPrefix" value="A_"/>
+        </include>
+        FROM
+        XZY_B_TEMPLATEATTRIBUTETYPE t
+        JOIN XZY_B_TEMPLATEATTRIBUTE t1 ON t1.S_ATTRIBUTETYPECODE = t.S_ATTRIBUTETYPECODE
+        WHERE t1.S_ATTRIBUTECODE IN (
+        SELECT
+        l.S_ATTRIBUTECODE
+        FROM
+        XZY_C_TEMPLATELINKATTR l
+        WHERE
+        l.S_TEMPLATETYPECODE = #{templateTypeCode}
+        )
+        and t1.C_FLAG = '1'
+    </select>
+
+
+    <!-- 单据模板属性取值范围表 -->
+    <select id="getTemplateValues" parameterType="Map"
+            resultType="com.ydzbinfo.emis.trainRepair.bill.querymodel.attribute.TemplateValue">
+        SELECT
+        <include refid="com.ydzbinfo.emis.common.bill.typeconfig.dao.TemplateValueMapper.Base_Column_List">
+            <property name="tableAlias" value="val."/>
+            <property name="columnPrefix" value=""/>
+        </include>
+        FROM
+        XZY_B_TEMPLATEVALUE val
+        where S_ATTRIBUTECODE in (
+        select
+        l.S_ATTRIBUTECODE
+        from
+        XZY_C_TEMPLATELINKATTR l
+        where
+        l.S_TEMPLATETYPECODE = #{billTypeCode}
+        )
+        order by val.I_SORTID
+    </select>
+
+
+    <!-- 模板类型查询条件字典表 -->
+    <select id="getTemplateQueryList"
+            resultType="com.ydzbinfo.emis.trainRepair.bill.querymodel.attribute.TemplateQuery">
+        SELECT
+        <include refid="com.ydzbinfo.emis.common.bill.typeconfig.dao.TemplateQueryMapper.Base_Column_List">
+            <property name="tableAlias" value="t."/>
+            <property name="columnPrefix" value=""/>
+        </include>
+        FROM
+        XZY_B_TEMPLATEQUERY t JOIN XZY_C_TEMPLATELINKQUERY t1 ON t.S_QUERYCODE = t1.S_QUERYCODE
+        where
+        t1.S_TEMPLATETYPECODE = #{billTypeCode}
+        order by t1.S_SORT
+    </select>
+
+
+    <!--&lt;!&ndash; 单据模板类型和查询条件关系表 暂时不用 &ndash;&gt;-->
+    <!--<select id="getTemplateLinkQuerys" parameterType="Map"-->
+    <!--resultType="com.ydzbinfo.emis.trainRepair.vo.bill.TemplateLinkQuery">-->
+    <!--SELECT-->
+    <!--S_ID as ID ,-->
+    <!--S_CREATEUSER as createUser,-->
+    <!--S_QUERYCODE as queryCode,-->
+    <!--S_TEMPLATETYPECODE as templateTypeCode,-->
+    <!--S_REMARK as-->
+    <!--remark ,-->
+    <!--S_CREATETIME as createTime,-->
+    <!--S_SORT as sort-->
+    <!--FROM-->
+    <!--XZY_C_TEMPLATELINKQUERY t-->
+    <!--where 1=1-->
+    <!--<if test="queryCode !=null and queryCode !=''">-->
+    <!--and t.S_QUERYCODE=#{queryCode}-->
+    <!--</if>-->
+    <!--<if test="templateTypeCode !=null and templateTypeCode !=''">-->
+    <!--and t.S_TEMPLATETYPECODE=#{templateTypeCode}-->
+    <!--</if>-->
+    <!--</select>-->
+
+
+    <!--&lt;!&ndash; 获取单据类型 关联 单据类型本身的表 &ndash;&gt;-->
+    <select id="getBillTypesByJoinOwn" parameterType="Map"
+            resultType="com.ydzbinfo.emis.trainRepair.bill.querymodel.attribute.TemplateType">
+        SELECT distinct
+        <include refid="com.ydzbinfo.emis.common.bill.typeconfig.dao.TemplateTypeMapper.Base_Column_List">
+            <property name="tableAlias" value="t."/>
+            <property name="columnPrefix" value=""/>
+        </include>
+        FROM XZY_C_TEMPLATETYPE t, XZY_C_TEMPLATETYPE t1
+        where (
+        t.s_templatetypecode = t1.s_fathertypecode
+        or t.s_templatetypecode = t1.s_templatetypecode
+        )
+        <if test="templateTypeCode !=null and templateTypeCode !=''">
+            and t.s_templatetypecode = #{templateTypeCode} or t.s_fathertypecode =#{templateTypeCode}
+        </if>
+    </select>
+</mapper>

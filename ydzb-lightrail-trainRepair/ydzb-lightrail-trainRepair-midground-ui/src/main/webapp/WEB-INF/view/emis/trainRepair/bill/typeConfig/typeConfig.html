@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>类型配置</title>
+    <script src="${publicStaticPath}/IE/babel-browser.min.js"></script>
+    <link rel="stylesheet" href="${publicStaticPath}/elementUI/index.css" />
+    <script src="${publicStaticPath}/jquery/jquery-1.10.2.min.js"></script>
+    <script src="${publicStaticPath}/vue/vue.js"></script>
+    <script src="${publicStaticPath}/elementUI/index.js"></script>
+    <script src="${publicStaticPath}/vue/axios.min.js"></script>
+    <script src="${ctxPath}/static/utils/GeneralUtil.js"></script>
+    <link rel="stylesheet" href="${ctxPath}/static/lib/input_word_limit.css" />
+
+    <link rel="stylesheet" href="${ctxPath}/static/trainRepair/bill/typeConfig/font/iconfont.css" />
+    <link rel="stylesheet" href="${ctxPath}/static/trainRepair/bill/typeConfig/style/typeConfig.css" />
+  </head>
+
+  <body>
+    <div id="app" \@click="signatureDown = false" v-cloak>
+      <el-card class="box-card">
+        <div slot="header">
+          <span class="adorn"></span>
+          <h2>{{pageTitle}}</h2>
+        </div>
+
+        <!-- 搜索部分 -->
+        <div class="screen">
+          <el-form :inline="true" class="demo-form-inline">
+            <el-form-item label="单据类型:" size="mini">
+              <el-select
+                placeholder=""
+                v-model="dataDocuments"
+                clearable
+                filterable
+                style="width: 9rem"
+                \@change="cutDataDocuments"
+              >
+                <el-option
+                  v-for="item in dataDocumentsList"
+                  :key="item.templateTypeCode"
+                  :label="item.templateTypeName"
+                  :value="item.templateTypeCode"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+
+            <el-form-item label="单据子类型:" size="mini">
+              <!-- style="width: 135px;" -->
+              <el-select placeholder="" v-model="dataSonDocuments" clearable filterable style="width: 9rem">
+                <el-option
+                  v-for="item in dataSonDocumentsList"
+                  :key="item.templateTypeName"
+                  :label="item.templateTypeName"
+                  :value="item.templateTypeCode"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+
+            <el-form-item label="单据名称:" size="mini">
+              <!-- width: 140px; -->
+                <el-input placeholder="" style="width: 9.333333rem" clearable v-model.trim="billsName"></el-input>           
+            </el-form-item>
+
+            <el-form-item label="状态:" size="mini">
+              <!-- style="width: 135px;" -->
+              <el-select placeholder="" v-model="seletState" style="width: 9rem">
+                <el-option v-for="item in state" :key="item.value" :label="item.value" :value="item.index"></el-option>
+              </el-select>
+            </el-form-item>
+
+            <el-form-item label="类别:" size="mini" v-if="jurisdiction == '2'">
+              <!-- style="width: 135px;" -->
+              <el-select placeholder="" v-model="category" style="width: 9rem">
+                <el-option
+                  v-for="item in categoryList"
+                  :key="item.code"
+                  :label="item.name"
+                  :value="item.code"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+
+            <el-form-item size="mini">
+              <!-- border-radius: 9px; -->
+              <el-button type="primary" \@click="inquiry" style="width: 4rem">查询</el-button>
+              <el-button type="primary" \@click="reset" style="margin-left: 0; width: 4rem">重置 </el-button>
+              @if(shiro.hasPermission("typeConfig:edit")){
+              <el-button type="primary" style="margin-left: 0; width: 4rem" \@click="newlyAdd"> 新增</el-button>
+              @}
+            </el-form-item>
+          </el-form>
+        </div>
+        <!-- 表格部分 -->
+        <div class="table">
+          <el-table
+            style="width: 100%"
+            :data="typeList"
+            :header-cell-style="{background:'#d4e3ff',color:'#000'}"
+            :row-class-name="tableRowClassName"
+            height="calc(100vh - 200px)"
+          >
+            <el-table-column align="center" label="序号" width="80">
+              <template slot-scope="scope"> {{scope.$index + 1}} </template>
+            </el-table-column>
+            <el-table-column align="center" prop="oneTypeName" label="单据类型" width="150" show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column align="center" prop="fatherTypeName" label="单据子类型" width="150" show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column align="center" prop="templateTypeName" label="单据名称" width="150" show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column align="center" prop="queryNames" label="关联条件" width="150" show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column
+              align="center"
+              prop="templateLinkAttrNames"
+              label="关联属性"
+              width="150"
+              show-overflow-tooltip
+            >
+            </el-table-column>
+            <el-table-column align="center" prop="remark" label="备注" show-overflow-tooltip> </el-table-column>
+            <el-table-column align="center" prop="flag" label="状态" width="150">
+              <template slot-scope="scope"> {{scope.row.flag | flagFilter}} </template>
+            </el-table-column>
+            <el-table-column align="center" prop="address" label="操作" width="120">
+              <template slot-scope="scope">
+                @if(shiro.hasPermission("typeConfig:edit")){
+                <div
+                  v-if="scope.row.flag == 1 && !(jurisdiction != 1 && scope.row.sysType == 1)"
+                  style="display: inline-block"
+                >
+                  <el-tooltip placement="top" width="200" trigger="hover" content="作废">
+                    <i
+                      class="el-icon iconfont icon-zuofei"
+                      style="cursor: pointer; font-size: 15px"
+                      \@click="delteValue(scope.row.templateTypeCode)"
+                    ></i>
+                  </el-tooltip>
+                  <el-tooltip placement="top" width="200" trigger="hover" content="编辑">
+                    <i class="el-icon el-icon-edit-outline" style="cursor: pointer" \@click="newEdit(scope.$index)"></i>
+                  </el-tooltip>
+                </div>
+                <div v-else style="display: inline-block">
+                  <i class="el-icon iconfont icon-zuofei" style="cursor: pointer; color: rgba(204, 204, 204, 0.815)"></i>
+                  <i class="el-icon-edit-outline" style="cursor: pointer; color: rgba(204, 204, 204, 0.815)"></i>
+                </div>
+                @}
+                <el-tooltip placement="top" width="200" trigger="hover" content="查看">
+                  <i class="el-icon el-icon-tickets" style="cursor: pointer" \@click="see(scope.$index, scope.row.flag == 1 && !(jurisdiction != 1 && scope.row.sysType == 1) == true? 1: 0)"></i>
+                </el-tooltip>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+        <!-- 分页 -->
+        <div class="pagination">
+          <el-pagination
+            \@size-change="handleSizeChange"
+            \@current-change="handleCurrentChange"
+            :page-sizes="[20, 50, 100, 150]"
+            :page-size="pageSize"
+            :current-page.sync="pageNum"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="count"
+          >
+          </el-pagination>
+        </div>
+      </el-card>
+
+      <!-- 类型配置新增弹出框 -->
+      <el-dialog
+        :title="newAndEdit == 'add' ? '类型配置-新增' : '类型编辑'"
+        v-on:closed="onPopUp"
+        v-if="jurisdiction == '2'"
+        :close-on-click-modal="false"
+        :visible.sync="append"
+        width="700px"
+      >
+        <el-form
+          :inline="true"
+          class="demo-form-inline"
+          :disabled="prohibit"
+          :rules="formRules"
+          ref="addForm"
+          :model="addFormData"
+          label-width="105px"
+        >
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="单据类型:" size="mini" prop="dataDocuments">
+                <el-select
+                  v-model="addFormData.dataDocuments"
+                  clearable
+                  filterable
+                  :disabled="newAndEdit == 'edit'"
+                  style="width: 150px"
+                  \@change="newCutDataDocuments"
+                >
+                  <el-option
+                    v-for="item in addFormData.dataDocumentsList"
+                    :key="item.templateTypeCode"
+                    :label="item.templateTypeName"
+                    :value="item.templateTypeCode"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="单据子类型:" size="mini" prop="dataSonDocuments">
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  :content="getSonTemplateTypeName(addFormData.dataSonDocuments)"
+                  placement="top"
+                  :disabled="!getSonTemplateTypeName(addFormData.dataSonDocuments)"
+                >
+                <el-select
+                  v-model="addFormData.dataSonDocuments"
+                  clearable
+                  filterable
+                  :disabled="newAndEdit == 'edit'"
+                  \@change="cutDataSonDocuments"
+                  style="width: 150px"
+                >
+                  <el-option
+                    v-for="item in addFormData.dataSonDocumentsList"
+                    :key="item.templateTypeCode"
+                    :label="item.templateTypeName"
+                    :value="item.templateTypeCode"
+                  >
+                  </el-option>
+                </el-select>
+                </el-tooltip>
+                <el-button type="primary" \@click="openDataSonDocumentsEdit" :disabled="newAndEdit == 'edit'"
+                  >编辑</el-button
+                >
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="单据名称:" size="mini" prop="billsName">
+                <el-tooltip
+                class="item"
+                effect="dark"
+                :content="getTemplateTypeName(addFormData.billsName)"
+                placement="top"
+                :disabled="!addFormData.billsName"
+              >
+              <el-select
+              v-model="addFormData.billsName"
+              clearable
+              filterable
+              :disabled="newAndEdit == 'edit'"
+              style="width: 150px"
+            >
+              <el-option
+                v-for="item in billsNameList"
+                :key="item.templateTypeName"
+                :label="item.templateTypeName"
+                :value="item.templateTypeCode"
+              >
+              </el-option>
+            </el-select>
+              </el-tooltip>
+                <el-button type="primary" \@click="openbillsNameEdit" :disabled="newAndEdit == 'edit'">编辑</el-button>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="关联条件:" size="mini">
+                <el-input
+                  placeholder=""
+                  v-model.trim="addFormData.jionCondition"
+                  readonly
+                  style="width: 150px"
+                  \@click.stop.native="openSignatureDown"
+                ></el-input>
+                <i
+                  class="el-select__caret el-input__icon"
+                  :class="signatureDown? 'el-icon-arrow-up' : 'el-icon-arrow-down'"
+                  style="position: relative; left: -34px; color: #c0c4cc"
+                ></i>
+                <div class="options" style="overflow: auto" v-show="signatureDown" \@click.stop="signatureDown=true">
+                  <el-checkbox-group
+                    v-model="addFormData.checkList"
+                    \@change="selectSigners"
+                    style="padding-left: 15px"
+                  >
+                    <el-checkbox
+                      v-for="item in addFormData.cruxConditionList"
+                      :key="item.queryCode"
+                      :label="item.queryCode"
+                      >{{item.queryName}}
+                    </el-checkbox>
+                  </el-checkbox-group>
+                </div>
+                <el-popover placement="top-start" width="200" trigger="hover" :content="relationConditionTips">
+                  <i
+                    class="el-icon-question"
+                    slot="reference"
+                    style="
+                      background-color: #000;
+                      color: #fff;
+                      border-radius: 7px;
+                      cursor: pointer;
+                      position: absolute;
+                      right: 5px;
+                      top: 15px;
+                    "
+                  ></i>
+                </el-popover>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="关联属性:" size="mini" prop="attributeRelationship">
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  :content="addFormData.attributeRelationship"
+                  placement="top"
+                  :disabled="!addFormData.attributeRelationship"
+                >
+                  <el-input placeholder="" readonly v-model.trim="addFormData.attributeRelationship" style="width: 150px">
+                  </el-input>
+                </el-tooltip>
+                <el-button type="primary" \@click="openRelationEdit">编辑</el-button>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="支持两张单据:" size="small">
+                <!-- width: 85px; margin-right: 20px -->
+                <el-select placeholder="" v-model="addFormData.moreForm" style="width: 150px">
+                  <el-option label="是" value="1"></el-option>
+                  <el-option label="否" value="0"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="备注:">
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  :content="addFormData.remark"
+                  placement="top"
+                  :disabled="!addFormData.remark"
+                >
+                <el-input
+                  type="textarea"
+                  v-model.trim="addFormData.remark"
+                  maxlength="100"
+                  show-word-limit
+                  class="fix-count-out"
+                  style="width: 480px"
+                ></el-input>
+              </el-tooltip>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <div class="popupNotarize">
+          <el-button
+            size="mini"
+            \@click="addition('addForm')"
+            type="primary"
+            style="background-color: #4f86ff"
+            v-if="!prohibit"
+            >确认</el-button
+          >
+          <el-button size="mini" \@click="closePop" type="primary" style="background-color: #4f86ff">取消</el-button>
+        </div>
+      </el-dialog>
+
+      <!-- 类型配置系统新增弹出框 -->
+      <el-dialog
+        :title="newAndEdit == 'add' ? '类型配置-新增' : '类型编辑'"
+        v-on:closed="onPopUp"
+        v-else-if="jurisdiction == '1'"
+        :close-on-click-modal="false"
+        :visible.sync="append"
+        width="700px"
+      >
+        <el-form
+          :inline="true"
+          class="demo-form-inline"
+          :disabled="prohibit"
+          :rules="formRules"
+          ref="addForm"
+          :model="addFormData"
+          label-width="105px"
+        >
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="单据类型:" size="mini" prop="dataDocuments">
+                <el-select
+                  placeholder=""
+                  v-model="addFormData.dataDocuments"
+                  clearable
+                  filterable
+                  :disabled="newAndEdit == 'edit'"
+                  style="width: 150px"
+                  \@change="newCutDataDocuments"
+                >
+                  <el-option
+                    v-for="item in addFormData.dataDocumentsList"
+                    :key="item.templateTypeCode"
+                    :label="item.templateTypeName"
+                    :value="item.templateTypeCode"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="单据子类型:" size="mini" prop="dataSonDocuments">
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  :content="getSonTemplateTypeName(addFormData.dataSonDocuments)"
+                  placement="top"
+                  :disabled="!getSonTemplateTypeName(addFormData.dataSonDocuments)"
+                >
+                <el-select
+                  placeholder=""
+                  v-model="addFormData.dataSonDocuments"
+                  clearable
+                  filterable
+                  :disabled="newAndEdit == 'edit'"
+                  \@change="cutDataSonDocuments"
+                  style="width: 150px"
+                >
+                  <el-option
+                    v-for="item in addFormData.dataSonDocumentsList"
+                    :key="item.templateTypeName"
+                    :label="item.templateTypeName"
+                    :value="item.templateTypeCode"
+                  >
+                  </el-option>
+                </el-select>
+                </el-tooltip>
+                <el-button type="primary" \@click="openDataSonDocumentsEdit" :disabled="newAndEdit == 'edit'"
+                  >编辑</el-button
+                >
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="单据名称:" size="mini" prop="billsName">
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  :content="getTemplateTypeName(addFormData.billsName)"
+                  placement="top"
+                  :disabled="!addFormData.billsName"
+                >
+                <el-select
+                  placeholder=""
+                  v-model="addFormData.billsName"
+                  clearable
+                  filterable
+                  :disabled="newAndEdit == 'edit'"
+                  style="width: 150px"
+                >
+                  <el-option
+                    v-for="item in billsNameList"
+                    :key="item.templateTypeName"
+                    :label="item.templateTypeName"
+                    :value="item.templateTypeCode"
+                  >
+                  </el-option>
+                </el-select>
+                </el-tooltip>
+                <el-button type="primary" \@click="openbillsNameEdit" :disabled="newAndEdit == 'edit'">编辑</el-button>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="关联条件:" size="mini">
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  :content="addFormData.jionCondition"
+                  placement="top"
+                  :disabled="!addFormData.jionCondition"
+                >
+                <el-input
+                placeholder=""
+                v-model.trim="addFormData.jionCondition"
+                readonly
+                style="width: 150px"
+                \@click.stop.native="openSignatureDown"
+              ></el-input>
+              </el-tooltip>
+                <i
+                  class="el-select__caret el-input__icon"
+                  :class="signatureDown? 'el-icon-arrow-up' : 'el-icon-arrow-down'"
+                  style="position: relative; left: -34px; color: #c0c4cc"
+                ></i>
+                <div class="options" style="overflow: auto" v-show="signatureDown" \@click.stop="signatureDown=true">
+                  <el-checkbox-group
+                    v-model="addFormData.checkList"
+                    \@change="selectSigners"
+                    style="padding-left: 15px"
+                  >
+                    <el-checkbox
+                      v-for="item in addFormData.cruxConditionList"
+                      :key="item.queryCode"
+                      :label="item.queryCode"
+                      >{{item.queryName}}
+                    </el-checkbox>
+                  </el-checkbox-group>
+                </div>
+                <el-popover placement="top-start" width="200" trigger="hover" :content="relationConditionTips">
+                  <i
+                    class="el-icon-question"
+                    slot="reference"
+                    style="
+                      background-color: #000;
+                      color: #fff;
+                      border-radius: 7px;
+                      cursor: pointer;
+                      position: absolute;
+                      right: 5px;
+                      top: 15px;
+                    "
+                  ></i>
+                </el-popover>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="关联属性:" size="mini" prop="attributeRelationship">
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  :content="addFormData.attributeRelationship"
+                  placement="top"
+                  :disabled="!addFormData.attributeRelationship"
+                >
+                  <el-input placeholder="" readonly v-model.trim="addFormData.attributeRelationship" style="width: 150px">
+                  </el-input>
+                </el-tooltip>
+                <el-button type="primary" \@click="openRelationEdit">编辑</el-button>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="项目类型编码:" size="mini">
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  :content="addFormData.projectCoding"
+                  placement="top"
+                  :disabled="!addFormData.projectCoding"
+                >
+                  <el-input
+                    placeholder=""
+                    v-model.trim="addFormData.projectCoding"
+                    maxlength="25"
+                    show-word-limit
+                    clearable
+                    class="fix-count-out"
+                    style="width: 150px"
+                  ></el-input>
+                </el-tooltip>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="是否可编辑:" size="small">
+                <!-- width: 85px; margin-right: 20px -->
+                <el-select placeholder="" v-model="addFormData.whetherEdit" style="width: 150px">
+                  <el-option label="是" value="1"></el-option>
+                  <el-option label="否" value="0"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="支持两张单据:" size="small">
+                <!-- width: 85px; margin-right: 20px -->
+                <el-select placeholder="" v-model="addFormData.moreForm" style="width: 150px">
+                  <el-option label="是" value="1"></el-option>
+                  <el-option label="否" value="0"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label="备注:">
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  :content="addFormData.remark"
+                  placement="top"
+                  :disabled="!addFormData.remark"
+                >
+                <el-input
+                  type="textarea"
+                  v-model.trim="addFormData.remark"
+                  maxlength="100"
+                  show-word-limit
+                  class="fix-count-out"
+                  style="width: 480px"
+                ></el-input>
+              </el-tooltip>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <div class="popupNotarize">
+          <el-button
+            size="mini"
+            type="primary"
+            \@click="addition('addForm')"
+            style="background-color: #4f86ff"
+            v-if="!prohibit"
+            >确认</el-button
+          >
+          <el-button size="mini" type="primary" \@click="closePop" style="background-color: #4f86ff">取消</el-button>
+        </div>
+      </el-dialog>
+
+      <!-- 新增-单据子类型配置弹出框 -->
+      <el-dialog
+        title="单据子类型-配置"
+        :visible.sync="editDataSonDocumentsPopup"
+        v-on:closed="onEditDataSonDocumentsClosed"
+        width="450px"
+        :close-on-click-modal="false"
+      >
+        <el-form :inline="true" class="demo-form-inline">
+          <el-form-item label="单据类型:" size="mini" style="margin-left: 42px">
+            <!-- <el-select placeholder="" v-model="addFormData.dataDocuments" \@change="cutDataDocuments"
+                style="width: 179px;">
+                <el-option v-for="item in dataDocumentsList" :key="item.templateTypeName" :label="item.templateTypeName"
+                  :value="item.templateTypeCode">
+                </el-option>
+              </el-select> -->
+              <el-tooltip
+                  class="item"
+                  effect="dark"
+                  :content="getDataDocuments"
+                  placement="top"
+                  :disabled="!getDataDocuments"
+                >
+                <el-input placeholder="" v-model.trim="getDataDocuments" disabled style="width: 179px"></el-input>
+              </el-tooltip>
+          </el-form-item>
+          <el-form-item label="单据子类型编码:" size="mini" v-if="jurisdiction == '1'">
+            <el-tooltip
+                  class="item"
+                  effect="dark"
+                  :content="billsSonCoding"
+                  placement="top"
+                  :disabled="!billsSonCoding"
+                >
+                <el-input placeholder="" class="fix-count-out" v-model.trim="billsSonCoding" style="width: 179px" clearable maxlength="25" show-word-limit>
+                </el-input>
+                </el-tooltip>
+          </el-form-item>
+          <el-form-item label="单据子类型:" size="mini" style="margin-left: 28px">
+            <!-- width: 240px; -->
+            <el-tooltip
+                  class="item"
+                  effect="dark"
+                  :content="newDataSonDocuments"
+                  placement="top"
+                  :disabled="!newDataSonDocuments"
+                >
+                <el-input style="width: 179px" class="fix-count-out" v-model.trim="newDataSonDocuments" clearable maxlength="25" show-word-limit></el-input>
+                </el-tooltip>
+            <el-button \@click="newDataSonDocumentsList" size="mini" type="primary" style="margin-left: 40px"
+              >添加
+            </el-button>
+          </el-form-item>
+          <el-form-item size="mini">
+            <el-table
+              :data="dataSonDocumentsTableList"
+              style="width: 360px"
+              :row-style="{height: '0'}"
+              :cell-style="{padding: '0'}"
+            >
+              <el-table-column align="center" prop="templateTypeName" label="类型名称"> </el-table-column>
+              <el-table-column align="center" label="操作">
+                <template slot-scope="scope">
+                  <a
+                    href="javascript:void(0)"
+                    v-if="allExistsSonDocumentsList(scope.row)"
+                    \@click="removeScope(scope.$index)"
+                    >删除</a
+                  >
+                  <a href="javascript:void(0)" style="color: #ccc" v-else>删除</a>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form-item>
+        </el-form>
+        <div class="popupNotarize">
+          <el-button size="mini" :disabled="determineDataSonDocumentsBtnisDisabled" \@click="determineDataSonDocuments" type="primary"
+            >确认
+          </el-button>
+          <el-button size="mini" \@click="cancelDataSonDocuments" type="primary"
+            >取消
+          </el-button>
+        </div>
+      </el-dialog>
+
+      <!-- 新增-单据名称配置弹出框 -->
+      <el-dialog
+        title="单据名称-配置"
+        :visible.sync="editBillsNamePopup"
+        v-on:closed="editBillsNameDialogClosed"
+        width="460px"
+        :close-on-click-modal="false"
+      >
+        <el-form :inline="true" class="demo-form-inline">
+          <el-form-item label="单据子类型:" size="mini" style="margin-left: 42px">
+            <!-- <el-select placeholder="" v-model="addFormData.dataSonDocuments" \@change="cutDataSonDocuments"
+                style="width: 179px;">
+                <el-option v-for="item in addFormData.dataSonDocumentsList" :key="item.templateTypeName"
+                  :label="item.templateTypeName" :value="item.templateTypeCode">
+                </el-option>
+              </el-select> -->
+            <el-input placeholder="" v-model.trim="getDataSonDocuments" disabled style="width: 179px"></el-input>
+          </el-form-item>
+          <el-form-item label="单据名称编码:" size="mini" v-if="jurisdiction == '1'" clearable style="margin-left: 28px">
+            <el-tooltip
+                  class="item"
+                  effect="dark"
+                  :content="billsNameCoding"
+                  placement="top"
+                  :disabled="!billsNameCoding"
+                >
+                <el-input
+                  placeholder=""
+                  v-model.trim="billsNameCoding"
+                  class="fix-count-out"
+                  style="width: 179px"
+                  maxlength="25"
+                  show-word-limit
+                ></el-input>
+              </el-tooltip>
+          </el-form-item>
+          <el-form-item label="单据名称:" size="mini" style="margin-left: 56px">
+            <!-- width: 240px; -->
+            <el-tooltip
+                  class="item"
+                  effect="dark"
+                  :content="newBillsName"
+                  placement="top"
+                  :disabled="!newBillsName"
+                >
+                <el-input
+                  placeholder=""
+                  style="width: 179px"
+                  class="fix-count-out"
+                  v-model.trim="newBillsName"
+                  maxlength="25"
+                  show-word-limit
+                ></el-input>
+              </el-tooltip>
+            <el-button size="mini" type="primary" \@click="newbillsNameList" clearable style="margin-left: 40px">添加 </el-button>
+          </el-form-item>
+          <el-form-item size="mini">
+            <el-table
+              :data="billsNameTableList"
+              style="width: 360px"
+              :row-style="{height: '0'}"
+              :cell-style="{padding: '0'}"
+            >
+              <el-table-column align="center" prop="templateTypeName" label="单据名称:"> </el-table-column>
+              <el-table-column align="center" label="操作">
+                <template slot-scope="scope">
+                  <a href="javascript:void(0)" v-if="existsBillsName(scope.row)" \@click="newRemoveScope(scope.$index)"
+                    >删除</a
+                  >
+                  <a href="javascript:void(0)" style="color: #ccc" v-else>删除</a>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form-item>
+        </el-form>
+        <div class="popupNotarize">
+          <el-button size="mini" \@click="determineBillsName" type="primary" style="background-color: #4f86ff"
+            >确认
+          </el-button>
+          <el-button size="mini" \@click="cancelBillsName" type="primary" style="background-color: #4f86ff"
+            >取消
+          </el-button>
+        </div>
+      </el-dialog>
+
+      <!-- 新增-关联属性出框-->
+      <el-dialog
+        title="类型配置-属性选择"
+        :close-on-click-modal="false"
+        v-on:closed="onPropertiesDialogClosed"
+        :visible.sync="editAttributeChoice"
+        width="90%"
+      >
+        <div style="display: flex" class="shuttleBox">
+          <div class="sunShuttleBox" style="margin-right: 20px">
+            <span class="shuttle">未配置属性</span>
+            <span class="shuttle">属性名称:</span>
+            <el-tooltip
+                  class="item"
+                  effect="dark"
+                  :content="unCheckedQuery"
+                  placement="top"
+                  :disabled="!unCheckedQuery"
+                >
+                <el-input
+                  class="shuttle"
+                  placeholder=""
+                  v-model="unCheckedQuery"
+                  style="width: 130px"
+                  size="mini"
+                  clearable
+                ></el-input>
+              </el-tooltip>
+            <el-button type="primary" \@click="addTo" size="mini">添加</el-button>
+            <el-table
+              :row-key="rowKey"
+              :data="filteredUncheckedAttributeList"
+              height="400"
+              stripe
+              tooltip-effect="dark"
+              border
+              style="margin-top: 10px"
+              \@selection-change="notConfig"
+              size="mini"
+            >
+              <el-table-column type="selection" align="center" min-width="50"> </el-table-column>
+              <el-table-column label="序号" align="center" min-width="60">
+                <template slot-scope="scope"> {{scope.$index + 1}} </template>
+              </el-table-column>
+              <el-table-column prop="attributeTypeName" label="属性类型" align="center" min-width="100">
+              </el-table-column>
+              <el-table-column
+                prop="attributeName"
+                label="属性名称"
+                show-overflow-tooltip
+                align="center"
+                min-width="140"
+              >
+              </el-table-column>
+              <el-table-column prop="attributeModeName" label="属性模式" align="center" min-width="120">
+              </el-table-column>
+              <el-table-column prop="address" label="操作" align="center" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  <span style="cursor: pointer; color: #409eff" \@click="seeValue(scope.$index, '1')">查看</span>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+          <div class="sunShuttleBox">
+            <span class="shuttle">已配置属性</span>
+            <span class="shuttle">属性名称:</span>
+            <el-tooltip
+                  class="item"
+                  effect="dark"
+                  :content="checkedQuery"
+                  placement="top"
+                  :disabled="!checkedQuery"
+                >
+                <el-input class="shuttle" placeholder="" v-model.trim="checkedQuery" style="width: 130px" clearable size="mini"></el-input>
+              </el-tooltip>
+            <el-button type="primary" \@click="removeTo" size="mini">移除</el-button>
+            <el-table
+              :row-key="rowKey"
+              :data="filteredCheckedAttributeList"
+              height="400"
+              stripe
+              tooltip-effect="dark"
+              border
+              style="margin-top: 10px"
+              \@selection-change="yesConfig"
+              size="mini"
+            >
+              <el-table-column type="selection" align="center" min-width="50"> </el-table-column>
+              <el-table-column label="序号" align="center" min-width="60">
+                <template slot-scope="scope"> {{scope.$index + 1}} </template>
+              </el-table-column>
+              <el-table-column prop="attributeTypeName" label="属性类型" align="center" min-width="100">
+              </el-table-column>
+              <el-table-column
+                prop="attributeName"
+                label="属性名称"
+                show-overflow-tooltip
+                align="center"
+                min-width="140"
+              >
+              </el-table-column>
+              <el-table-column prop="attributeModeName" label="属性模式" align="center" min-width="120">
+              </el-table-column>
+              <el-table-column prop="address" label="操作" align="center" show-overflow-tooltip>
+                <template slot-scope="scope">
+                  <span style="cursor: pointer; color: #409eff" \@click="seeValue(scope.$index, '2')">查看</span>
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+        </div>
+        <div style="text-align: center; position: relative; left: -23px; margin: 20px">
+          <el-button type="primary" \@click="confirmProperties" size="mini">确定</el-button>
+          <el-button type="primary" \@click="cancelProperties" size="mini">取消</el-button>
+        </div>
+      </el-dialog>
+
+      <!-- 关联属性查看 -->
+      <el-dialog
+        class="attributePreview"
+        title="属性管理"
+        :close-on-click-modal="false"
+        :visible.sync="serial"
+        width="635px"
+      >
+        <el-form :inline="true" class="demo-form-inline" :disabled="true" ref="addForm" :model="addFormData">
+          <el-form-item label="属性类型:" size="small" style="margin-left: 28px; margin-right: 45px">
+            <!-- width: 185px; margin-right: 12px; -->
+            <el-tooltip
+                  class="item"
+                  effect="dark"
+                  :content="addFormData.attributeTypeName"
+                  placement="top"
+                  :disabled="!addFormData.attributeTypeName"
+                >
+                <el-input placeholder="" v-model.trim="addFormData.attributeTypeName" style="width: 150px; margin-right: 10px">
+                </el-input>
+              </el-tooltip>
+            
+          </el-form-item>
+
+          <el-form-item label="属性名称:" size="small">
+            <!-- width: 185px; -->
+            <el-tooltip placement="right-start" :disabled="!addFormData.newAttributeName">
+              <div slot="content">{{addFormData.newAttributeName}}</div>
+              <el-input placeholder="" v-model.trim="addFormData.newAttributeName" style="width: 150px"> </el-input>
+            </el-tooltip>
+          </el-form-item>
+
+          <el-form-item label="属性说明:" size="small" style="margin-left: 28px">
+            <!-- width: 465px; -->
+            <el-tooltip
+                  class="item"
+                  effect="dark"
+                  :content="addFormData.attributeState"
+                  placement="top"
+                  :disabled="!addFormData.attributeState"
+                >
+                <el-input placeholder="" v-model.trim="addFormData.attributeState" style="width: 432px"></el-input>
+              </el-tooltip>
+          </el-form-item>
+
+          <el-form-item
+            label="属性模式:"
+            size="small"
+            prop="attributeModel"
+            style="margin-left: 28px"
+            ref="attributeModel"
+          >
+            <!-- width: 185px; margin-right: 12px; -->
+            <el-select placeholder="" v-model="addFormData.attributeModel" style="width: 150px; margin-right: 19px">
+              <el-option
+                v-for="item in addFormData.seletAttributeModel"
+                :key="item.attributeModeCode"
+                :label="item.attributeModeName"
+                :value="item.attributeModeCode"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+
+          <!-- 取值范围 -->
+          <!-- 文本 -->
+          <el-form-item class="range" :label="valueName + ':'" size="small" style="margin-left: 27px">
+            <!-- width: 185px -->
+            <el-popover placement="top-start" width="200" trigger="hover" :content="addFormData.selectScope">
+              <el-input placeholder="" slot="reference" v-model.trim="addFormData.selectScope" readonly style="width: 150px">
+              </el-input>
+            </el-popover>
+          </el-form-item>
+
+          <el-form-item label="是否关联属性:" size="small" style="margin-right: 20px">
+            <!-- width: 85px; margin-right: 20px -->
+            <el-select placeholder="" v-model="addFormData.myAttribute" style="width: 150px; margin-right: 10px">
+              <el-option label="是" value="1"></el-option>
+              <el-option label="否" value="0"></el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="是否只读:" size="small" style="margin-left: 27px">
+            <!-- width: 85px; margin-right: 20px; -->
+            <el-select placeholder="" v-model="addFormData.myRead" style="width: 150px; margin-right: 20px">
+              <el-option label="是" value="1"></el-option>
+              <el-option label="否" value="0"></el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="是否必填:" size="small" style="margin-left: 27px">
+            <!-- width: 85px; margin-right: 20px; -->
+            <el-select placeholder="" v-model="addFormData.myRequired" style="width: 150px">
+              <el-option label="是" value="1"></el-option>
+              <el-option label="否" value="0"></el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+
+        <div class="popupNotarize">
+          <el-button size="mini" \@click="serial = false" type="primary" style="background-color: #4f86ff"
+            >确认
+          </el-button>
+          <el-button size="mini" \@click="serial = false" type="primary" style="background-color: #4f86ff"
+            >取消
+          </el-button>
+        </div>
+      </el-dialog>
+    </div>
+
+    <script src="${ctxPath}/static/trainRepair/bill/typeConfig/js/typeConfig.js"></script>
+  </body>
+</html>

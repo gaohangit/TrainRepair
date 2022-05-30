@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.systemmanagent.rfid.dao.XzyCRfidcarPoistionMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.systemmanagent.rfid.querymodel.XzyCRfidcarPoistion">
+        <id column="S_RULEID" property="ruleId"/>
+        <result column="S_CARCOUNT" property="carCount"/>
+        <result column="S_HEADDIRECTIONCARNO" property="headDirectionCarNo"/>
+        <result column="D_CREATETIME" property="createTime"/>
+        <result column="S_CREATEUSERCODE" property="createUserCode"/>
+        <result column="S_CREATEUSERNAME" property="createUserName"/>
+        <result column="S_TID" property="tId"/>
+        <result column="S_TAILDIRECTIONCARNO" property="tailDirectionCarNo"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_RULEID as ruleId,
+        S_CARCOUNT as carCount,
+        S_HEADDIRECTIONCARNO as headDirectionCarNo,
+        D_CREATETIME as createTime,
+        S_CREATEUSERCODE as createUserCode,
+        S_CREATEUSERNAME as createUserName,
+        S_TID as tId,
+        S_TAILDIRECTIONCARNO as tailDirectionCarNo
+    </sql>
+
+    <select id="selectRfIdPosition" resultType="com.ydzbinfo.emis.trainRepair.systemmanagent.rfid.model.RfidPosition">
+        select
+            rf.S_TRACKCODE as trackCode,
+            rf.S_TRACKNAME as trackName,
+            rf.S_PLACECODE as placeCode,
+            rf.S_PLACENAME as placeName,
+            rp.S_CARCOUNT as carCount,
+            rp.S_HEADDIRECTIONCARNO as headDirectionCarNo,
+            rp.S_TAILDIRECTIONCARNO as tailDirectionCarNo,
+            rp.S_TID as tId,
+            rp.S_RULEID as ruleId
+        from
+        XZY_C_RFIDCAR_POISTION rp left join XZY_C_RFIDREGIST rf on rp.S_TID = rf.S_TID
+        <where>
+            rf.C_FLAG = 1
+            <if test="tid != null and tid != ''">
+                and UPPER(rp.S_TID) like UPPER(#{tid}) escape '\'
+            </if>
+            <if test="trackCode != null and trackCode != ''">
+                and rf.S_TRACKCODE = #{trackCode}
+            </if>
+            <if test="placeCode != null and placeCode != ''">
+                and rf.S_PLACECODE = #{placeCode}
+            </if>
+            <if test="carCount != null">
+                and rp.S_CARCOUNT = #{carCount}
+            </if>
+        </where>
+    </select>
+</mapper>

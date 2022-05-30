@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.common.taskAllot.dao.PzMTaskApplyMapper">
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.PzMTaskApply">
+        <id column="S_APPLYID" property="applyid"/>
+        <result column="S_PLATFORM" property="platform"/>
+        <result column="S_TYPE" property="type"/>
+        <result column="S_NAME" property="name"/>
+        <result column="S_DETAILINFO" property="detailinfo"/>
+        <result column="S_TRAINSETID" property="trainsetid"/>
+        <result column="S_TRAINNO" property="trainno"/>
+        <result column="C_DEPTTYPE" property="depttype"/>
+        <result column="S_REPAIRDEPTCODE" property="repairdeptcode"/>
+        <result column="S_INCHARGEDEPTCODE" property="inchargedeptcode"/>
+        <result column="D_CREATDATE" property="creatdate"/>
+        <result column="C_STATUS" property="status"/>
+        <result column="S_DEPTCODE" property="deptcode"/>
+        <result column="S_PHMCODE" property="phmcode"/>
+        <result column="S_TRANSPORTSTATUS" property="transportstatus"/>
+        <result column="S_TRANSPORTDATE" property="transportdate"/>
+        <result column="S_FUNCTIONTYPECODE" property="functiontypecode"/>
+        <result column="S_FUNCTIONTYPENAME" property="functiontypename"/>
+        <result column="S_LEVEL" property="level"/>
+    </resultMap>
+</mapper>

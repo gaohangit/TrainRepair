@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.ydzbinfo.emis.trainRepair.taskAllot.dao.XzyMTaskcarpartMapper">
+
+
+	<!-- 通用查询结果列 -->
+	<sql id="Base_Column_List">
+		t.S_PROCESSID AS processId,
+		t.S_DAYPLANID AS dayPlanID,
+		t.S_TRAINSETNAME AS trainsetName,
+		t.S_TRAINSETID AS trainsetId,
+		t.S_UNITCODE AS unitCode,
+		t.S_UNITNAME AS unitName,
+		t.S_ITEMCODE AS ItemCode,
+		t.S_ITEMNAME AS ItemName,
+		t.S_REPAIRTYPE AS repairType,
+		t.S_ARRAGETYPE AS arrageType,
+		t.S_DATASOURCE AS dataSource,
+		t.S_PARTTYPE AS partType,
+		t.S_PARTPOSITION AS partPosition,
+		t.S_REMARK AS remark,
+		t.S_REPAIRMODE AS repairMode,
+		t.S_PARTNAME AS partName,
+		t.S_RECORDTIME AS recordTime,
+		t.S_RECORDERNAME AS recorderName,
+		t.S_RECORDERCODE AS recorderCode,
+		t.S_TASKALLOTPACKETID AS taskAllotPacketId,
+		t.S_TASKALLOTDEPTID AS taskAllotDeptId,
+		t.S_CARNO AS carNo,
+		t.S_TRAINSETTYPE AS trainsetType,
+		t.S_TASKITEMID AS taskItemId,
+		t.S_MAINCYC AS mainCyc,
+		p.S_PACKETCODE AS packetCode,
+		p.S_PACKETNAME AS packetName,
+		p.S_PACKETTYPE AS packetType,
+		p.S_TASKID AS taskId
+	</sql>
+
+	<!-- 根据派工包ID获取派工任务 -->
+	<select id="getTaskAllotListByPacket"
+		resultType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyMTaskcarpart">
+		select
+		<include refid="Base_Column_List"></include>
+		from XZY_M_TASKCARPART t, xzy_m_taskallotpacket p
+		where
+		t.S_TASKALLOTPACKETID =p.S_TASKALLOTPACKETID and
+
+		t.S_TASKALLOTPACKETID = #{packetId}
+	</select>
+
+	<!-- 新增派工任务 -->
+	<insert id="setTaskAllot"
+		parameterType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyMTaskcarpart">
+		insert into XZY_M_TASKCARPART
+		(
+		<if test="dayPlanID != null and dayPlanID != ''">
+			S_DAYPLANID,
+		</if>
+		<if test="trainsetName != null and trainsetName != ''">
+			S_TRAINSETNAME,
+		</if>
+		<if test="trainsetId != null and trainsetId != ''">
+			S_TRAINSETID,
+		</if>
+		<if test="unitCode != null and unitCode != ''">
+			S_UNITCODE,
+		</if>
+		<if test="unitName != null and unitName != ''">
+			S_UNITNAME,
+		</if>
+		<if test="ItemCode != null and ItemCode != ''">
+			S_ITEMCODE,
+		</if>
+		<if test="ItemName != null and ItemName != ''">
+			S_ITEMNAME,
+		</if>
+		<if test="repairType != null and repairType != ''">
+			S_REPAIRTYPE,
+		</if>
+		<if test="arrageType != null and arrageType != ''">
+			S_ARRAGETYPE,
+		</if>
+		<if test="dataSource != null and dataSource != ''">
+			S_DATASOURCE,
+		</if>
+		<if test="partType != null and partType != ''">
+			S_PARTTYPE,
+		</if>
+		<if test="partPosition != null and partPosition != ''">
+			S_PARTPOSITION,
+		</if>
+		<if test="remark != null and remark != ''">
+			S_REMARK,
+		</if>
+		<if test="repairMode != null and repairMode != ''">
+			S_REPAIRMODE,
+		</if>
+		<if test="partName != null and partName != ''">
+			S_PARTNAME,
+		</if>
+		<if test="recorderName != null and recorderName != ''">
+			S_RECORDERNAME,
+		</if>
+		<if test="recorderCode != null and recorderCode != ''">
+			S_RECORDERCODE,
+		</if>
+		<if test="taskAllotPacketId != null and taskAllotPacketId != ''">
+			S_TASKALLOTPACKETID,
+		</if>
+		<if test="taskAllotDeptId != null and taskAllotDeptId != ''">
+			S_TASKALLOTDEPTID,
+		</if>
+		<if test="carNo != null and carNo != ''">
+			S_CARNO,
+		</if>
+		<if test="trainsetType != null and trainsetType != ''">
+			S_TRAINSETTYPE,
+		</if>
+		<if test="taskItemId != null and taskItemId != ''">
+			S_TASKITEMID,
+		</if>
+		<if test="mainCyc != null and mainCyc != ''">
+			S_MAINCYC,
+		</if>
+		S_PROCESSID,
+		S_RECORDTIME
+		)
+		values
+		(
+		<if test="dayPlanID != null and dayPlanID != ''">
+			#{dayPlanID},
+		</if>
+		<if test="trainsetName != null and trainsetName != ''">
+			#{trainsetName},
+		</if>
+		<if test="trainsetId != null and trainsetId != ''">
+			#{trainsetId},
+		</if>
+		<if test="unitCode != null and unitCode != ''">
+			#{unitCode},
+		</if>
+		<if test="unitName != null and unitName != ''">
+			#{unitName},
+		</if>
+		<if test="ItemCode != null and ItemCode != ''">
+			#{ItemCode},
+		</if>
+		<if test="ItemName != null and ItemName != ''">
+			#{ItemName},
+		</if>
+		<if test="repairType != null and repairType != ''">
+			#{repairType},
+		</if>
+		<if test="arrageType != null and arrageType != ''">
+			#{arrageType},
+		</if>
+		<if test="dataSource != null and dataSource != ''">
+			#{dataSource},
+		</if>
+		<if test="partType != null and partType != ''">
+			#{partType},
+		</if>
+		<if test="partPosition != null and partPosition != ''">
+			#{partPosition},
+		</if>
+		<if test="remark != null and remark != ''">
+			#{remark},
+		</if>
+		<if test="repairMode != null and repairMode != ''">
+			#{repairMode},
+		</if>
+		<if test="partName != null and partName != ''">
+			#{partName},
+		</if>
+		<if test="recorderName != null and recorderName != ''">
+			#{recorderName},
+		</if>
+		<if test="recorderCode != null and recorderCode != ''">
+			#{recorderCode},
+		</if>
+		<if test="taskAllotPacketId != null and taskAllotPacketId != ''">
+			#{taskAllotPacketId},
+		</if>
+		<if test="taskAllotDeptId != null and taskAllotDeptId != ''">
+			#{taskAllotDeptId},
+		</if>
+		<if test="carNo != null and carNo != ''">
+			#{carNo},
+		</if>
+		<if test="trainsetType != null and trainsetType != ''">
+			#{trainsetType},
+		</if>
+		<if test="taskItemId != null and taskItemId != ''">
+			#{taskItemId},
+		</if>
+		<if test="mainCyc != null and mainCyc != ''">
+			#{mainCyc},
+		</if>
+		#{processId},
+		TO_DATE(TO_CHAR(SYSDATE,'YYYY/MM/DD
+		HH24:MI:SS'),'YYYY-MM-DD HH24:MI:SS')
+		)
+	</insert>
+
+	<!-- 根据条件获取派工任务 -->
+	<select id="getCarPartListByParam" parameterType="Map"
+		resultType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyMTaskcarpart">
+		select
+		<include refid="Base_Column_List"></include>
+		from XZY_M_TASKCARPART t
+		left join XZY_M_TASKALLOTPACKET p on p.S_TASKALLOTPACKETID =
+		t.S_TASKALLOTPACKETID
+		left join XZY_M_TASKALLOTDEPT d on d.S_TASKALLOTDEPTID =
+		t.S_TASKALLOTDEPTID
+		left join XZY_M_TASKALLOTPERSON h on h.S_PROCESSID = t.s_processid
+		where 1 = 1
+		<if test="processId != null and processId != ''">
+			and t.S_PROCESSID = #{processId}
+		</if>
+		<if test="dayPlanID != null and dayPlanID != ''">
+			and t.S_DAYPLANID = #{dayPlanID}
+		</if>
+		<if test="trainsetName != null and trainsetName != ''">
+			and t.S_TRAINSETNAME = #{trainsetName}
+		</if>
+		<if test="trainsetID != null and trainsetID != ''">
+			and t.S_TRAINSETID = #{trainsetID}
+		</if>
+		<if test="unitCode != null and unitCode != ''">
+			and t.S_UNITCODE = #{unitCode}
+		</if>
+		<if test="unitName != null and unitName != ''">
+			and t.S_UNITNAME = #{unitName}
+		</if>
+		<if test="ItemCode != null and ItemCode != ''">
+			and t.S_ITEMCODE = #{ItemCode}
+		</if>
+		<if test="ItemName != null and ItemName != ''">
+			and t.S_ITEMNAME = #{ItemName}
+		</if>
+		<if test="repairType != null and repairType != ''">
+			and t.S_REPAIRTYPE = #{repairType}
+		</if>
+		<if test="arrageType != null and arrageType != ''">
+			and t.S_ARRAGETYPE = #{arrageType}
+		</if>
+		<if test="partType != null and partType != ''">
+			and t.S_PARTTYPE = #{partType}
+		</if>
+		<if test="partPosition != null and partPosition != ''">
+			and t.S_PARTPOSITION = #{partPosition}
+		</if>
+		<if test="repairMode != null and repairMode != ''">
+			and t.S_REPAIRMODE = #{repairMode}
+		</if>
+		<if test="partName != null and partName != ''">
+			and t.S_PARTNAME = #{partName}
+		</if>
+		<if test="recorderName != null and recorderName != ''">
+			and t.S_RECORDERNAME = #{recorderName}
+		</if>
+		<if test="recorderCode != null and recorderCode != ''">
+			and t.S_RECORDERCODE = #{recorderCode}
+		</if>
+		<if test="taskAllotPacketId != null and taskAllotPacketId != ''">
+			and t.S_TASKALLOTPACKETID = #{taskAllotPacketId}
+		</if>
+		<if test="taskAllotDeptId != null and taskAllotDeptId != ''">
+			and t.S_TASKALLOTDEPTID = #{taskAllotDeptId}
+		</if>
+		<if test="carNo != null and carNo != ''">
+			and t.S_CARNO = #{carNo}
+		</if>
+		<if test="trainsetType != null and trainsetType != ''">
+			and t.S_TRAINSETTYPE = #{trainsetType}
+		</if>
+		<if test="taskItemId != null and taskItemId != ''">
+			and t.S_TASKITEMID = #{taskItemId}
+		</if>
+		<if test="repairID != null and repairID != ''">
+			and t.S_MAINCYC = #{repairID}
+		</if>
+		<if test="workTeamID != null and workTeamID != ''">
+			and d.S_DEPTCODE = #{workTeamID}
+		</if>
+		<if test="workerID != null and workerID != ''">
+			and h.S_WORKERID = #{workerID}
+		</if>
+	</select>
+
+	<delete id="deleteAll" parameterType="String">
+		delete from XZY_M_TASKCARPART t
+		where T.S_TASKALLOTDEPTID in
+		(select T.S_TASKALLOTDEPTID
+		from XZY_M_TASKCARPART t, XZY_M_TASKALLOTDEPT b
+		where t.S_TASKALLOTDEPTID = b.S_TASKALLOTDEPTID
+		and b.S_DEPTCODE = #{deptCode}
+		and t.S_UNITCODE = #{unitCode})
+	</delete>
+
+
+	<delete id="deleteTaskCarPatrs" parameterType="Map">
+		delete from XZY_M_TASKCARPART t
+		where t.S_PROCESSID in
+		(
+		select t.S_PROCESSID
+		from XZY_M_TASKCARPART t,
+		xzy_m_taskallotdept td
+		where td.s_taskallotdeptid = t.s_taskallotdeptid
+		<if test="dayplanId != null and dayplanId != ''">
+			and t.s_dayplanid = #{dayplanId}
+		</if>
+		<if test="unitCode != null and unitCode != ''">
+			and t.s_unitcode = #{unitCode}
+		</if>
+		<if test="deptCode != null and deptCode != ''">
+			and td.s_deptcode = #{deptCode}
+		</if>
+		)
+	</delete>
+
+
+	<!-- 根据条件获取派工任务 -->
+	<select id="getCarPartLists" parameterType="Map"
+		resultType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyMTaskcarpart">
+		select t.S_PROCESSID AS processId,
+		t.S_DAYPLANID AS dayPlanID,
+		t.S_TRAINSETNAME AS trainsetName,
+		t.S_TRAINSETID AS trainsetId,
+		t.S_UNITCODE AS unitCode,
+		t.S_UNITNAME AS unitName,
+		t.S_ITEMCODE AS ItemCode,
+		t.S_ITEMNAME AS ItemName,
+		t.S_REPAIRTYPE AS repairType,
+		t.S_ARRAGETYPE AS arrageType,
+		t.S_DATASOURCE AS dataSource,
+		t.S_PARTTYPE AS partType,
+		t.S_PARTPOSITION AS partPosition,
+		t.S_REMARK AS remark,
+		t.S_REPAIRMODE AS repairMode,
+		t.S_PARTNAME AS partName,
+		t.S_RECORDTIME AS recordTime,
+		t.S_RECORDERNAME AS recorderName,
+		t.S_RECORDERCODE AS recorderCode,
+		t.S_TASKALLOTPACKETID AS taskAllotPacketId,
+		t.S_TASKALLOTDEPTID AS taskAllotDeptId,
+		t.S_CARNO AS carNo,
+		t.S_TRAINSETTYPE AS trainsetType,
+		t.S_TASKITEMID AS taskItemId
+
+		from XZY_M_TASKCARPART t,XZY_M_TASKALLOTDEPT d
+		where
+		t.S_TASKALLOTDEPTID = d.S_TASKALLOTDEPTID
+		<if test="workTeamID != null and workTeamID != ''">
+			and d.S_DEPTCODE = #{workTeamID}
+		</if>
+		<if test="processId != null and processId != ''">
+			and t.S_PROCESSID = #{processId}
+		</if>
+		<if test="dayPlanID != null and dayPlanID != ''">
+			and t.S_DAYPLANID = #{dayPlanID}
+		</if>
+		<if test="trainsetName != null and trainsetName != ''">
+			and t.S_TRAINSETNAME = #{trainsetName}
+		</if>
+		<if test="trainsetId != null and trainsetId != ''">
+			and t.S_TRAINSETID = #{trainsetId}
+		</if>
+		<if test="unitCode != null and unitCode != ''">
+			and t.S_UNITCODE = #{unitCode}
+		</if>
+		<if test="unitName != null and unitName != ''">
+			and t.S_UNITNAME = #{unitName}
+		</if>
+		<if test="ItemCode != null and ItemCode != ''">
+			and t.S_ITEMCODE = #{ItemCode}
+		</if>
+		<if test="ItemName != null and ItemName != ''">
+			and t.S_ITEMNAME = #{ItemName}
+		</if>
+		<if test="repairType != null and repairType != ''">
+			and t.S_REPAIRTYPE = #{repairType}
+		</if>
+		<if test="arrageType != null and arrageType != ''">
+			and t.S_ARRAGETYPE = #{arrageType}
+		</if>
+		<if test="partType != null and partType != ''">
+			and t.S_PARTTYPE = #{partType}
+		</if>
+		<if test="partPosition != null and partPosition != ''">
+			and t.S_PARTPOSITION = #{partPosition}
+		</if>
+		<if test="repairMode != null and repairMode != ''">
+			and t.S_REPAIRMODE = #{repairMode}
+		</if>
+		<if test="partName != null and partName != ''">
+			and t.S_PARTNAME = #{partName}
+		</if>
+		<if test="recorderName != null and recorderName != ''">
+			and t.S_RECORDERNAME = #{recorderName}
+		</if>
+		<if test="recorderCode != null and recorderCode != ''">
+			and t.S_RECORDERCODE = #{recorderCode}
+		</if>
+		<if test="taskAllotPacketId != null and taskAllotPacketId != ''">
+			and t.S_TASKALLOTPACKETID = #{taskAllotPacketId}
+		</if>
+		<if test="taskAllotDeptId != null and taskAllotDeptId != ''">
+			and t.S_TASKALLOTDEPTID = #{taskAllotDeptId}
+		</if>
+		<if test="carNo != null and carNo != ''">
+			and t.S_CARNO = #{carNo}
+		</if>
+		<if test="trainsetType != null and trainsetType != ''">
+			and t.S_TRAINSETTYPE = #{trainsetType}
+		</if>
+		<if test="taskItemId != null and taskItemId != ''">
+			and t.S_TASKITEMID = #{taskItemId}
+		</if>
+		<if test="repairID != null and repairID != ''">
+			and t.S_MAINCYC = #{repairID}
+		</if>
+	</select>
+
+	<select id="getCarPartListByItemCodeList" resultType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyMTaskcarpart">
+		select
+		S_ITEMCODE as ItemCode,
+		S_PROCESSID as processId
+		from XZY_M_TASKCARPART t
+		where 1=1
+		<if test="list != null and list.size() > 0">
+			and (t.S_ITEMCODE in
+			<trim suffixOverrides=" OR t.S_ITEMCODE in ()">
+				<foreach collection="list" item="item" index="index" open="(" close=")">
+					<if test="index != 0">
+						<choose>
+							<when test="index % 1000 == 999">
+								) or t.S_ITEMCODE in (
+							</when>
+							<otherwise>
+								,
+							</otherwise>
+						</choose>
+					</if>
+					#{item}
+				</foreach>
+			</trim>
+			)
+		</if>
+	</select>
+
+	<select id="getTaskAllotListByPacketIds" resultType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyMTaskcarpart">
+		select
+		<include refid="Base_Column_List"></include>
+		from XZY_M_TASKCARPART t, xzy_m_taskallotpacket p
+		where
+		t.S_TASKALLOTPACKETID =p.S_TASKALLOTPACKETID
+		<if test="list != null and list.size() > 0">
+			and (t.S_TASKALLOTPACKETID in
+			<trim suffixOverrides=" OR t.S_TASKALLOTPACKETID in ()">
+				<foreach collection="list" item="item" index="index" open="(" close=")">
+					<if test="index != 0">
+						<choose>
+							<when test="index % 1000 == 999">
+								) or t.S_TASKALLOTPACKETID in (
+							</when>
+							<otherwise>
+								,
+							</otherwise>
+						</choose>
+					</if>
+					#{item}
+				</foreach>
+			</trim>
+			)
+		</if>
+    </select>
+</mapper>

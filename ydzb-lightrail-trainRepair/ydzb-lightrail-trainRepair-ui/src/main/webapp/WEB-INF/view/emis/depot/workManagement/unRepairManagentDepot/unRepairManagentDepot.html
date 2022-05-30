@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>一体化作业回填</title>
+  <link href="${publicStaticPath}/common/base.css" rel="stylesheet" />
+  <link href="${ctxPath}/static/lib/animate.css" rel="stylesheet" />
+  <script src="${publicStaticPath}/jquery/jquery-1.10.2.min.js"></script>
+  <script src="${publicStaticPath}/common/common.js"></script>
+  <!--使IE支持Promise-->
+  <script src="${publicStaticPath}/IE/babel-browser.min.js"></script>
+  <!--时间处理工具-->
+  <script src="${publicStaticPath}/moment/moment.min.js"></script>
+  <!--Vue相关-->
+  <script src="${publicStaticPath}/vue/axios.min.js"></script>
+  <script src="${publicStaticPath}/vue/vue.min.js"></script>
+  <!--elementUi-->
+  <link href="${publicStaticPath}/elementUI/index.css" rel="stylesheet" />
+  <script src="${publicStaticPath}/elementUI/index.js"></script>
+  <script src="${ctxPath}/static/lib/elementUI/el-table-fix.js"></script>
+
+  <!-- scope.css -->
+  <link href="${ctxPath}/static/depot/workManagement/unRepairManagentDepot/css/baseWorkProcess.css"
+    rel="stylesheet" />
+  <link href="${ctxPath}/static/depot/workManagement/unRepairManagentDepot/css/unRepairManagentDepot.css"
+    rel="stylesheet" />
+  <script>
+    var ctxpath = "${ctxPath}";
+    var thirdOrganCode = "${thirdOrganCode}";
+
+  </script>
+</head>
+
+<body class="body">
+  <!-- <div class="nowPosition pane">当前位置: 检修管理><span style="font-weight: bold;color: #000;">无修程作业过程管理</span></div> -->
+  <div class="container pane" id="notFixed" v-cloak v-loading="loading">
+    <div class="header">
+      <div class="common_title">
+        <div class="flex">
+          <div class="tag"></div>
+          <h3 class="title">无修程作业过程管理</h3>
+        </div>
+      </div>
+      <div class="searchList">
+        <el-row>
+          <el-col :span="5">
+            <template>
+              <label>运用所：</label>
+              <el-select v-model="search.operationDepot" clearable filterable placeholder="请选择" size="mini">
+                <el-option v-for="item in search.operationDepotList" :key="item.unitCode" :label="item.unitName" :value="item.unitCode">
+                </el-option>
+              </el-select>
+            </template>
+          </el-col>
+          <el-col :span="5">
+            <template>
+              <div class="block dateTime startDate">
+                <span class="demonstration">开始日期：</span>
+                <el-date-picker size="mini" value-format="yyyy-MM-dd" v-model="search.dateFrom" type="date"
+                  placeholder="选择日期">
+                </el-date-picker>
+              </div>
+            </template>
+          </el-col>
+          <el-col :span="5">
+            <template>
+              <div class="block dateTime endDate">
+                <span class="demonstration">结束日期：</span>
+                <el-date-picker size="mini" value-format="yyyy-MM-dd" v-model="search.dateTo" type="date"
+                  placeholder="选择日期">
+                </el-date-picker>
+              </div>
+            </template>
+          </el-col>
+          <el-col :span="5">
+            <template>
+              <label>车型：</label>
+              <el-select size="mini" v-model="search.trainType" clearable filterable placeholder="请选择"
+                \@change="changeTrainType">
+                <el-option v-for="item in search.trainTypeOptions" :key="item" :label="item" :value="item">
+                </el-option>
+              </el-select>
+            </template>
+          </el-col>
+          <el-col :span="5">
+            <template>
+              <label>车组：</label>
+              <el-select size="mini" v-model="search.trainGroup" clearable filterable placeholder="请选择">
+                <el-option v-for="item in search.trainGroupOptions" :key="item" :label="item" :value="item">
+                </el-option>
+              </el-select>
+            </template>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="5">
+            <template>
+              <label>作业班组：</label>
+              <el-select size="mini" v-model="search.jobGroup" clearable filterable placeholder="请选择">
+                <el-option v-for="item in search.jobGroupOptions" :key="item.id" :label="item.name" :value="item.id">
+                </el-option>
+              </el-select>
+            </template>
+          </el-col>
+          <el-col :span="19" class="searchBtnBox">
+            <template>
+              <el-button size="mini" type="primary" size="small" v-on:click.stop="onSearch">查询</el-button>
+              <el-button size="mini" type="primary" size="small" v-on:click.stop="reset">重置</el-button>
+            </template>
+          </el-col>
+        </el-row>
+      </div>
+    </div>
+    <div class="main">
+      <el-table class="listTable" :data="main.tableData" stripe :height="main.scrollHeight"
+        :default-sort="{prop: 'trainsetName', order: 'ascending'}" style="width: 100%;">
+        <el-table-column align="center" sortable prop="unitName" label="运用所" width="120"></el-table-column>
+        <el-table-column align="center" prop="dayPlanId" label="作业班次" width="120">
+          <template slot-scope="scope">
+            {{ scope.row.dayPlanId | operationShift}}
+          </template>
+        </el-table-column>
+        <el-table-column align="center" prop="trainsetName" label="车组号" sortable width="120">
+        </el-table-column>
+        <el-table-column align="center" prop="itemName" label="作业项目" sortable width="120">
+        </el-table-column>
+        <el-table-column align="center" prop="deptName" label="作业班组" sortable width="120">
+        </el-table-column>
+
+        <el-table-column align="center" prop="processWorkerList" label="作业人员" sortable width="120">
+          <template slot-scope="scope">
+            {{ scope.row.processWorkerList | peopleName}}
+          </template>
+        </el-table-column>
+
+        <el-table-column width="120" align="center" prop="workCarCount" label="作业辆序">
+        </el-table-column>
+
+        <el-table-column width="120" align="center" prop="workEndTime" label="作业完成时间">
+        </el-table-column>
+
+        <el-table-column width="120" align="center" prop="confirmDeptName" label="确认班组" sortable>
+        </el-table-column>
+
+        <el-table-column width="120" align="center" prop="processConfirmList" label="确认人" sortable>
+          <template slot-scope="scope">
+            {{ scope.row.processConfirmList | peopleName}}
+          </template>
+        </el-table-column>
+
+        <el-table-column width="115" align="center" prop="confirmCarCount" label="确认辆序">
+        </el-table-column>
+
+        <el-table-column width="120" align="center" prop="confirmEndTime" label="确认完成时间">
+        </el-table-column>
+      </el-table>
+      <div class="block" style="text-align: center;">
+        <el-pagination v-on:size-change="handleSizeChange" v-on:current-change="handleCurrentChange"
+          :current-page="main.currentPage" :page-sizes="[10, 20, 30, 40,100,200]" :page-size="main.pageSize"
+          layout="total, sizes, prev, pager, next, jumper" :total="main.tableData.length">
+        </el-pagination>
+      </div>
+    </div>
+    <div class="footer"></div>
+  </div>
+
+  <script src="${ctxPath}/static/depot/workManagement/unRepairManagentDepot/js/unRepairManagentDepot.js"></script>
+</body>
+
+</html>

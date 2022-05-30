@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.common.workprocess.dao.WorkProcessMidMapper">
+
+    <resultMap id="workProcessMap" type="com.ydzbinfo.emis.trainRepair.workprocess.model.ProcessPacketEntity" autoMapping="true">
+        <id column="processPacketId" property="processPacketId"></id>
+        <collection property="processCarPartEntityList" columnPrefix="B_" autoMapping="true" ofType="com.ydzbinfo.emis.trainRepair.workprocess.model.ProcessCarPartEntity">
+            <id column="processId" property="processId"></id>
+            <collection property="processPersonEntityList" columnPrefix="D_" autoMapping="true" ofType="com.ydzbinfo.emis.trainRepair.workprocess.model.ProcessPersonEntity">
+                <id column="processPersonId" property="processPersonId"></id>
+                <collection property="processTimeRecordEntityList" columnPrefix="E_" autoMapping="true" ofType="com.ydzbinfo.emis.trainRepair.workprocess.model.ProcessTimeRecordEntity">
+                    <id column="processId" property="processId"></id>
+                </collection>
+            </collection>
+        </collection>
+    </resultMap>
+    <select id="getWorkProcessList" resultMap="workProcessMap">
+        select
+        a.S_PROCESSPACKETID as processPacketId,
+        a.S_PACKETCODE as packetCode,
+        a.S_PACKETNAME as packetName,
+        a.S_PACKETTYPE as packetType,
+        c.S_DEPTCODE as deptCode,
+        c.S_DEPTNAME as deptName,
+        b.S_DAYPLANID as dayPlanId,
+        b.S_TRAINSETID as trainsetId,
+        b.S_TRAINSETNAME as trainsetName,
+        b.S_UNITCODE as unitCode,
+        b.S_UNITNAME as unitName,
+
+        b.S_PROCESSID as B_processId,
+        b.S_CARNO as B_carNo,
+        b.S_ITEMCODE as B_itemCode,
+        b.S_ITEMNAME as B_itemName,
+        b.S_REPAIRTYPE as B_itemType,
+        b.S_ARRAGETYPE as B_arrageType,
+        b.S_DATASOURCE as B_dataSource,
+        b.S_PARTNAME as B_partName,
+        b.S_PARTTYPE as B_partType,
+        b.S_PARTPOSITION as B_partPosition,
+        b.S_REMARK as B_remark,
+        b.S_REPAIRMODE as B_repairMode,
+        b.S_ITEMPUBLCISHED as B_publishCode,
+
+        d.S_PROCESSPERSONID as B_D_processPersonId,
+        d.S_WORKERID as B_D_workerId,
+        d.S_WORKERNAME as B_D_workerType,
+        d.S_WORKERTYPE as B_D_workerName,
+        d.S_PROCESSID as B_D_processId,
+        f.S_CARNOCOUNT as B_D_carNoCount,
+
+        e.S_PROCESSID as B_D_E_processId,
+        e.D_ITEMTIMESTATE as B_D_E_itemTimeState,
+        e.D_TIME as B_D_E_time
+
+        from XZY_M_PROCESSPACKET a left join XZY_M_PROCESSCARPART b on a.S_PROCESSPACKETID = b.S_PROCESSPACKETID
+        left join XZY_M_PROCESSDEPT c on c.S_PROCESSDEPTID = b.S_PROCESSDEPTID
+        left join XZY_M_PROCESSPERSON d on d.s_processid=b.s_processid
+        left join XZY_M_PROCESSPERSONCONFIRM f on f.S_PROCESSPERSONID=d.S_PROCESSPERSONID
+        left join XZY_M_PROCESSTIMERECORD e on e.S_PROCESSPERSONID=d.S_PROCESSPERSONID
+        where 1=1 and b.C_FLAG='1' and d.C_FLAG='1' and e.C_FLAG='1'
+        <if test="dayPlanId!=null and dayPlanId!=''">
+            and b.S_DAYPLANID=#{dayPlanId}
+        </if>
+        <if test="unitCode!=null and unitCode!=''">
+            and b.S_UNITCODE=#{unitCode}
+        </if>
+        <if test="unitName!=null and unitName!=''">
+            and b.S_UNITNAME=#{unitName}
+        </if>
+        <if test="workerId!=null and workerId!=''">
+            and d.S_WORKERID=#{workerId}
+        </if>
+        <if test="workerName!=null and workerName!=''">
+            and d.S_WORKERNAME=#{d.S_WORKERNAME}
+        </if>
+        <if test="trainsetId!=null and trainsetId!=''">
+            and b.S_TRAINSETID=#{trainsetId}
+        </if>
+        <if test="trainsetName!=null and trainsetName!=''">
+            and b.S_TRAINSETNAME=#{trainsetName}
+        </if>
+        <if test="deptCode!=null and deptCode!=''">
+            and c.S_DEPTCODE=#{deptCode}
+        </if>
+        <if test="deptName!=null and deptName!=''">
+            and c.S_DEPTNAME=#{deptName}
+        </if>
+        <if test="packetCode!=null and packetCode!=''">
+            and a.S_PACKETCODE=#{packetCode}
+        </if>
+        <if test="packetName!=null and packetName!=''">
+            and a.S_PACKETNAME=#{packetName}
+        </if>
+    </select>
+</mapper>

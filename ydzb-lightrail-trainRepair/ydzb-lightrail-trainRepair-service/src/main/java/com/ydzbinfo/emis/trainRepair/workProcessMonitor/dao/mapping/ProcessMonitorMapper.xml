@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.workProcessMonitor.dao.ProcessMonitorMapper">
+    <!--获取已经确认过了的协同任务信息-->
+    <select id="getIntegrationProcess" resultType="com.ydzbinfo.emis.trainRepair.workprocess.model.ProcessData">
+        select
+        a.S_PROCESSID as processId,
+        a.S_ITEMCODE as itemCode,
+        a.S_ITEMNAME as itemName,
+        a.S_TRAINSETID as trainsetId,
+        b.S_PROCESSPERSONID as processPersonId
+        from XZY_M_PROCESSCARPART a inner join XZY_M_PROCESSPERSON b on a.S_PROCESSID=b.S_PROCESSID and a.c_flag='1' and b.c_flag='1' and  a.s_repairtype='6'
+        where 1=1
+        <if test="unitCode!=null and unitCode!=''">
+            and a.S_UNITCODE=#{unitCode}
+        </if>
+        <if test="dayPlanId!=null and dayPlanId!=''">
+            and a.S_DAYPLANID=#{dayPlanId}
+        </if>
+        <if test="trainsetId!=null and trainsetId!=''">
+            and a.S_TRAINSETID=#{trainsetId}
+        </if>
+    </select>
+
+    <!--获取岗位配置信息-->
+    <select id="getPersonPostList" resultType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.PersonPost">
+        select
+        S_POSTID as postId,
+        S_STAFFID as staffId,
+        S_STAFFNAME as staffName,
+        S_DEPTCODE as deptCode
+        from XZY_C_PERSONPOST
+        where 1=1 and c_flag='1'
+        <if test="list!=null and list.size()>0">
+            and s_postid in
+            <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <!--获取派工过的故障辆序信息-->
+    <select id="getFaultAllot" resultType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.XzyMTaskcarpart">
+        select
+        S_PROCESSID as processId,
+        S_ITEMCODE as ItemCode,
+        S_ITEMNAME as ItemName,
+        S_CARNO as carNo,
+        S_TRAINSETID as trainsetId
+        from XZY_M_TASKCARPART
+        where 1=1 and S_REPAIRTYPE='5'
+        <if test="unitCode!=null and unitCode!=''">
+            and S_UNITCODE=#{unitCode}
+        </if>
+        <if test="dayPlanId!=null and dayPlanId!=''">
+            and S_DAYPLANID=#{dayPlanId}
+        </if>
+        <if test="trainsetId!=null and trainsetId!=''">
+            and S_TRAINSETID=#{trainsetId}
+        </if>
+
+    </select>
+
+    <select id="getPersonByDayPlanIdAndPersonId" resultType="com.ydzbinfo.emis.trainRepair.workprocess.querymodel.ProcessPerson">
+        select
+        a.S_PROCESSPERSONID as processPersonId,
+        a.S_WORKERID as workerId,
+        a.S_PROCESSID as processId
+        from
+        XZY_M_PROCESSPERSON a inner join XZY_M_PROCESSCARPART b on a.s_processid=b.s_processid
+        where 1=1 and b.c_flag='1'
+        <if test="unitCode!=null and unitCode!=''">
+            and b.s_unitcode=#{unitCode}
+        </if>
+        <if test="dayPlanId!=null and dayPlanId!=''">
+            and b.s_dayplanid=#{dayPlanId}
+        </if>
+    </select>
+
+
+    <!--获取二级修的作业过程数据-->
+    <resultMap id="twoProcessResultMap" type="com.ydzbinfo.emis.trainRepair.workprocess.model.ProcessData">
+        <id column="S_PROCESSID" property="processId"/>
+        <result column="S_UNITCODE" property="unitCode" />
+        <result column="S_DAYPLANID" property="dayPlanId" />
+        <result column="S_TRAINSETNAME" property="trainsetName" />
+        <result column="S_TRAINSETID" property="trainsetId" />
+        <result column="S_ITEMCODE" property="itemCode" />
+        <result column="S_ITEMNAME" property="itemName" />
+        <result column="S_CARNO" property="carNo" />
+        <result column="S_PROCESSPACKETID" property="processPacketId" />
+        <result column="S_PACKETCODE" property="packetCode" />
+        <result column="S_PACKETNAME" property="packetName" />
+        <result column="S_WORKERID" property="workerId" />
+        <result column="S_WORKERNAME" property="workerName" />
+    </resultMap>
+    <select id="getTwoProcess" resultMap="twoProcessResultMap">
+        select
+        a.S_PROCESSID,
+        a.S_UNITCODE,
+        a.S_DAYPLANID,
+        a.S_TRAINSETID,
+        a.S_TRAINSETNAME,
+        a.S_ITEMCODE,
+        a.S_ITEMNAME,
+        a.S_CARNO,
+        b.S_PROCESSPACKETID,
+        b.S_PACKETCODE,
+        b.S_PACKETNAME,
+        c.S_WORKERID,
+        c.S_WORKERNAME
+        from XZY_M_PROCESSCARPART a
+        inner join XZY_M_PROCESSPACKET b on a.S_PROCESSPACKETID=b.S_PROCESSPACKETID and a.s_repairtype='1' and a.c_flag='1'
+        inner join XZY_M_PROCESSPERSON c on a.S_PROCESSID = c.S_PROCESSID and c.c_flag='1'
+        where 1=1
+        <if test="unitCode!=null">
+            and a.S_UNITCODE=#{unitCode}
+        </if>
+        <if test="dayPlanId!=null and dayPlanId!=''">
+            and a.S_DAYPLANID=#{dayPlanId}
+        </if>
+        <if test="trainsetId!=null and trainsetId!=''">
+            and a.S_TRAINSETID=#{trainsetId}
+        </if>
+        <if test="packetCode!=null and packetCode!=''">
+            and b.S_PACKETCODE=#{packetCode}
+        </if>
+    </select>
+
+    <select id="selectPersonPostList" resultType="com.ydzbinfo.emis.trainRepair.taskAllot.querymodel.PersonPost">
+        select
+        tp.S_WORKERID as staffId,
+        tp.S_WORKERNAME as staffName,
+        tpp.S_POSTID as postId,
+        tt.S_DEPTCODE as deptCode
+        from XZY_M_TASKALLOTPERSONPOST tpp
+        left join XZY_M_TASKALLOTPERSON  tp on tpp.S_TASKALLOTPERSONID = tp.S_TASKALLOTPERSONID
+        left join XZY_M_TASKCARPART tc on tp.S_PROCESSID = tc.S_PROCESSID
+        left join XZY_M_TASKALLOTDEPT tt on tt.S_TASKALLOTDEPTID = tc.S_TASKALLOTDEPTID
+        where 1=1
+        and tc.S_DAYPLANID = #{dayPlanId}
+        and tc.S_REPAIRTYPE = 0
+        <if test="unitCode!=null and unitCode!=''">
+            and tc.S_UNITCODE = #{unitCode}
+        </if>
+        <if test="trainsetId!=null and trainsetId!=''">
+            and tc.S_TRAINSETID=#{trainsetId}
+        </if>
+        <if test="postIds!=null and postIds.size()>0">
+            and tpp.S_POSTID in
+            <foreach collection="postIds" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        group by
+            tp.S_WORKERID,
+            tp.S_WORKERNAME,
+            tp.S_WORKERTYPE,
+            tpp.S_POSTID,
+            tt.S_DEPTCODE
+    </select>
+
+    <select id="getOneWorkProcessMonitorConfig" resultType="map">
+        select distinct t.S_TRACKCODE "trackCode" from XZY_M_TRAINSETPOSTION_CUR t
+        where 1=1
+        <if test="trackCode!=null and trackCode.size()>0">
+            and t.S_TRACKCODE in
+            <foreach collection="trackCode" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+</mapper>

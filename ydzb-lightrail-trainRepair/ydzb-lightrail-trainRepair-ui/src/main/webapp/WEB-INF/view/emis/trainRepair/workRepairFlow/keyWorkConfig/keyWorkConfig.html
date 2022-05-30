@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="${publicStaticPath}/IE/babel-browser.min.js"></script>
+    <link rel="stylesheet" href="${publicStaticPath}/elementUI/index.css" />
+    <script src="${publicStaticPath}/vue/vue.js"></script>
+    <script src="${publicStaticPath}/elementUI/index.js"></script>
+    <script src="${ctxPath}/static/lib/day/day.js"></script>
+    <script src="${publicStaticPath}/vue/axios.min.js"></script>
+    <link rel="stylesheet" href="${ctxPath}/static/lib/input_word_limit.css" />
+
+    <script src="${ctxPath}/static/config/index.js"></script>
+    <script src="${ctxPath}/static/utils/GeneralUtil.js"></script>
+
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/keyWorkConfig/api/keyWorkConfigRequest.js"></script>
+    <script src="${ctxPath}/static/trainRepair/workRepairFlow/keyWorkConfig/api/keyWorkTypeRequest.js"></script>
+
+    <link rel="stylesheet" href="${ctxPath}/static/components/multipleSelect/multipleSelect.css" />
+    <script src="${ctxPath}/static/components/multipleSelect/multipleSelect.js"></script>
+
+    <link rel="stylesheet" href="${publicStaticPath}/common/base.css" />
+    <link rel="stylesheet" href="${ctxPath}/static/trainRepair/workRepairFlow/keyWorkConfig/css/index.css" />
+    <script>
+      const unitCode = '${thirdOrganCode}'; //所编码
+      const ctxPath = '${ctxPath}';
+    </script>
+  </head>
+  <body>
+    <div id="keyWorkConfig" v-cloak>
+      <el-card class="box-card">
+        <div slot="header">
+          <span class="adorn"></span>
+          <h2>{{pageTitle}}</h2>
+        </div>
+
+        <el-form class="mb-form" :model="headerFormData" :rules="headerFormRules" label-width="100px">
+          <el-row>
+            <el-col :span="6">
+              <el-form-item label="运用所：" prop="unitCode">
+                <el-select v-model="headerFormData.unitCode" filterable>
+                  <el-option
+                    v-for="item in unitList"
+                    :key="item.unitCode"
+                    :label="item.unitName"
+                    :value="item.unitCode"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="作业内容：" prop="content">
+                <el-input v-model.trim="headerFormData.content" clearable></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item>
+                <el-button type="primary" size="mini" \@click="getKeyWorkConfigList">查询</el-button>
+                @if(shiro.hasPermission("keyWorkTypeConfig:edit")){
+                <el-button type="primary" size="mini" \@click="getKeyWorkTypeList">类型配置</el-button>
+                @} 
+                @if(shiro.hasPermission("keyWorkConfig:edit")){
+                <el-button type="primary" size="mini" \@click="openConfigDialog()">快速录入配置</el-button>
+                @}
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <div class="main-table" ref="mainTable">
+          <el-table
+            ref="elTable"
+            :data="mainTableData"
+            border
+            :height="mainTableHeight"
+            :max-height="mainTableHeight"
+            v-loading="loading"
+          >
+            <el-table-column label="序号" type="index" width="50"></el-table-column>
+            <el-table-column label="运用所" prop="unitName" sortable show-overflow-tooltip></el-table-column>
+            <el-table-column label="作业内容" prop="content" sortable show-overflow-tooltip></el-table-column>
+            <el-table-column label="车型" prop="trainModel" sortable show-overflow-tooltip></el-table-column>
+            <el-table-column v-for="column in columns" :key="column.key" :label="column.label" show-overflow-tooltip>
+              <template v-slot="{row}">
+                <span v-if="column.type==='text'"> {{row[column.property]}}</span>
+                <span v-else-if="!column.simpleOption"> {{ getColumnLabel(row,column)}} </span>
+                <span v-else-if="column.type==='multipleChoice'"> {{row[column.property] | filterCarNoList}} </span>
+                <span v-else> {{row[column.property].toString()}} </span>
+              </template>
+            </el-table-column>
+            @if(shiro.hasPermission("keyWorkConfig:edit")){
+            <el-table-column label="操作" width="200">
+              <template slot-scope="{row}">
+                <el-button type="primary" plain size="mini" \@click="openConfigDialog(row)"
+                  ><i class="self-icon edit"></i>编辑</el-button
+                >
+                <el-button type="primary" plain size="mini" \@click="delKeyWorkConfig(row)"
+                  ><i class="self-icon del"></i>删除</el-button
+                >
+              </template>
+            </el-table-column>
+            @}
+          </el-table>
+        </div>
+        <el-pagination
+          \@size-change="mainTablePageSizeChange"
+          \@current-change="mainTablePageNumChange"
+          :current-page="mainTablePageNum"
+          :page-sizes="[10, 20, 50,100]"
+          :page-size="mainTablePageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="mainTablePageTotal"
+        >
+        </el-pagination>
+      </el-card>
+      
+      <el-dialog
+        :title="configDialog.formData.title"
+        width="55%"
+        :visible.sync="configDialog.visible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        \@close="configDialogClose"
+        class="center-dialog"
+        top="auto"
+      >
+        <el-form
+          ref="configDialogForm"
+          :model="configDialog.formData"
+          :rules="configDialog.formRules"
+          label-width="100px"
+          class="mb-10-form"
+          size="medium"
+        >
+          <el-form-item label="运用所：" prop="unitCode">
+            <el-select v-model="configDialog.formData.unitCode">
+              <el-option
+                v-for="item in unitList"
+                :key="item.unitCode"
+                :label="item.unitName"
+                :value="item.unitCode"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="作业内容：" prop="content">
+            <el-input class="fix-count-out" v-model.trim="configDialog.formData.content" :maxlength="200" show-word-limit clearable></el-input>
+          </el-form-item>
+
+          <el-form-item label="车型：" prop="trainModel">
+            <el-select
+              v-if="configDialog.formData.id"
+              v-model="configDialog.formData.trainModel"
+              \@change="trainModelChange"
+              filterable
+              clearable
+            >
+              <el-option
+                v-for="item in trainTypeList"
+                :key="item.id"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+            <lp-select
+              v-else
+              v-model="configDialog.formData.trainModel"
+              :list="trainTypeList"
+              id="id"
+              label="label"
+              value="value"
+              \@change="trainModelChange"
+            ></lp-select>
+          </el-form-item>
+          <el-form-item v-for="column in columns" :key="column.key" :label="column.label+'：'" :prop="column.property">
+            <el-select
+              v-if="column.type=='options'"
+              v-model="configDialog.formData[column.property]"
+              \@focus="formItemFocus(column)"
+              filterable
+              :clearable="column.key!='WORK_ENV'"
+            >
+              <el-option
+                v-for="item in columnListMap[column.key+'List']"
+                v-show="columnListMap['KEY_WORK_TYPEList'] &&  !item.isDelete ? true : false "
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+            <lp-select
+              v-else-if="column.type=='multipleChoice'"
+              v-model="configDialog.formData.carNoList"
+              \@change="carNoListChange"
+              :list="carList"
+              value="value"
+              mutiple
+              flag="CAR"
+              \@focus="formItemFocus(column)"
+            ></lp-select>
+            <el-cascader
+              v-else-if="column.type=='specialOptions'"
+              v-model="configDialog.formData[column.property]"
+              :options="columnListMap[column.key+'List']"
+              :props="cascaderProps"
+              \@focus="formItemFocus(column)"
+              :show-all-levels="false"
+              popper-class="funcNodeCodePopper"
+              filterable
+              clearable
+            >
+            </el-cascader>
+
+            <el-input
+              v-else-if="column.property === 'position'"
+              :maxlength="50"
+              show-word-limit
+              v-model.trim="configDialog.formData[column.property]"
+              clearable
+              class="fix-count-out"
+            ></el-input>
+
+            <el-input
+              v-else
+              :maxlength="50"
+              show-word-limit
+              v-model.trim="configDialog.formData[column.property]"
+              clearable
+              class="fix-count-out"
+            ></el-input>
+          </el-form-item>
+        </el-form>
+        <el-row>
+          <el-col class="text-r">
+            <el-button type="primary" size="mini" \@click="setKeyWorkConfig">确定</el-button>
+            <el-button type="primary" size="mini" \@click="configDialog.visible = false">取消</el-button>
+          </el-col>
+        </el-row>
+      </el-dialog>
+      <!-- 关键作业类型配置 -->
+      <el-dialog
+        title="关键作业配置-类型配置"
+        :visible.sync="keyWorkTypeConfigDialog.visible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        class="center-dialog"
+        top="auto"
+        custom-class="key-work-type-dialog"
+        \@closed="keyWorkTypeConfigDialogClose"
+      >
+        <el-form
+          ref="keyWorkTypeConfigDialogForm"
+          :model="keyWorkTypeConfigDialog.formData"
+          :rules="keyWorkTypeConfigDialog.formRules"
+          class="keyWorkTypeConfigDialog-form"
+          \@submit.native.prevent
+        >
+          <el-row>
+            <el-col :span="14">
+              <el-form-item prop="type">
+                <label>类型名称:</label>
+                <el-input
+                  maxlength="50"
+                  show-word-limit
+                  v-model.trim="keyWorkTypeConfigDialog.formData.type"
+                  clearable
+                  class="fix-count-in fix-height"
+                  style="width: 230px;"
+                ></el-input>
+                <el-button type="primary" size="mini" \@click="addType">增加</el-button>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <el-table :data="keyWorkTypeConfigDialog.tableData" height="528" border \@cell-click="editType">
+          <el-table-column label="类型" min-width="300px" show-overflow-tooltip>
+            <template slot-scope="{row,$index}">
+              <div style="width: 95%" v-if="keyWorkTypeConfigDialog.editable[row.id]">
+                <el-input v-model.trim="keyWorkTypeConfigDialog.typeObj[row.id]" class="fix-count-in fix-height" :maxlength="50" show-word-limit></el-input>
+                <el-button type="primary" size="mini" \@click="confirmEditType(row.id, $index)">确定</el-button>
+                <el-button type="primary" size="mini" \@click="cancelEditType(row.id)">取消</el-button>
+              </div>
+              <span v-else>{{row.name}}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="300px">
+            <template slot-scope="{row,$index}">
+              <el-button
+                :type="$index===0?'info':'primary'"
+                :disabled="$index===0"
+                icon="el-icon-top"
+                size="mini"
+                \@click="typeSortChange('up',row.code)"
+                >上移</el-button
+              >
+              <el-button
+                :type="$index===lastIndex?'info':'primary'"
+                :disabled="$index === lastIndex"
+                icon="el-icon-bottom"
+                size="mini"
+                \@click="typeSortChange('down',row.code)"
+                >下移</el-button
+              >
+              <el-button type="primary" plain size="mini" \@click="deleteType(row.id, $index)"
+                ><i class="self-icon del"></i>删除</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+        <div style="text-align: center; padding-top: 20px">
+          <el-button type="primary" size="mini" \@click="setTypeList">确定</el-button>
+          <el-button type="primary" size="mini" \@click="cancelSetTypeList">取消</el-button>
+        </div>
+      </el-dialog>
+    </div>
+    <script type="text/babel" src="${ctxPath}/static/trainRepair/workRepairFlow/keyWorkConfig/js/index.js"></script>
+  </body>
+</html>

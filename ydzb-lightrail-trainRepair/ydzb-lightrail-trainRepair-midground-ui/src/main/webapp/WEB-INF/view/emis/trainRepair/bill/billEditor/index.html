@@ -1,0 +1,386 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<!-- disable IE compatible view -->
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="spreadjs culture" content="zh-cn" />
+	<title>SpreadJS Designer</title>
+
+	<!-- 引用elementUI样式 -->
+	<link rel="stylesheet" href="${publicStaticPath}/elementUI/index.css">
+
+	<!-- Libraries -->
+	<link href="../lib/jquery-ui/css/smoothness/jquery-ui-1.10.3.custom.min.css" rel="stylesheet" type="text/css" />
+	<link href="../lib/gcui.css" rel="stylesheet" type="text/css" />
+	<link href="../lib/spread/gc.spread.sheets.excel2013white.13.2.0.css" rel="stylesheet" type="text/css" />
+	<link href="../lib/zTreeStyle/css/zTreeStyle.css" rel="stylesheet" type="text/css" />
+
+
+	<link href="../common/common.css" rel="stylesheet" type="text/css" />
+	<link href="../widgets/colorpicker/colorpicker.css" rel="stylesheet" type="text/css" />
+	<link href="../widgets/fontpicker/fontpicker.css" rel="stylesheet" type="text/css" />
+	<link href="../widgets/comboframe/comboframe.css" rel="stylesheet" type="text/css" />
+	<link href="../widgets/borderpicker/borderpicker.css" rel="stylesheet" type="text/css" />
+	<link href="../widgets/sliderpanel/sliderpanel.css" rel="stylesheet" type="text/css" />
+	<link href="../dialogs/dialogs.css" rel="stylesheet" type="text/css" />
+	<link href="../dialogs/dialogs2.css" rel="stylesheet" type="text/css" />
+	<link href="../dialogs/chartDialogs.css" rel="stylesheet" type="text/css" />
+	<link href="../formatDialog/formatDialog.css" rel="stylesheet" type="text/css" />
+	<link href="../dialogs/subtotalDialog/subtotalDialog.css" rel="stylesheet" type="text/css" />
+	<link href="../dialogs/hyperlinkDialog/hyperlinkDialog.css" rel="stylesheet" type="text/css" />
+	<link href="../ribbon/ribbon.css" rel="stylesheet" type="text/css" />
+	<link href="../formulaBar/formulaBar.css" rel="stylesheet" type="text/css" />
+	<link href="../spreadWrapper/spreadWrapper.css" rel="stylesheet" type="text/css" />
+	<link href="../statusBar/statusBar.css" rel="stylesheet" type="text/css" />
+	<link href="../contextMenu/contextMenu.css" rel="stylesheet" type="text/css" />
+	<link href="../fileMenu/fileMenu.css" rel="stylesheet" type="text/css" />
+	<link href="../index/index.css" rel="stylesheet" type="text/css" />
+	<link href="../chart/chartColorPicker/chart-colorPicker.css" rel="stylesheet" type="text/css" />
+	<link href="../chart/addChartElement/chartAddChartElement.css" rel="stylesheet" type="text/css" />
+	<link href="../chart/chartTypePicker/chartTypePicker.css" rel="stylesheet" type="text/css" />
+	<link href="../chart/chartLayoutPicker/chartLayoutPicker.css" rel="stylesheet" type="text/css" />
+	<link href="../shape/insertShape/insertShapePopup.css" rel="stylesheet" type="text/css" />
+	<link href="../shape/shapeStylePreview/shapeStylePreview.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" href="../customEls/billTemplateSetting.css">
+	<link rel="stylesheet" href="../customEls/billBasicInfo.css">
+
+	<!-- CN special -->
+	<link href="../common/local.cn.css" rel="stylesheet">
+	<style>
+		.container.hide-content>*:not(.loading-placeholder) {
+			visibility: hidden;
+		}
+
+		[v-cloak] {
+			display: none !important;
+		}
+	</style>
+</head>
+
+<body unselectable="on" style="-moz-user-select: none; -webkit-user-select: none; user-select: none;">
+	<div class="container">
+		<div class="loading-placeholder background-mask-layer"></div>
+		<span class="loading-placeholder loading-pic"></span>
+		<div class="header">
+			<div data-include="ribbon">
+			</div>
+			<div id="billBasicInfo"></div>
+			<div data-include="formulaBar">
+			</div>
+		</div>
+		<div class="content">
+			<div class="vertical-splitter ui-draggable hidden" id="verticalSplitter"></div>
+			<div class="fill-spread-content" data-include="spreadWrapper">
+			</div>
+		</div>
+		<div class="footer">
+			<div data-include="statusBar">
+			</div>
+		</div>
+		<div class="file-menu hidden">
+			<div data-include="fileMenu"></div>
+		</div>
+		<div class="slicer-contextmenu-width hidden">
+			<span id="name-container"></span>
+		</div>
+		<div class="ui-button-text-icon-primary"
+			style="position: absolute; left: -1000px; top: -1000px; visibility: hidden">
+			<span id="measureWidth" class="ui-button-text"></span>
+		</div>
+		<div class="hidden">
+			<input type="file" id="fileSelector" name="files[]" />
+		</div>
+		<div v-if="dialogVisible" id="copyBillConfigDialog" v-cloak>
+			<el-dialog \@close="onCloseDialog" :visible.sync="dialogVisible" title='复制记录单配置' :show-close="false" width="50%"
+				top="10vh" style="padding-bottom:150px">
+				<el-form :model="baseForm" ref="baseForm" label-width="130px">
+					<el-form-item label="单据类型：" prop="billType1">
+						<el-select disabled v-model="baseForm.billType1" placeholder="请选择" clearable>
+							<el-option v-for="item in billTypeList" :key="item.templateTypeCode" :label="item.templateTypeName"
+								:value="item.templateTypeCode"></el-option>
+						</el-select>
+					</el-form-item>
+					<el-form-item label="单据名称：" prop="billType2">
+						<el-select disabled v-model="baseForm.billType2" placeholder="请选择" clearable>
+							<el-option v-for="item in dialogBillNameList" :key="item.templateTypeCode" :label="item.templateTypeName"
+								:value="item.templateTypeCode"></el-option>
+						</el-select>
+					</el-form-item>
+					<el-form-item label="单据子名称：" prop="billType3">
+						<el-select disabled v-model="baseForm.billType3" clearable placeholder="请选择">
+							<el-option v-for="item in dialogBillChildrenTypeList" :key="item.templateTypeCode"
+								:label="item.templateTypeName" :value="item.templateTypeCode"></el-option>
+						</el-select>
+					</el-form-item>
+					<div v-for="conditionItem in addItemCondition" :key="conditionItem.queryCode">
+						<el-form-item v-if="conditionItem.queryCode === 'Item'" label="项目名称:" prop="itemCode">
+							<el-input :value="billProjectNameMap[baseForm.itemCode]" clearable style="width:217px" disabled>
+							</el-input>
+							<el-button type="primary" v-on:click="handleSelectItem">选择项目</el-button>
+						</el-form-item>
+						<el-form-item v-else-if="conditionItem.queryCode === 'Unit'" label="运用所：" prop="unitCode">
+							<el-select disabled v-model="baseForm.unitCode" clearable placeholder="请选择">
+								<el-option v-for="item in unitList" :key="item.unitCode" :label="item.unitName" :value="item.unitCode">
+								</el-option>
+							</el-select>
+						</el-form-item>
+						<el-form-item v-else-if="conditionItem.queryCode === 'TrainsetType'" label="车型：" prop="trainsetType">
+							<el-select v-model="baseForm.trainsetType" clearable :disabled="trainTypeDisabled" placeholder="请选择"
+								v-on:change="changeSecondTraintype">
+								<el-option v-for="item in drpcartype" :key="item" :label="item" :value="item"></el-option>
+							</el-select>
+						</el-form-item>
+						<el-form-item v-else-if="conditionItem.queryCode === 'Batch'" label="批次：" prop="batch">
+							<el-select v-model="baseForm.batch" clearable :disabled="batchIdDisabled" placeholder="请选择"
+								v-on:change="changDialogBatch">
+								<el-option v-for="item in dialogBatchsByTrainsetTypeList" :key="item" :label="item" :value="item">
+								</el-option>
+							</el-select>
+						</el-form-item>
+						<el-form-item v-else-if="conditionItem.queryCode === 'Trainset'" label="车组：" prop="trainsetId" filterable>
+							<el-select v-model="baseForm.trainsetId" clearable placeholder="请选择">
+								<el-option v-for="item in dialogTrainsetNamesByUnitCodeList" :key="item.trainsetid"
+									:label="item.trainsetname" :value="item.trainsetid"></el-option>
+							</el-select>
+						</el-form-item>
+					</div>
+				</el-form>
+				<div slot="footer">
+					<el-row type="flex">
+						<div style="width: 200px;margin-left: auto;margin-top: 20px;">
+							<el-button type="primary" v-on:click="handleSave()">确定</el-button>
+							<el-button v-on:click="closeDialog">取 消</el-button>
+						</div>
+					</el-row>
+				</div>
+			</el-dialog>
+
+			<el-dialog title="选择项目" :visible.sync="optionDialogVisible" fullscreen>
+				<el-card>
+					<div>
+						<el-form :model="configForm" ref="configForm" label-width="130px">
+							<el-row>
+								<!-- <el-col :span="6">
+                  <el-form-item label="动车所：" prop="unitCode">
+                    <el-select v-model="configForm.unitCode" clearable placeholder="请选择">
+                      <el-option v-for="item in unitList" :key="item.unitCode" :label="item.unitName"
+                        :value="item.unitCode"></el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-col> -->
+								<el-col :span="6">
+									<el-form-item label="车型：" prop="trainType">
+										<el-select v-model="configForm.trainType" clearable placeholder="请选择">
+											<el-option v-for="item in drpcartype" :key="item" :label="item" :value="item"></el-option>
+										</el-select>
+									</el-form-item>
+
+								</el-col>
+
+								<el-col :span="6">
+									<el-form-item label="批次：" prop="trainSubType">
+										<el-select v-model="configForm.trainSubType" clearable placeholder="请选择">
+											<el-option v-for="item in thirdBatchsByTrainsetTypeList" :key="item" :label="item" :value="item">
+											</el-option>
+										</el-select>
+									</el-form-item>
+								</el-col>
+
+								<el-col :span="6">
+									<el-form-item label="车组：" prop="trainSetIdList">
+										<el-select v-model="configForm.trainSetIdList" multiple clearable collapse-tags placeholder="请选择">
+											<el-option v-for="item in thirdTrainsetNamesByUnitCodeList" :key="item.trainsetid"
+												:label="item.trainsetname" :value="item.trainsetid"></el-option>
+										</el-select>
+									</el-form-item>
+								</el-col>
+
+								<el-col :span="6">
+									<el-form-item label="回填状态：" prop="allocatedTempStatus">
+										<el-select v-model="configForm.allocatedTempStatus" placeholder="请选择">
+											<el-option v-for="item in allocatedTempStatusList" :key="item.value" :value="item.value"
+												:label="item.label">
+											</el-option>
+										</el-select>
+									</el-form-item>
+								</el-col>
+							</el-row>
+							<el-row>
+								<el-col :span="6">
+									<el-form-item label="项目：" prop="itemName">
+										<el-input v-model="configForm.itemName" clearable style="width:217px"></el-input>
+									</el-form-item>
+								</el-col>
+								<el-col :span="18" style="display:flex;">
+									<el-form-item style="width: 300px;margin-left: auto;">
+										<el-button type="primary" v-on:click="searchProjectList">查询</el-button>
+										<el-button type="primary" v-on:click="resetConfigForm">重置</el-button>
+									</el-form-item>
+								</el-col>
+							</el-row>
+
+						</el-form>
+					</div>
+					<div style="margin-top:10px">
+						<el-table :data="billProjectList" border style="margin-top: 20px;"
+							v-on:current-change="handleCurrentChange">
+							<el-table-column type="index" label="序号" width="50px" align="center"></el-table-column>
+							<el-table-column label="单位名称" prop="unitName" sortable show-overflow-tooltip align="center">
+							</el-table-column>
+							<el-table-column label="项目名称" prop="itemName" sortable show-overflow-tooltip align="center" width="240">
+							</el-table-column>
+							<!-- <el-table-column label="技术平台" prop="plantForm" show-overflow-tooltip align="center"></el-table-column> -->
+							<el-table-column label="车型" prop="trainType" sortable show-overflow-tooltip align="center">
+							</el-table-column>
+							<el-table-column label="批次" prop="trainBatch" sortable show-overflow-tooltip align="center">
+							</el-table-column>
+							<el-table-column label="适用车组" prop="trainsetName" show-overflow-tooltip align="center"></el-table-column>
+							<el-table-column label="非适用车组" prop="notTrainSetName" show-overflow-tooltip align="center">
+							</el-table-column>
+							<el-table-column label="功能分类" prop="funcSysName" show-overflow-tooltip align="center"></el-table-column>
+							<!-- <el-table-column label="维修性质" prop="mainTainNature" show-overflow-tooltip align="center"></el-table-column> -->
+							<el-table-column label="配置状态" prop="allocatedTempStatus" sortable show-overflow-tooltip align="center">
+								<template v-slot="scope">
+									<span>{{ allocatedTempStatusMap[scope.row.allocatedTempStatus] }}</span>
+								</template>
+							</el-table-column>
+							<el-table-column label="维修卡片编号" prop="mainTainCardNo" show-overflow-tooltip align="center">
+							</el-table-column>
+						</el-table>
+						<el-row>
+							<el-col style="display: flex">
+								<el-pagination v-on:size-change="handleSecondSizeChange" v-on:current-change="handleSecondCurrentChange"
+									:current-page="configForm.page" :page-sizes="[1, 2, 5, 10]" :page-size="configForm.limit"
+									layout="total, sizes, prev, pager, next, jumper" :total="projectTotal"
+									style="margin-top: 20px;margin-left: auto;">
+								</el-pagination>
+							</el-col>
+						</el-row>
+					</div>
+				</el-card>
+
+				<span slot="footer" class="dialog-footer">
+					<el-button v-on:click="closeProgremDialog">取消</el-button>
+				</span>
+			</el-dialog>
+		</div>
+	</div>
+
+	<!-- Libraries -->
+	<script src="../lib/jquery-2.0.2.min.js"></script>
+	<script src="../lib/jquery-ui/js/jquery-ui-1.10.3.custom.min.js"></script>
+	<script src="../lib/knockout-2.3.0.min.js"></script>
+	<script src="../lib/zTreeStyle/js/jquery.ztree.all-3.5.min.js"></script>
+	<script src="../lib/spread/gc.spread.sheets.all.13.2.0.min.js"></script>
+	<script src="../lib/spread/plugins/gc.spread.sheets.print.13.2.0.min.js"></script>
+	<script src="../lib/spread/plugins/gc.spread.sheets.pdf.13.2.0.min.js"></script>
+	<script src="../lib/spread/plugins/gc.spread.sheets.charts.13.2.0.min.js"></script>
+	<script src="../lib/spread/plugins/gc.spread.sheets.barcode.13.2.0.min.js"></script>
+	<script src="../lib/spread/plugins/gc.spread.sheets.shapes.13.2.0.min.js"></script>
+	<script src="../lib/spread/interop/gc.spread.excelio.13.2.0.min.js"></script>
+	<script src="../lib/spread/resources/zh/gc.spread.sheets.resources.zh.13.2.0.min.js"></script>
+	<script>
+		//var getSsjsonBaseUrl = "http://172.20.104.74:8080"
+		var getSsjsonBaseUrl = "${mainweb}"
+
+		var licenseKeyMap = {
+			"172.20.104.74": "172.20.104.74,847673347321839#B0tFlQEVmMVdVezQ7RvlUTqZ6aoVWdQ9WNHBTMwkXTrBjYTF5bvFHdIFzUnJFe4I5avNlMsRmTMhUVn3UYxcHWIpkWu3ycFV7Y6gFUONjevFUc8gXbZpHWKJGbvVHSwNGT4tUN9JjYWZFONpWUntSRPJ7LzUUY4E4brNjNshEaoNDMK5mRMp5a0tCT0FnUPFHcHhENlhkS9JjToh7TaVnQUJ6cClDb6l6dylzU5cnd6UVSVJ7ZjplNJJ7SNtGduJkZBp4QNBzYMpUOlt6Q6kmNQBTTaJHOQJVOS3mTIlEeMN7YoJkeEpWc4YmMvM6cw56YLRXaGZ4a7kFVChTWxBnUiojITJCLiUTN6gDN7QjMiojIIJCL6QjNwkzNxgjN0IicfJye#4Xfd5nIV34M6IiOiMkIsIyMx8idgMlSgQWYlJHcTJiOi8kI1tlOiQmcQJCLicjMyUTOwAiMykDMwIDMyIiOiQncDJCLiIjM9ATMyAjMiojIwhXRiwiI4cjL4ATMuAjMuIzNxIiOiMXbEJCLig1jlzahlDZmpnInm/KnmDoim/agmH0vkzqun/8unzqukfJjlLiOiEmTDJCLikzM8EjMzcDNzMzN6cDN8IiOiQWSiwSflNHbhZmOiI7ckJye0ICbuFkI1pjIEJCLi4TPBNjUVh5Q4lFNFdmUY9mTIx6QnJjdydTNH96UMZjQ9EjSwdFON54NSNzLIxEeTJlYQlWcURmauN7V0hUaCVETQhFcEhTRqZVVypkWMZmWFF4RHZ5UMttT",
+		}
+		var hostname = location.hostname
+		// if (licenseKeyMap[hostname]) {
+		// 	GC.Spread.Sheets.LicenseKey = licenseKeyMap[hostname]
+		// }
+		GC.Spread.Sheets.LicenseKey = "asd";
+	</script>
+	<script src="../lib/FileSaver.min.js"></script>
+	<script src="../lib/jszip.min.js"></script>
+	<!-- zhangtk引入vue作为数据中心 -->
+	<script src="${publicStaticPath}/vue/vue.js"></script>
+	<!-- 支持es6和jsx -->
+	<script src="${publicStaticPath}/IE/babel-browser.min.js"></script>
+	<!-- 引入axios -->
+	<script src="${publicStaticPath}/vue/axios.min.js"></script>
+	<!-- 引用elementUI -->
+	<script src="${publicStaticPath}/elementUI/index.js"></script>
+
+	<!-- 页面间传值 -->
+	<script src="../../lib/localStorageParamsBus.js"></script>
+	<!-- bill基础组件 -->
+	<script src="../common/BillSpreadModule.js"></script>
+	<!-- svg遮罩 -->
+	<script src="../common/SvgMask.js"></script>
+	<script src="../common/app.js"></script>
+	<script src="../common/resources.js"></script>
+	<script src="../common/resources.cn.js"></script>
+	<script src="../widgets/gcui/gcui.js"></script>
+	<script src="../widgets/colorpicker/colorpicker.js"></script>
+	<script src="../widgets/fontpicker/fontpicker.js"></script>
+	<script src="../widgets/comboframe/comboframe.js"></script>
+	<script src="../widgets/borderpicker/borderpicker.js"></script>
+	<script src="../widgets/sliderpanel/sliderpanel.js"></script>
+	<script src="../chart/chart-templates.js"></script>
+	<script src="../chart/chartColorPicker/chart-colorPicker.js"></script>
+	<script src="../chart/chartLayoutPicker/chartLayoutPicker.js"></script>
+	<script src="../chart/chartTypePicker/chartTypePicker.js"></script>
+	<script src="../common/colorHelper.js"></script>
+	<script src="../common/util.js"></script>
+	<script src="../common/asyncLoader.js"></script>
+	<script src="../common/metadata.js"></script>
+	<script src="../spreadWrapper/spreadMeta.js"></script>
+	<script src="../spreadWrapper/spreadWrapper.js"></script>
+	<script src="../spreadWrapper/spreadActions.js"></script>
+	<script src="../spreadWrapper/actions.js"></script>
+	<script src="../spreadWrapper/ceUtility.js"></script>
+	<script src="../spreadWrapper/spreadUtility.js"></script>
+	<script src="../statusBar/statusBar.js"></script>
+	<script src="../chartPreviewer/chartPreviewer.js"></script>
+	<script src="../chart/addChartElement/chartAddChartElement.js"></script>
+	<script src="../dialogs/baseDialog.js"></script>
+	<script src="../dialogs/dialogs.js"></script>
+	<script src="../dialogs/dialogs2.js"></script>
+	<script src="../dialogs/chartDialogs.js"></script>
+	<script src="../formatDialog/formatDialog.js"></script>
+	<script src="../dialogs/subtotalDialog/subtotalDialog.js"></script>
+	<script src="../dialogs/hyperlinkDialog/hyperlinkDialog.js"></script>
+	<script src="../formulaBar/formulaBar.js"></script>
+	<script src="../chart/chartSliderPanel.js"></script>
+	<script src="../chart/chartWrapper.js"></script>
+
+	<script src="../shape/utils.js"></script>
+	<script src="../shape/setShapeWidthAndHeight.js"></script>
+	<script src="../shape/shapeStyleTemplates.js"></script>
+	<script src="../shape/insertShape/insertShapePopup.js"></script>
+	<script src="../shape/insertShape/insertShapePreview.js"></script>
+	<script src="../shape/shapeStylePreview/shapeStylePreview.js"></script>
+	<script src="../shape/shapeSliderPanel.js"></script>
+	<script src="../ribbon/ribbon.js"></script>
+	<script src="../contextMenu/contextMenu.js"></script>
+	<script src="../fileMenu/fileMenu.js"></script>
+	<script src="index.js"></script>
+	<script type="text/babel" src="../customEls/billTemplateSetting.js"></script>
+	<script type="text/babel" src="../customEls/billBasicInfo.js"></script>
+	<script type="text/babel" src="../customEls/copyBillConfigDialog.js"></script>
+	<!-- <script src="../customEls/copyBillConfigDialog.js"></script> -->
+	<script>
+		// 获取基础css，去掉了一些对当前页面具有破坏性的样式
+		var baseCssUrl = "${publicStaticPath}/common/base.css"
+		axios.get(baseCssUrl).then(function (rs) {
+			var css = rs.data
+			var baseStyle = document.createElement("style")
+			var removeRegs = [
+				/\*\s*\{\s*margin: 0;\s*padding: 0;\s*\}/,
+				/table\s*\{\s*table-layout: fixed;\s*border-collapse: collapse;\s*border-spacing: 0;\s*\}/,
+				/button\s*\{\s*margin: 0 1px;\s*\}/,
+			]
+			removeRegs.forEach(function (reg) {
+				css = css.replace(reg, "")
+			})
+			baseStyle.innerHTML = css
+			document.body.append(baseStyle)
+		});
+	</script>
+</body>
+
+</html>

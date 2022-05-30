@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.workProcess.dao.ProcessCarPartMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.workprocess.querymodel.ProcessCarPart">
+        <id column="S_PROCESSID" property="processId" />
+        <result column="S_DAYPLANID" property="dayplanId" />
+        <result column="S_TRAINSETNAME" property="trainsetName" />
+        <result column="S_TRAINSETID" property="trainsetId" />
+        <result column="S_UNITCODE" property="unitCode" />
+        <result column="S_UNITNAME" property="unitName" />
+        <result column="S_ITEMCODE" property="itemCode" />
+        <result column="S_ITEMNAME" property="itemName" />
+        <result column="S_REPAIRTYPE" property="repairType" />
+        <result column="S_ARRAGETYPE" property="arrageType" />
+        <result column="S_DATASOURCE" property="dataSource" />
+        <result column="S_PARTTYPE" property="partType" />
+        <result column="S_PARTPOSITION" property="partPosition" />
+        <result column="S_REMARK" property="remark" />
+        <result column="S_REPAIRMODE" property="repairMode" />
+        <result column="S_PARTNAME" property="partName" />
+        <result column="S_RECORDTIME" property="recordTime" />
+        <result column="S_RECORDERNAME" property="recorderName" />
+        <result column="S_RECORDERCODE" property="recorderCode" />
+        <result column="S_PROCESSDEPTID" property="processDeptId" />
+        <result column="S_PROCESSPACKETID" property="processPacketId" />
+        <result column="S_CARNO" property="carNo" />
+        <result column="S_TRAINSETTYPE" property="trainsetType" />
+        <result column="C_FLAG" property="flag" />
+        <result column="S_DELUSERCODE" property="delUserCode" />
+        <result column="S_DELUSERNAME" property="delUserName" />
+        <result column="D_DELTIME" property="delTime" />
+        <result column="S_ITEMPUBLCISHED" property="itemPublcished" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_PROCESSID, S_DAYPLANID, S_TRAINSETNAME, S_TRAINSETID, S_UNITCODE, S_UNITNAME, S_ITEMCODE, S_ITEMNAME, S_REPAIRTYPE, S_ARRAGETYPE, S_DATASOURCE, S_PARTTYPE, S_PARTPOSITION, S_REMARK, S_REPAIRMODE, S_PARTNAME, S_RECORDTIME, S_RECORDERNAME, S_RECORDERCODE, S_PROCESSDEPTID, S_PROCESSPACKETID, S_CARNO, S_TRAINSETTYPE, C_FLAG, S_DELUSERCODE, S_DELUSERNAME, D_DELTIME, S_ITEMPUBLCISHED
+    </sql>
+
+    <select id="selectCarPartItemList" resultType="com.ydzbinfo.emis.trainRepair.mobile.model.NoMainCycPersonInfo">
+        select
+            pd.S_DEPTNAME as deptName,
+            ppe.S_WORKERNAME as workerName,
+            ptr.D_TIME as time,
+            pcp.S_ITEMCODE as itemCode,
+            pcp.S_TRAINSETID as trainsetId,
+            ppe.S_WORKERTYPE as workerType,
+            ppi.S_CARNOCOUNT as carNo
+        from
+        XZY_M_PROCESSCARPART pcp
+        inner join XZY_M_PROCESSPACKET pp on pcp.S_PROCESSPACKETID = pp.S_PROCESSPACKETID
+        inner join XZY_M_PROCESSDEPT pd on pcp.S_PROCESSDEPTID = pd.S_PROCESSDEPTID
+        inner join XZY_M_PROCESSPERSON ppe on pcp.S_PROCESSID = ppe.S_PROCESSID
+        inner join XZY_M_PROCESSTIMERECORD ptr on ptr.S_PROCESSPERSONID = ppe.S_PROCESSPERSONID
+        inner join XZY_M_PROCESSPERSONCONFIRM ppi on ppe.S_PROCESSPERSONID = ppi.S_PROCESSPERSONID
+        where 1 = 1
+        and pcp.S_ITEMCODE in
+        <foreach collection="itemCodes" close=")" index="index" item="itemCode" open="(" separator=",">
+            #{itemCode}
+        </foreach>
+        and pcp.S_DAYPLANID = #{dayPlanID}
+        and pcp.S_TRAINSETID in
+        <foreach collection="trainsetIds" close=")" separator="," item="trainsetId" open="(" index="index">
+            #{trainsetId}
+        </foreach>
+        and pp.S_PACKETTYPE = #{packetTypeCode}
+        <if test="workerType==4">
+            and ppe.S_WORKERTYPE in (3, 4)
+        </if>
+        <if test="workerType==3">
+            and ppe.S_WORKERTYPE = #{workerType}
+        </if>
+        and ptr.D_ITEMTIMESTATE = 4
+        group by pd.S_DEPTNAME,ppe.S_WORKERNAME,pcp.S_ITEMCODE,pcp.S_TRAINSETID,ppe.S_WORKERTYPE,ppi.S_CARNOCOUNT,ptr.D_TIME
+        order by ptr.D_TIME
+    </select>
+
+    <select id="selectCarPartEndItemList" resultType="com.ydzbinfo.emis.trainRepair.mobile.model.NoMainCycPersonInfo">
+        select
+            ppe.S_WORKERNAME as workerName,
+            ptr.D_TIME as time,
+            pcp.S_ITEMCODE as itemCode,
+            ppe.S_WORKERTYPE as workerType,
+            pcp.S_CARNO as carNo,
+            pcp.S_PARTNAME as partName,
+            ptr.D_ITEMTIMESTATE as itemTimeState
+        from
+        XZY_M_PROCESSCARPART pcp
+        inner join XZY_M_PROCESSPERSON ppe on pcp.S_PROCESSID = ppe.S_PROCESSID
+        inner join XZY_M_PROCESSTIMERECORD ptr on ptr.S_PROCESSPERSONID = ppe.S_PROCESSPERSONID
+        where 1 = 1 and pcp.C_FLAG='1' and ppe.C_FLAG='1' and ptr.C_FLAG='1'
+        and pcp.S_ITEMCODE = #{itemCode}
+        and pcp.S_DAYPLANID = #{dayPlanID}
+        and pcp.S_TRAINSETID = #{trainsetId}
+        and ppe.S_WORKERTYPE = #{workerType}
+        <if test="staffId != null and staffId.length != 0">
+        and ppe.S_WORKERID = #{staffId}
+        </if>
+        order by ptr.D_TIME desc
+    </select>
+
+    <select id="selectStatisticsDuration" resultType="com.ydzbinfo.emis.trainRepair.statistics.querymodel.DurationInfo">
+        select
+            wc.S_TRAINSETTYPE as trainsetType,
+            pc.S_TRAINSETNAME as trainsetName,
+            pc.S_TRAINSETID as trainsetId,
+            wc.S_ITEMNAME as itemName,
+            wc.S_ITEMCODE as itemCode,
+            pd.S_DEPTNAME as deptName,
+            pc.S_DAYPLANID as dayPlanId,
+            wc.S_POWERSTATE as powerState,
+            wc.S_TRAINSETSUBTYPE as trainsetSubtype
+        from
+            XZY_M_PROCESSCARPART pc
+        inner join XZY_C_WORKCRITERTION wc on pc.S_ITEMCODE = wc.S_ITEMCODE
+        inner join XZY_M_PROCESSDEPT pd on pc.S_PROCESSDEPTID = pd.S_PROCESSDEPTID
+        where pc.S_REPAIRTYPE = '0'
+        <if test="durationEntity.trainsetType != null and durationEntity.trainsetType.length != 0">
+            and wc.S_TRAINSETTYPE = #{durationEntity.trainsetType}
+        </if>
+        <if test="durationEntity.trainsetNames != null and durationEntity.trainsetNames.size() != 0">
+            and pc.S_TRAINSETNAME in
+             <foreach collection="durationEntity.trainsetNames" index="index" open="(" item="trainsetName" separator="," close=")">
+                 #{trainsetName}
+             </foreach>
+        </if>
+        <if test="durationEntity.itemName != null and durationEntity.itemName.length != 0">
+            and UPPER(wc.S_ITEMNAME) like Concat(Concat('%',UPPER(#{durationEntity.itemName})),'%') escape '\'
+        </if>
+        <if test="durationEntity.deptNames != null and durationEntity.deptNames.size() != 0">
+            and pd.S_DEPTNAME in
+            <foreach collection="durationEntity.deptNames" index="index" open="(" item="deptName" separator="," close=")">
+                #{deptName}
+            </foreach>
+        </if>
+        <if test="durationEntity.startDate != null and durationEntity.startDate.length != 0">
+            and pc.S_DAYPLANID &gt;= #{durationEntity.startDate}
+        </if>
+        <if test="durationEntity.endDate != null and durationEntity.endDate.length != 0">
+            and pc.S_DAYPLANID &lt;= #{durationEntity.endDate}
+        </if>
+        <if test="durationEntity.unitCode != null and durationEntity.unitCode.length != 0">
+            and pc.S_UNITCODE = #{durationEntity.unitCode}
+        </if>
+        group by wc.S_TRAINSETTYPE, pc.S_TRAINSETNAME, pc.S_TRAINSETID, wc.S_ITEMCODE, wc.S_ITEMNAME, pd.S_DEPTNAME, pc.S_DAYPLANID, wc.S_POWERSTATE, wc.S_TRAINSETSUBTYPE
+        order by pc.S_DAYPLANID, pc.S_TRAINSETID
+    </select>
+</mapper>

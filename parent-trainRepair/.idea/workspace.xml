@@ -1,0 +1,814 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="57eff158-844a-4e61-bb60-083919298945" name="Default Changelist" comment="关键作业bug修改" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Enum" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="localRepository" value="D:\maven\GqMaven\maven" />
+        <option name="mavenHome" value="D:\maven\GqMaven\apache-maven-3.5.3" />
+        <option name="userSettingsFile" value="D:\maven\GqMaven\apache-maven-3.5.3\settings.xml" />
+      </MavenGeneralSettings>
+    </option>
+    <option name="enabledProfiles">
+      <list>
+        <option value="test" />
+        <option value="testsuo" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectId" id="21QydUyifzJOpJR9r5QhHRPuTLE" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+    <ConfirmationsSetting value="2" id="Remove" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RequestMappingsPanelOrder0" value="0" />
+    <property name="RequestMappingsPanelOrder1" value="1" />
+    <property name="RequestMappingsPanelWidth0" value="75" />
+    <property name="RequestMappingsPanelWidth1" value="75" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/.." />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="project.structure.last.edited" value="SDKs" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="restartRequiresConfirmation" value="false" />
+    <property name="settings.editor.selected.configurable" value="MavenSettings" />
+  </component>
+  <component name="ReactorSettings">
+    <option name="notificationShown" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveInnerDialog.RECENTS_KEY">
+      <recent name="com.ydzbinfo.emis.trainRepair.repairworkflow.utils" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.ydzbinfo.emis.trainRepair.repairworkflow.utils" />
+      <recent name="com.ydzbinfo.emis.configs" />
+      <recent name="com.ydzbinfo.emis.trainRepair.repairworkflow.model" />
+      <recent name="com.ydzbinfo.emis.trainRepair.repairworkflow.config" />
+      <recent name="com.ydzbinfo.emis.trainRepair.repairworkflow.querymodel" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\WorkProcessWeb\TrainRepairCode\ydzb-lightrail-trainRepair\ydzb-lightrail-trainRepair-midground-service\src\main\java\com\ydzbinfo\emis\common\trainMonitor\service\imp" />
+      <recent name="E:\WorkProcessWeb\TrainRepairCode\ydzb-lightrail-trainRepair\ydzb-lightrail-trainRepair-service\src\main\java\com\ydzbinfo\emis\trainRepair\repairworkflow" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Spring Boot.TrainRepairServiceApplication">
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TrainRepairMidGroundServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="ydzb-lightrail-trainRepair-midground-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.TrainRepairMidGroundServiceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TrainRepairMidGroundUIApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="ydzb-lightrail-trainrepair-midground-ui" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.TrainRepairMidGroundUIApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TrainRepairServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="ydzb-lightrail-trainrepair-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.TrainRepairServiceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TrainRepairUIApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="ydzb-lightrail-trainrepair-ui" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.TrainRepairUIApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Spring Boot.TrainRepairMidGroundServiceApplication" />
+      <item itemvalue="Spring Boot.TrainRepairMidGroundUIApplication" />
+      <item itemvalue="Spring Boot.TrainRepairServiceApplication" />
+      <item itemvalue="Spring Boot.TrainRepairUIApplication" />
+    </list>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SvnConfiguration" cleanupOnStartRun="true">
+    <configuration>C:\Users\GH\AppData\Roaming\Subversion</configuration>
+    <supportedVersion>125</supportedVersion>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="57eff158-844a-4e61-bb60-083919298945" name="Default Changelist" comment="" />
+      <created>1637887696311</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1637887696311</updated>
+      <workItem from="1637887698014" duration="19086000" />
+      <workItem from="1638146724100" duration="30918000" />
+      <workItem from="1638233053428" duration="13476000" />
+      <workItem from="1638267843317" duration="4189000" />
+      <workItem from="1638319553107" duration="2207000" />
+      <workItem from="1638321780310" duration="23763000" />
+      <workItem from="1638405841497" duration="18953000" />
+      <workItem from="1638492741535" duration="22506000" />
+      <workItem from="1638751211490" duration="22030000" />
+      <workItem from="1638791688006" duration="364000" />
+      <workItem from="1638837988975" duration="15893000" />
+      <workItem from="1638924395759" duration="18638000" />
+      <workItem from="1639010798675" duration="25450000" />
+      <workItem from="1639097051802" duration="16575000" />
+      <workItem from="1639356198921" duration="22573000" />
+      <workItem from="1639391012977" duration="2815000" />
+      <workItem from="1639442685467" duration="18071000" />
+      <workItem from="1639470012964" duration="4149000" />
+      <workItem from="1639474272198" duration="5529000" />
+      <workItem from="1639529089909" duration="17945000" />
+      <workItem from="1639615871825" duration="18564000" />
+      <workItem from="1639701850442" duration="19648000" />
+      <workItem from="1639960907489" duration="10100000" />
+      <workItem from="1639983162286" duration="9543000" />
+      <workItem from="1640047872761" duration="13939000" />
+      <workItem from="1640133765771" duration="16567000" />
+      <workItem from="1640306531169" duration="14811000" />
+      <workItem from="1640566571905" duration="17295000" />
+      <workItem from="1640652555303" duration="16196000" />
+      <workItem from="1640737481408" duration="6432000" />
+      <workItem from="1640747287609" duration="13126000" />
+      <workItem from="1640824845801" duration="8720000" />
+      <workItem from="1640835410334" duration="20000" />
+      <workItem from="1640911559857" duration="18815000" />
+      <workItem from="1641256566147" duration="20746000" />
+      <workItem from="1641342971547" duration="19830000" />
+      <workItem from="1641429825963" duration="20391000" />
+      <workItem from="1641516030879" duration="12673000" />
+      <workItem from="1641775380585" duration="16517000" />
+      <workItem from="1641809281728" duration="2458000" />
+      <workItem from="1641861662204" duration="17105000" />
+      <workItem from="1641948441254" duration="13153000" />
+      <workItem from="1642122901051" duration="15364000" />
+      <workItem from="1642380353680" duration="1009000" />
+      <workItem from="1642382290742" duration="10078000" />
+      <workItem from="1642466766860" duration="20612000" />
+      <workItem from="1642552818777" duration="15302000" />
+      <workItem from="1642640035510" duration="22110000" />
+      <workItem from="1642726049442" duration="963000" />
+      <workItem from="1642727818896" duration="4751000" />
+      <workItem from="1643070641491" duration="9344000" />
+      <workItem from="1643158031093" duration="13580000" />
+      <workItem from="1643244117925" duration="16777000" />
+      <workItem from="1643330678718" duration="20828000" />
+      <workItem from="1644280587619" duration="21860000" />
+      <workItem from="1644367325871" duration="20096000" />
+      <workItem from="1644453054692" duration="16242000" />
+      <workItem from="1644486183140" duration="1458000" />
+      <workItem from="1644539890656" duration="9192000" />
+      <workItem from="1644559469287" duration="10387000" />
+      <workItem from="1644799094503" duration="12064000" />
+      <workItem from="1644886366002" duration="10553000" />
+      <workItem from="1644971908901" duration="17322000" />
+      <workItem from="1645058995919" duration="13151000" />
+      <workItem from="1645163851723" duration="5843000" />
+      <workItem from="1645410823744" duration="14851000" />
+      <workItem from="1645494529606" duration="15740000" />
+      <workItem from="1645577472990" duration="14321000" />
+      <workItem from="1645663748595" duration="16080000" />
+      <workItem from="1645749606973" duration="432000" />
+      <workItem from="1645750700962" duration="3722000" />
+      <workItem from="1645756541648" duration="12950000" />
+      <workItem from="1646009348311" duration="20827000" />
+      <workItem from="1646095097584" duration="17904000" />
+      <workItem from="1646181941382" duration="19578000" />
+      <workItem from="1646287773315" duration="9181000" />
+      <workItem from="1646300590328" duration="933000" />
+      <workItem from="1646355196428" duration="14135000" />
+      <workItem from="1646613728691" duration="20021000" />
+      <workItem from="1646699825552" duration="16202000" />
+      <workItem from="1646792584234" duration="13192000" />
+      <workItem from="1646872784576" duration="12413000" />
+      <workItem from="1646960070328" duration="14465000" />
+      <workItem from="1647218213218" duration="17466000" />
+      <workItem from="1647305245938" duration="12264000" />
+      <workItem from="1647391360377" duration="10791000" />
+      <workItem from="1647478044084" duration="15048000" />
+      <workItem from="1647564219009" duration="19920000" />
+      <workItem from="1647823636358" duration="13641000" />
+      <workItem from="1647910022564" duration="18641000" />
+      <workItem from="1647995942538" duration="16613000" />
+      <workItem from="1648082218283" duration="16829000" />
+      <workItem from="1648168820273" duration="15235000" />
+      <workItem from="1648428018244" duration="22373000" />
+      <workItem from="1648513984893" duration="18211000" />
+      <workItem from="1648600902400" duration="23563000" />
+      <workItem from="1648687706714" duration="24479000" />
+      <workItem from="1648773613536" duration="28315000" />
+      <workItem from="1648860371955" duration="3206000" />
+      <workItem from="1648863826315" duration="20891000" />
+      <workItem from="1649205757364" duration="29679000" />
+      <workItem from="1648946777514" duration="22645000" />
+      <workItem from="1649383262078" duration="10894000" />
+      <workItem from="1649642424487" duration="19289000" />
+      <workItem from="1649725025398" duration="17281000" />
+      <workItem from="1649813917326" duration="11771000" />
+      <workItem from="1649896340705" duration="18816000" />
+      <workItem from="1649930032349" duration="10000" />
+      <workItem from="1649983023427" duration="23175000" />
+      <workItem from="1650243506608" duration="20775000" />
+      <workItem from="1650332117690" duration="22769000" />
+      <workItem from="1650415575809" duration="17889000" />
+      <workItem from="1650502038135" duration="25904000" />
+      <workItem from="1650588142967" duration="20227000" />
+      <workItem from="1650761068965" duration="21211000" />
+      <workItem from="1650847211521" duration="18351000" />
+      <workItem from="1650933980516" duration="17687000" />
+      <workItem from="1651022969156" duration="15962000" />
+      <workItem from="1651106893815" duration="20709000" />
+      <workItem from="1651192264968" duration="17266000" />
+      <workItem from="1651710080170" duration="4203000" />
+      <workItem from="1651716636313" duration="12752000" />
+      <workItem from="1651797201337" duration="14726000" />
+      <workItem from="1651883990065" duration="19488000" />
+      <workItem from="1652056556825" duration="12057000" />
+      <workItem from="1652089688568" duration="36000" />
+      <workItem from="1652089736577" duration="38000" />
+      <workItem from="1652089785028" duration="95000" />
+      <workItem from="1652142492146" duration="15063000" />
+    </task>
+    <task id="LOCAL-00105" summary="流程刷卡记录修改">
+      <created>1649211503236</created>
+      <option name="number" value="00105" />
+      <option name="presentableId" value="LOCAL-00105" />
+      <option name="project" value="LOCAL" />
+      <updated>1649211503237</updated>
+    </task>
+    <task id="LOCAL-00108" summary="关键作业监控修改">
+      <created>1649298234075</created>
+      <option name="number" value="00108" />
+      <option name="presentableId" value="LOCAL-00108" />
+      <option name="project" value="LOCAL" />
+      <updated>1649298234075</updated>
+    </task>
+    <task id="LOCAL-00109" summary="修改错误缓存key名称">
+      <created>1649314113866</created>
+      <option name="number" value="00109" />
+      <option name="presentableId" value="LOCAL-00109" />
+      <option name="project" value="LOCAL" />
+      <updated>1649314113866</updated>
+    </task>
+    <task id="LOCAL-00110" summary="关键作业录入bug修改,不规范名称修改">
+      <created>1649317628255</created>
+      <option name="number" value="00110" />
+      <option name="presentableId" value="LOCAL-00110" />
+      <option name="project" value="LOCAL" />
+      <updated>1649317628255</updated>
+    </task>
+    <task id="LOCAL-00111" summary="添加股道作业过程监控是否开始股道切换">
+      <created>1649320472892</created>
+      <option name="number" value="00111" />
+      <option name="presentableId" value="LOCAL-00111" />
+      <option name="project" value="LOCAL" />
+      <updated>1649320472892</updated>
+    </task>
+    <task id="LOCAL-00112" summary="监控获取流程类型（未全部完成）">
+      <created>1649320836241</created>
+      <option name="number" value="00112" />
+      <option name="presentableId" value="LOCAL-00112" />
+      <option name="project" value="LOCAL" />
+      <updated>1649320836241</updated>
+    </task>
+    <task id="LOCAL-00113" summary="去除璇轮多余代码">
+      <created>1649643650018</created>
+      <option name="number" value="00113" />
+      <option name="presentableId" value="LOCAL-00113" />
+      <option name="project" value="LOCAL" />
+      <updated>1649643650019</updated>
+    </task>
+    <task id="LOCAL-00114" summary="流程监控视角bug修改,流程运行多车组获取,大屏获取检修信息标志">
+      <created>1649675865400</created>
+      <option name="number" value="00114" />
+      <option name="presentableId" value="LOCAL-00114" />
+      <option name="project" value="LOCAL" />
+      <updated>1649675865400</updated>
+    </task>
+    <task id="LOCAL-00115" summary="大屏检修流程修改">
+      <created>1649727336656</created>
+      <option name="number" value="00115" />
+      <option name="presentableId" value="LOCAL-00115" />
+      <option name="project" value="LOCAL" />
+      <updated>1649727336657</updated>
+    </task>
+    <task id="LOCAL-00116" summary="大屏检修流程修改">
+      <created>1649753600156</created>
+      <option name="number" value="00116" />
+      <option name="presentableId" value="LOCAL-00116" />
+      <option name="project" value="LOCAL" />
+      <updated>1649753600156</updated>
+    </task>
+    <task id="LOCAL-00117" summary="刷卡流程状态bug修改,是否根据派工查看岗位修改">
+      <created>1649761651987</created>
+      <option name="number" value="00117" />
+      <option name="presentableId" value="LOCAL-00117" />
+      <option name="project" value="LOCAL" />
+      <updated>1649761651987</updated>
+    </task>
+    <task id="LOCAL-00118" summary="监控修程标修改">
+      <created>1649831946204</created>
+      <option name="number" value="00118" />
+      <option name="presentableId" value="LOCAL-00118" />
+      <option name="project" value="LOCAL" />
+      <updated>1649831946205</updated>
+    </task>
+    <task id="LOCAL-00119" summary="车组监控排序修改，查询流程运行修改">
+      <created>1649925959911</created>
+      <option name="number" value="00119" />
+      <option name="presentableId" value="LOCAL-00119" />
+      <option name="project" value="LOCAL" />
+      <updated>1649925959912</updated>
+    </task>
+    <task id="LOCAL-00120" summary="修改关键作业类型配置">
+      <created>1649987427766</created>
+      <option name="number" value="00120" />
+      <option name="presentableId" value="LOCAL-00120" />
+      <option name="project" value="LOCAL" />
+      <updated>1649987427767</updated>
+    </task>
+    <task id="LOCAL-00121" summary="返回结果json序列化优化">
+      <created>1649993003711</created>
+      <option name="number" value="00121" />
+      <option name="presentableId" value="LOCAL-00121" />
+      <option name="project" value="LOCAL" />
+      <updated>1649993003711</updated>
+    </task>
+    <task id="LOCAL-00122" summary="关键作业类型修改">
+      <created>1650005137050</created>
+      <option name="number" value="00122" />
+      <option name="presentableId" value="LOCAL-00122" />
+      <option name="project" value="LOCAL" />
+      <updated>1650005137050</updated>
+    </task>
+    <task id="LOCAL-00123" summary="关键作业类型修改">
+      <created>1650005204637</created>
+      <option name="number" value="00123" />
+      <option name="presentableId" value="LOCAL-00123" />
+      <option name="project" value="LOCAL" />
+      <updated>1650005204637</updated>
+    </task>
+    <task id="LOCAL-00124" summary="车组重联状态bug修改,关键作业监控bug修改,流程运行排序">
+      <created>1650016139156</created>
+      <option name="number" value="00124" />
+      <option name="presentableId" value="LOCAL-00124" />
+      <option name="project" value="LOCAL" />
+      <updated>1650016139156</updated>
+    </task>
+    <task id="LOCAL-00125" summary="错误字段名修改,重联车组添加记录历史表">
+      <created>1650261859039</created>
+      <option name="number" value="00125" />
+      <option name="presentableId" value="LOCAL-00125" />
+      <option name="project" value="LOCAL" />
+      <updated>1650261859040</updated>
+    </task>
+    <task id="LOCAL-00126" summary="车组重联状态bug修改,关键作业记录添加驳回撤销">
+      <created>1650271710964</created>
+      <option name="number" value="00126" />
+      <option name="presentableId" value="LOCAL-00126" />
+      <option name="project" value="LOCAL" />
+      <updated>1650271710964</updated>
+    </task>
+    <task id="LOCAL-00127" summary="刷卡时间排序">
+      <created>1650355928730</created>
+      <option name="number" value="00127" />
+      <option name="presentableId" value="LOCAL-00127" />
+      <option name="project" value="LOCAL" />
+      <updated>1650355928730</updated>
+    </task>
+    <task id="LOCAL-00128" summary="关键作业监控修改,节点刷卡返回流程运行id">
+      <created>1650364804087</created>
+      <option name="number" value="00128" />
+      <option name="presentableId" value="LOCAL-00128" />
+      <option name="project" value="LOCAL" />
+      <updated>1650364804087</updated>
+    </task>
+    <task id="LOCAL-00129" summary="作业包过滤已删除的">
+      <created>1650442103776</created>
+      <option name="number" value="00129" />
+      <option name="presentableId" value="LOCAL-00129" />
+      <option name="project" value="LOCAL" />
+      <updated>1650442103776</updated>
+    </task>
+    <task id="LOCAL-00130" summary="关键作业监控排序,切换列位bug修改">
+      <created>1650451421117</created>
+      <option name="number" value="00130" />
+      <option name="presentableId" value="LOCAL-00130" />
+      <option name="project" value="LOCAL" />
+      <updated>1650451421117</updated>
+    </task>
+    <task id="LOCAL-00131" summary="切换列位修改">
+      <created>1650509380434</created>
+      <option name="number" value="00131" />
+      <option name="presentableId" value="LOCAL-00131" />
+      <option name="project" value="LOCAL" />
+      <updated>1650509380435</updated>
+    </task>
+    <task id="LOCAL-00132" summary="调车修改">
+      <created>1650515080276</created>
+      <option name="number" value="00132" />
+      <option name="presentableId" value="LOCAL-00132" />
+      <option name="project" value="LOCAL" />
+      <updated>1650515080276</updated>
+    </task>
+    <task id="LOCAL-00133" summary="流程配置修改后获取不到流程信息修改">
+      <created>1650607744381</created>
+      <option name="number" value="00133" />
+      <option name="presentableId" value="LOCAL-00133" />
+      <option name="project" value="LOCAL" />
+      <updated>1650607744381</updated>
+    </task>
+    <task id="LOCAL-00134" summary="去除关键作业记录查询废弃代码">
+      <created>1650615064543</created>
+      <option name="number" value="00134" />
+      <option name="presentableId" value="LOCAL-00134" />
+      <option name="project" value="LOCAL" />
+      <updated>1650615064543</updated>
+    </task>
+    <task id="LOCAL-00135" summary="修改流程配置添加提示">
+      <created>1650786719089</created>
+      <option name="number" value="00135" />
+      <option name="presentableId" value="LOCAL-00135" />
+      <option name="project" value="LOCAL" />
+      <updated>1650786719089</updated>
+    </task>
+    <task id="LOCAL-00136" summary="修改流程配置添加提示(默认值修改)">
+      <created>1650788266933</created>
+      <option name="number" value="00136" />
+      <option name="presentableId" value="LOCAL-00136" />
+      <option name="project" value="LOCAL" />
+      <updated>1650788266933</updated>
+    </task>
+    <task id="LOCAL-00137" summary="修改流程配置提示">
+      <created>1650790632186</created>
+      <option name="number" value="00137" />
+      <option name="presentableId" value="LOCAL-00137" />
+      <option name="project" value="LOCAL" />
+      <updated>1650790632186</updated>
+    </task>
+    <task id="LOCAL-00138" summary="添加删除流程配置提示">
+      <created>1650870425167</created>
+      <option name="number" value="00138" />
+      <option name="presentableId" value="LOCAL-00138" />
+      <option name="project" value="LOCAL" />
+      <updated>1650870425167</updated>
+    </task>
+    <task id="LOCAL-00139" summary="修改查询同组流程条件下流程接口,添加排除本身">
+      <created>1650876591868</created>
+      <option name="number" value="00139" />
+      <option name="presentableId" value="LOCAL-00139" />
+      <option name="project" value="LOCAL" />
+      <updated>1650876591868</updated>
+    </task>
+    <task id="LOCAL-00140" summary="删除流程配置提示修改">
+      <created>1650882864080</created>
+      <option name="number" value="00140" />
+      <option name="presentableId" value="LOCAL-00140" />
+      <option name="project" value="LOCAL" />
+      <updated>1650882864080</updated>
+    </task>
+    <task id="LOCAL-00141" summary="流程切换时节点配置不匹配导致节点状态不正确修改">
+      <created>1650957487867</created>
+      <option name="number" value="00141" />
+      <option name="presentableId" value="LOCAL-00141" />
+      <option name="project" value="LOCAL" />
+      <updated>1650957487868</updated>
+    </task>
+    <task id="LOCAL-00142" summary="故障转关键作业修改">
+      <created>1650969118805</created>
+      <option name="number" value="00142" />
+      <option name="presentableId" value="LOCAL-00142" />
+      <option name="project" value="LOCAL" />
+      <updated>1650969118805</updated>
+    </task>
+    <task id="LOCAL-00143" summary="修改故障转关键作业">
+      <created>1651041481261</created>
+      <option name="number" value="00143" />
+      <option name="presentableId" value="LOCAL-00143" />
+      <option name="project" value="LOCAL" />
+      <updated>1651041481261</updated>
+    </task>
+    <task id="LOCAL-00144" summary="修改故障转关键作业">
+      <created>1651044842751</created>
+      <option name="number" value="00144" />
+      <option name="presentableId" value="LOCAL-00144" />
+      <option name="project" value="LOCAL" />
+      <updated>1651044842751</updated>
+    </task>
+    <task id="LOCAL-00145" summary="去除故障不能重复转关键作业过滤条件">
+      <created>1651054120856</created>
+      <option name="number" value="00145" />
+      <option name="presentableId" value="LOCAL-00145" />
+      <option name="project" value="LOCAL" />
+      <updated>1651054120856</updated>
+    </task>
+    <task id="LOCAL-00146" summary="去除故障转关键作业过滤">
+      <created>1651107065568</created>
+      <option name="number" value="00146" />
+      <option name="presentableId" value="LOCAL-00146" />
+      <option name="project" value="LOCAL" />
+      <updated>1651107065568</updated>
+    </task>
+    <task id="LOCAL-00147" summary="关键作业监控是否获取驳回信息改为前端传参数">
+      <created>1651110938342</created>
+      <option name="number" value="00147" />
+      <option name="presentableId" value="LOCAL-00147" />
+      <option name="project" value="LOCAL" />
+      <updated>1651110938342</updated>
+    </task>
+    <task id="LOCAL-00148" summary="关键作业监控修改,故障转关键作业带图片">
+      <created>1651132461939</created>
+      <option name="number" value="00148" />
+      <option name="presentableId" value="LOCAL-00148" />
+      <option name="project" value="LOCAL" />
+      <updated>1651132461939</updated>
+    </task>
+    <task id="LOCAL-00149" summary="修改获取故障附件名接口">
+      <created>1651136318534</created>
+      <option name="number" value="00149" />
+      <option name="presentableId" value="LOCAL-00149" />
+      <option name="project" value="LOCAL" />
+      <updated>1651136318534</updated>
+    </task>
+    <task id="LOCAL-00150" summary="优化关键作业监控查询接口">
+      <created>1651214015762</created>
+      <option name="number" value="00150" />
+      <option name="presentableId" value="LOCAL-00150" />
+      <option name="project" value="LOCAL" />
+      <updated>1651214015763</updated>
+    </task>
+    <task id="LOCAL-00151" summary="作业记录查询,检修信息bug修改">
+      <created>1651743519905</created>
+      <option name="number" value="00151" />
+      <option name="presentableId" value="LOCAL-00151" />
+      <option name="project" value="LOCAL" />
+      <updated>1651743519905</updated>
+    </task>
+    <task id="LOCAL-00152" summary="获取作业包接口整理,关键作业查询bug修改,获取检修配置根据作业包调整">
+      <created>1651910115048</created>
+      <option name="number" value="00152" />
+      <option name="presentableId" value="LOCAL-00152" />
+      <option name="project" value="LOCAL" />
+      <updated>1651910115049</updated>
+    </task>
+    <task id="LOCAL-00153" summary="修改检修信息">
+      <created>1652059506009</created>
+      <option name="number" value="00153" />
+      <option name="presentableId" value="LOCAL-00153" />
+      <option name="project" value="LOCAL" />
+      <updated>1652059506010</updated>
+    </task>
+    <task id="LOCAL-00154" summary="优化代码">
+      <created>1652089570789</created>
+      <option name="number" value="00154" />
+      <option name="presentableId" value="LOCAL-00154" />
+      <option name="project" value="LOCAL" />
+      <updated>1652089570789</updated>
+    </task>
+    <task id="LOCAL-00155" summary="关键作业bug修改">
+      <created>1652176579715</created>
+      <option name="number" value="00155" />
+      <option name="presentableId" value="LOCAL-00155" />
+      <option name="project" value="LOCAL" />
+      <updated>1652176579715</updated>
+    </task>
+    <option name="localTasksCounter" value="156" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="调车修改" />
+    <MESSAGE value="流程配置修改后获取不到流程信息修改" />
+    <MESSAGE value="去除关键作业记录查询废弃代码" />
+    <MESSAGE value="修改流程配置添加提示" />
+    <MESSAGE value="修改流程配置添加提示(默认值修改)" />
+    <MESSAGE value="修改流程配置提示" />
+    <MESSAGE value="添加删除流程配置提示" />
+    <MESSAGE value="修改查询同组流程条件下接口添加排除本身" />
+    <MESSAGE value="修改查询同组流程条件下流程接口,添加排除本身" />
+    <MESSAGE value="删除流程配置提示修改" />
+    <MESSAGE value="流程切换时节点配置不匹配导致节点状态不正常修改" />
+    <MESSAGE value="流程切换时节点配置不匹配导致节点状态不正确修改" />
+    <MESSAGE value="故障转关键作业修改" />
+    <MESSAGE value="修改故障转关键作业" />
+    <MESSAGE value="去除故障不能重复转关键作业过滤条件" />
+    <MESSAGE value="去除故障转关键作业过滤" />
+    <MESSAGE value="关键作业监控是否获取驳回信息改为前端传参数" />
+    <MESSAGE value="关键作业监控修改,故障转关键作业带图片" />
+    <MESSAGE value="修改获取故障附件名接口" />
+    <MESSAGE value="优化关键作业监控查询接口" />
+    <MESSAGE value="作业记录查询,检修信息bug修改" />
+    <MESSAGE value="获取作业包接口整理,关键作业查询bug修改,获取检修配置根据作业包调整" />
+    <MESSAGE value="修改检修信息" />
+    <MESSAGE value="优化代码" />
+    <MESSAGE value="关键作业bug修改" />
+    <option name="LAST_COMMIT_MESSAGE" value="关键作业bug修改" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="414" y="115" width="1092" height="925" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1651716623810">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="414" y="115" width="1092" height="925" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1651716623810" />
+    <state x="720" y="320" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1646615432819">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="720" y="320" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1646615432819" />
+    <state x="765" y="225" key="#com.intellij.ide.util.MemberChooser" timestamp="1651889544131">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="765" y="225" key="#com.intellij.ide.util.MemberChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1651889544131" />
+    <state x="767" y="443" key="#com.intellij.refactoring.move.MoveHandler.SelectRefactoringDialog" timestamp="1649986147208">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="767" y="443" key="#com.intellij.refactoring.move.MoveHandler.SelectRefactoringDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1649986147208" />
+    <state x="389" y="387" width="1141" height="273" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.classes" timestamp="1646728779850">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="389" y="387" width="1141" height="273" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.classes/0.0.1920.1040@0.0.1920.1040" timestamp="1646728779850" />
+    <state x="736" y="361" key="#com.intellij.refactoring.move.moveInner.MoveInnerDialog" timestamp="1648794595924">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="736" y="361" key="#com.intellij.refactoring.move.moveInner.MoveInnerDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1648794595924" />
+    <state x="0" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog" timestamp="1650960141184">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="0" y="0" key="#com.intellij.refactoring.rename.AutomaticRenamingDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1650960141184" />
+    <state x="690" y="266" key="#com.intellij.refactoring.typeMigration.ui.FailedConversionsDialog" timestamp="1648869256213">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="690" y="266" key="#com.intellij.refactoring.typeMigration.ui.FailedConversionsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1648869256213" />
+    <state x="607" y="346" width="1010" height="596" key="#xdebugger.evaluate" timestamp="1651819938823">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="607" y="346" width="1010" height="596" key="#xdebugger.evaluate/0.0.1920.1040@0.0.1920.1040" timestamp="1651819938823" />
+    <state x="514" y="97" key="CommitChangelistDialog2" timestamp="1652176574615">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="514" y="97" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1652176574615" />
+    <state width="1748" height="847" key="DebuggerActiveHint" timestamp="1652166467848">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1748" height="847" key="DebuggerActiveHint/0.0.1920.1040@0.0.1920.1040" timestamp="1652166467848" />
+    <state x="195" y="99" width="1536" height="860" key="DiffContextDialog" timestamp="1652176567867">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="195" y="99" width="1536" height="860" key="DiffContextDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1652176567867" />
+    <state x="493" y="163" key="FileChooserDialogImpl" timestamp="1653893407935">
+      <screen x="0" y="0" width="1280" height="680" />
+    </state>
+    <state x="493" y="163" key="FileChooserDialogImpl/0.0.1280.680@0.0.1280.680" timestamp="1653893407935" />
+    <state x="740" y="274" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1650589723421" />
+    <state width="1877" height="331" key="GridCell.Tab.0.bottom" timestamp="1652176596346">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="331" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1652176596346" />
+    <state width="1877" height="331" key="GridCell.Tab.0.center" timestamp="1652176596346">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="331" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1652176596346" />
+    <state width="1877" height="331" key="GridCell.Tab.0.left" timestamp="1652176596346">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="331" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1652176596346" />
+    <state width="1877" height="331" key="GridCell.Tab.0.right" timestamp="1652176596346">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="331" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1652176596346" />
+    <state width="1877" height="331" key="GridCell.Tab.1.bottom" timestamp="1652176596346">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="331" key="GridCell.Tab.1.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1652176596346" />
+    <state width="1877" height="331" key="GridCell.Tab.1.center" timestamp="1652176596346">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="331" key="GridCell.Tab.1.center/0.0.1920.1040@0.0.1920.1040" timestamp="1652176596346" />
+    <state width="1877" height="331" key="GridCell.Tab.1.left" timestamp="1652176596346">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="331" key="GridCell.Tab.1.left/0.0.1920.1040@0.0.1920.1040" timestamp="1652176596346" />
+    <state width="1877" height="331" key="GridCell.Tab.1.right" timestamp="1652176596346">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="331" key="GridCell.Tab.1.right/0.0.1920.1040@0.0.1920.1040" timestamp="1652176596346" />
+    <state width="1877" height="331" key="GridCell.Tab.2.bottom" timestamp="1652176596346">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="331" key="GridCell.Tab.2.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1652176596346" />
+    <state width="1877" height="331" key="GridCell.Tab.2.center" timestamp="1652176596346">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="331" key="GridCell.Tab.2.center/0.0.1920.1040@0.0.1920.1040" timestamp="1652176596346" />
+    <state width="1877" height="331" key="GridCell.Tab.2.left" timestamp="1652176596346">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="331" key="GridCell.Tab.2.left/0.0.1920.1040@0.0.1920.1040" timestamp="1652176596346" />
+    <state width="1877" height="331" key="GridCell.Tab.2.right" timestamp="1652176596346">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1877" height="331" key="GridCell.Tab.2.right/0.0.1920.1040@0.0.1920.1040" timestamp="1652176596346" />
+    <state x="497" y="240" key="RollbackChangesDialog" timestamp="1652079272661">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="497" y="240" key="RollbackChangesDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1652079272661" />
+    <state x="461" y="164" key="SettingsEditor" timestamp="1649404598165">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="461" y="164" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1649404598165" />
+    <state x="319" y="254" key="VcsDiffUtil.ChangesDialog" timestamp="1651802117922">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="319" y="254" key="VcsDiffUtil.ChangesDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1651802117922" />
+    <state width="968" height="500" key="XDebugger.FullValuePopup" timestamp="1649753210782">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="968" height="500" key="XDebugger.FullValuePopup/0.0.1920.1040@0.0.1920.1040" timestamp="1649753210782" />
+    <state x="92" y="92" width="1736" height="856" maximized="true" key="com.intellij.history.integration.ui.views.FileHistoryDialog" timestamp="1650872561127">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="92" y="92" width="1736" height="856" maximized="true" key="com.intellij.history.integration.ui.views.FileHistoryDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1650872561127" />
+    <state x="385" y="254" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog" timestamp="1651800664873">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="385" y="254" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1651800664873" />
+    <state x="773" y="359" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1648863517182">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="773" y="359" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1920.1040@0.0.1920.1040" timestamp="1648863517182" />
+    <state x="731" y="331" key="com.intellij.testIntegration.createTest.CreateTestDialog" timestamp="1648794922195">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="731" y="331" key="com.intellij.testIntegration.createTest.CreateTestDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1648794922195" />
+    <state x="485" y="249" width="915" height="641" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1652078852672">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="485" y="249" width="915" height="641" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.0.1920.1040@0.0.1920.1040" timestamp="1652078852672" />
+    <state x="690" y="279" key="extract.method.dialog" timestamp="1648867083426">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="690" y="279" key="extract.method.dialog/0.0.1920.1040@0.0.1920.1040" timestamp="1648867083426" />
+    <state x="682" y="115" width="1094" height="688" key="find.popup" timestamp="1652176037903">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="682" y="115" width="1094" height="688" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1652176037903" />
+    <state x="655" y="276" key="refactoring.ChangeSignatureDialog" timestamp="1652078636038">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="655" y="276" key="refactoring.ChangeSignatureDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1652078636038" />
+    <state x="616" y="240" width="672" height="677" key="run.anything.popup" timestamp="1650867415186">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="616" y="240" width="672" height="677" key="run.anything.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1650867415186" />
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1650942319905">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1650942319905" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/ydzb_emis_lightrail_parent$test__3_.ic" NAME="test (3) Coverage Results" MODIFIED="1639983077694" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>com.ydzbinfo.emis.trainRepair.repairworkflow.*</FILTER>
+    </SUITE>
+  </component>
+</project>

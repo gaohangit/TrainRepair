@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>一级修作业过程记录</title>
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="${publicStaticPath}/vue/vue.js"></script>
+    <link rel="stylesheet" href="${publicStaticPath}/elementUI/index.css">
+    <script src="${publicStaticPath}/elementUI/index.js"></script>
+    <script src="${ctxPath}/static/lib/elementUI/el-table-fix.js"></script>
+    <script src="${publicStaticPath}/vue/axios.min.js"></script>
+    <script src="${ctxPath}/static/lib/image_url.js"></script>
+    <script src="${publicStaticPath}/IE/babel-browser.min.js"></script>
+    <script>
+        var ctxpath = "${ctxPath}";
+    </script>
+    <script src="${publicStaticPath}/jquery/jquery-1.10.2.min.js"></script>
+    
+    <script src="${ctxPath}/static/utils/GeneralUtil.js"></script>
+    <link rel="stylesheet"
+        href="${ctxPath}/static/trainRepair/overhaulmanagent/oneWorkManagement/css/oneWorkManagement.css">
+    </head>
+</head>
+
+<body class="body">
+  <div id="one" v-cloak>
+    <!-- 头部以及搜索框 -->
+    <el-card class="box-card">
+      <div slot="header">
+        <span class="adorn"></span><h2>{{pageTitle}}</h2>
+      </div>
+      
+      <div>
+        <el-row>
+          <el-col :span="5">
+            <template>
+              <label>开始日期：</label>
+              <el-date-picker v-model="search.starTime" style="width: 180px;" size="mini"
+                value-format="yyyy-MM-dd" type="date" placeholder="选择日期">
+              </el-date-picker>
+            </template>
+          </el-col>
+          <el-col :span="5">
+            <template>
+              <label>结束日期：</label>
+              <el-date-picker class="search.endtime" style="width: 180px;" size="mini" v-model="search.endTime"
+              value-format="yyyy-MM-dd" type="date" placeholder="选择日期">
+              </el-date-picker>
+            </template>
+          </el-col>
+          <el-col :span="5">
+            <template>
+              <label>车型：</label>
+              <el-select v-model="search.trainsetType" style="width: 180px;" size="mini" placeholder="请选择"
+                clearable filterable v-on:change=getTrainsetNameList>
+                <el-option v-for="item in trainTypeList" :key="item" :label="item" :value="item">
+                </el-option>
+              </el-select>
+            </template>
+          </el-col>
+          <el-col :span="5">
+            <template>
+              <label>车组：</label>
+              <el-select v-model="search.trainsetName" style="width: 180px;" size="mini" placeholder="请选择"
+                clearable filterable>
+                <el-option v-for="item in trainsetList" :key="item" :label="item" :value="item">
+                </el-option>
+              </el-select>
+            </template>
+          </el-col>
+          <el-col :span="5">
+            <template>
+              <label>作业班组：</label>
+              <el-select v-model="search.workTeam" style="width: 180px;" size="mini" placeholder="请选择" clearable
+                filterable v-on:change="getPersonByDept">
+                <el-option v-for="item in workTeamList" :key="item.id" :label="item.name" :value="item.id">
+                </el-option>
+              </el-select>
+            </template>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="5">
+            <template>
+              <label>作业人员：</label>
+              <el-select v-model="search.workPeople" style="width: 180px;" size="mini" placeholder="请选择"
+                clearable filterable>
+                <el-option v-for="item in workPeopleList" :key="item.workId" :label="item.workName"
+                    :value="item.workId">
+                </el-option>
+              </el-select>
+            </template>
+          </el-col>
+          <el-col :span="5">
+            <template>
+              <label>作业状态：</label>
+              <el-select v-model="search.workStatus" style="width: 180px;" size="mini" placeholder="请选择" clearable>
+                <el-option label="超时" value="超时">
+                </el-option>
+                <el-option label="欠时" value="欠时">
+                </el-option>
+                <el-option label="正常" value="正常">
+                </el-option>
+              </el-select>
+            </template>
+          </el-col>
+          <el-col :span="14" class="searchBtnBox">
+            <template>
+              <el-button type="primary" size="mini" v-on:click="clickList">查询</el-button>
+              <el-button type="primary" size="mini" v-on:click="repeatHandle">重置</el-button>
+              @if(shiro.hasPermission("oneWorkManagement:edit")){
+              <el-button type="primary" size="mini" v-on:click="addOneWorkProcess">新增</el-button>
+              @}
+            </template>
+            </el-col>
+        </el-row>
+      </div>
+      <!-- 表格以及分页 -->
+      <el-table :data="tableData" stripe :height="scrollHeight"
+        :header-cell-style="{background:'#d4e3ff',color:'#000'}" :row-class-name="tableRowClassName"
+        style="width: 100%;" class="listTable">
+        <el-table-column align="center" type="index" label="序号" width="80"></el-table-column>
+        <el-table-column align="center" label="作业班次" width="180">
+          <template slot-scope="scope">
+            {{scope.row.dayPlanId | operationShift}}
+          </template>
+        </el-table-column>
+        <el-table-column align="center" sortable prop="trainsetName" label="车组" width="180"
+          show-overflow-tooltip></el-table-column>
+        <el-table-column align="center" label="数据来源" width="140"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{scope.row.dataSource | datesourseFilter}}
+          </template>
+        </el-table-column>
+        <el-table-column align="center" sortable prop="itemName" label="作业内容" width="180"
+          show-overflow-tooltip> </el-table-column>
+        <el-table-column align="center" prop="deptName" label="作业班组" width="180" show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column align="center" sortable prop="workerName" label="作业人员" width="180"
+          show-overflow-tooltip></el-table-column>
+        <el-table-column align="center" sortable prop="startTime" label="开始时间" width="180"
+          show-overflow-tooltip> </el-table-column>
+        <el-table-column align="center" sortable prop="endTime" label="结束时间" width="180"
+          show-overflow-tooltip></el-table-column>
+        <el-table-column align="center" prop="carNos" label="作业辆序" width="180" show-overflow-tooltip>
+          <template slot-scope="scope">
+            {{scope.row.carNos.toString()}}
+          </template>
+        </el-table-column>
+        <el-table-column align="center" prop="totalTime" label="作业时长(分)" width="180" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span \@click="WorkTimeHandle(scope.row)"
+            style="cursor: pointer;color:#409eff;text-decoration: underline;">{{scope.row.totalTime == 0 ? '--' : scope.row.totalTime}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" prop="suspendedTime" label="暂停时长" width="180" show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column align="center" prop="timeStatus" label="作业状态" width="180" show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span>{{scope.row.timeStatus == '未知' ? '--' : scope.row.timeStatus}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" prop="standardPicCount" label="标准图片数量" width="180"
+          show-overflow-tooltip> </el-table-column>
+        <el-table-column align="center" prop="actualPicCount" label="实际图片数量" width="180"
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <span \@click="ClickPicCount(scope.row)"
+            style="cursor: pointer;color: #409eff;">{{scope.row.actualPicCount}}</span>
+          </template>
+        </el-table-column>
+        @if(shiro.hasPermission("oneWorkManagement:edit")){
+        <el-table-column align="center" label="操作" width="70px">
+          <template slot-scope="scope">
+            <i class="el-icon-edit-outline" \@click="updateOneWorkProcess(scope.row)"
+            style="cursor: pointer;color: #409eff;"></i>
+            <i class="el-icon-delete" \@click="deleteHandle(scope.row)"
+            style="cursor: pointer;color: #409eff;"></i>
+          </template>
+        </el-table-column>
+        @}
+      </el-table>
+      <div class="block" style="text-align: center;">
+        <el-pagination \@size-change="handleSizeChange" \@current-change="handleCurrentChange"
+          :current-page="pageNum" :page-sizes="[10, 20, 30, 40,100]" :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper" :total="total">
+        </el-pagination>
+      </div>
+    </el-card>
+
+    <!-- 点击新增按钮 -->
+    <el-dialog 
+      :title="addDialogTitle"
+      :visible.sync="oneWorkProcessDialog.visible"
+      width="55%"
+      :close-on-click-modal="false"
+      v-on:closed="onOneWorkProcessDialogClosed"
+      style="border-radius: 10px;"
+    >
+      <el-form :model="oneWorkProcessDialog" :rules="oneWorkProcessDialogRules" ref="oneWorkProcessDialog" label-width="80px">
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="作业班次：" prop="time">
+              <el-date-picker v-model="oneWorkProcessDialog.time" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"
+              :disabled="oneWorkProcessDialog.addOrUpdate == 'update'"  \@change="frequencyChange" style="width: 135px;">
+              </el-date-picker>
+              <el-select v-model="oneWorkProcessDialog.shift" style="width: 80px;" :disabled="oneWorkProcessDialog.addOrUpdate == 'update'" \@change="frequencyChange">
+                <el-option v-for="item in shiftList" :key="item.id" :label="item.name" :value="item.id">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="车组：" prop="trainset">
+              <el-select v-model="oneWorkProcessDialog.trainset" placeholder="请选择" filterable clearable v-on:change="getTrainset"
+              :disabled="oneWorkProcessDialog.addOrUpdate == 'update'" value-key="trainsetId">
+                  <el-option v-for="item in addTrainsetList" :key="item.trainsetId" :label="item.trainsetName"
+                      :value="item">
+                  </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="作业内容：" prop="workConent">
+              <el-select v-model="oneWorkProcessDialog.workConent" placeholder="请选择" :disabled="oneWorkProcessDialog.addOrUpdate == 'update'" filterable clearable value-key="sItemcode">
+                  <el-option v-for="(item,index) in workConentList" :key="item.sItemcode" :label="item.sItemname"
+                      :value="item">
+                  </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="作业辆序：" prop="Carno">
+              <el-select v-model="oneWorkProcessDialog.Carno" collapse-tags multiple placeholder="请选择" filterable clearable
+              :disabled="oneWorkProcessDialog.addOrUpdate == 'update'" v-on:change="carNoChange">
+                  <el-option v-for="item in Carnos" :key="item" :label="item" :value="item">
+                  </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="作业班组：" prop="workTeam">
+              <el-select v-model="oneWorkProcessDialog.workTeam" placeholder="请选择" filterable clearable value-key="deptCode"
+              :disabled="oneWorkProcessDialog.addOrUpdate == 'update'" v-on:change="getPersonByDept">
+                <el-option v-for="item in addWorkTeamList" :key="item.deptCode" :label="item.deptName" :value="item">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="作业人员：" prop="workPeople">
+              <el-select
+                v-model="oneWorkProcessDialog.workPeople"
+                multiple
+                collapse-tags
+                filterable
+                clearable
+                value-key="workId"
+                :disabled="oneWorkProcessDialog.addOrUpdate == 'update'"
+                placeholder="请选择">
+                <el-option
+                  v-for="item in addWorkPeopleList"
+                  :key="item.workId"
+                  :label="item.workName"
+                  :value="item">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="开始时间：" prop="starTime">
+              <el-date-picker value-format="yyyy-MM-dd HH:mm:ss" v-model="oneWorkProcessDialog.starTime" type="datetime"
+                placeholder="选择日期时间">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="结束时间：" prop="endTime">
+              <el-date-picker value-format="yyyy-MM-dd HH:mm:ss" v-model="oneWorkProcessDialog.endTime" type="datetime"
+                placeholder="选择日期时间">
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <div class="dialo">
+            <span class="dialspan"> 已上传图片数量：</span>
+            <div style="display: inline-block;">{{imgLength}}</div>
+            <el-button type="primary" size="mini" style="width: 90px; margin-left: 20px;"
+             v-on:click="pictureHandle">选择图片</el-button>
+             <span>标准图片数量：{{oneWorkProcessDialog.workConent.iPiccount !== '' && oneWorkProcessDialog.workConent.iPiccount !== null && oneWorkProcessDialog.workConent.iPiccount !== undefined ? oneWorkProcessDialog.workConent.iPiccount : '-' }}</span>
+        </div>
+
+        <div class="popButton" style="margin-top: 10px; text-align: center;">
+            <el-button type="primary" size="mini" v-on:click="dialogServe('oneWorkProcessDialog')">保存</el-button>
+            <el-button type="primary" size="mini" v-on:click="dialogRepeat">取消</el-button>
+        </div>
+      </el-form>
+    </el-dialog>
+
+    <!-- 点击列表的作业时长 -->
+    <el-dialog title="一级修作业记录 -- 作业时长" :visible.sync="workTimeDialog.visible" width="40%" :close-on-click-modal="false">
+      <table class="dialNews">
+        <tr>
+          <td>作业班次：{{workTimeDialog.workLong.dayPlanId | operationShift}}</td>
+          <td>车组：{{workTimeDialog.workLong.trainsetId}}</td>
+        </tr>
+        <tr>
+          <td>作业内容：{{workTimeDialog.workLong.itemName}}</td>
+          <td>作业时长：{{workTimeDialog.workLong.totalTime == 0 ? '--' : workTimeDialog.workLong.totalTime}}</td>
+        </tr>
+      </table>
+      <div class="diaSpan">
+        <span v-for="item in workTimeDialog.workDeteil" :key="item.recordId" class="dia">
+          <span>{{item.repairTime}}</span>
+          <span :class="{startAndEnd : item.timeTag == 1 || item.timeTag == 4}" style="margin-left: 10px;">
+            {{item.timeTag | timeTagFilter}}
+          </span>
+        </span>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" size="mini" v-on:click="workTimeDialog.visible = false">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- 点击dialog中得上传图片按钮 -->
+    <el-dialog
+      title="一级修作业记录 -- 上传图片"
+      :visible.sync="addPicDialog.visible"
+      width="50%"
+      :close-on-click-modal="false"
+    >
+      <span>作业辆序：</span>
+      <el-select v-model="addPicDialog.uploadCarno" clearable placeholder="请选择" clearable filterable style="margin-right: 20px;">
+        <el-option v-for="item in addPicDialog.uploadCarnos" :key="item" :label="item" :value="item">
+        </el-option>
+      </el-select>
+      <el-upload class="upload-demo" action="#" multiple list-type="picture" :show-file-list="false"
+        :http-request="successImg" :before-upload="beforeAvatarUploadPdf">
+        <el-button type="primary" size="mini"
+            v-on:click="select_img">选择图片
+        </el-button>
+      </el-upload>
+      <div class="picAll">
+        <p>图片展示：</p>
+        <div style="height: 275px; background: #f5f5f5;">
+          <ul class="picUl">
+            <li class="picLi" v-for="(item, key, index) in imgList" :key="key">
+              <el-divider content-position="left">{{key}}车</el-divider>
+              <div class="img-list">
+                <div v-for="(img, imgIndex) in imgList[key]" :key="img">
+                  <!-- <img :src="img" :alt="img.name" \@dblclick="dbImage(img)"> -->
+                  <el-image class="img" :src="img" fit="contain" :preview-src-list="[img]">
+                  </el-image>
+                  <div class="delete_img" \@click="deleteImgs(imgIndex, key)">
+                      <i class="el-icon-delete"></i>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="mini" type="primary" v-on:click="dialogVisiblePicOk">确 定</el-button>
+        <el-button size="mini" type="primary" v-on:click="dialogVisiblePicNo">取 消</el-button>
+      </span>
+    </el-dialog>
+
+    <!--点击列表的实际图片数量  -->
+    <el-dialog title="一级修作业记录 -- 实际图片数量" :visible.sync="picCountDialog.visible" width="50%" :close-on-click-modal="false">
+      <div class="picAll">
+        <p>图片展示：</p>
+        <div style="height: 275px; background: #f5f5f5;">
+          <ul class="picUl">
+            <li class="picLi" v-for="(item,index) in addPicDialog.uploadCarnos" :key="item">
+              <el-divider content-position="left">{{item | carNosFilter}}车</el-divider>
+              <div class="img-list">
+                <div v-for="(img, imgIndex) in imgList[item]" :key="img">
+                  <el-image class="img" :src="img" fit="contain" :preview-src-list="imgList[item]">
+                  </el-image>
+                  <!-- <img :src="img" :alt="img.name" \@dblclick="dbImage(img)"> -->
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="mini" type="primary" v-on:click="picCountDialog.visible = false">确 定</el-button>
+      </span>
+    </el-dialog>
+  </div>
+
+
+  <!-- <script src="${ctxPath}/static/trainRepair/overhaulmanagent/oneWorkManagement/js/oneWorkManagement.js"
+      type="text/babel"></script> -->
+  <script src="${ctxPath}/static/trainRepair/overhaulmanagent/oneWorkManagement/js/oneWorkManagement.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>派工记录查询</title>
+    <script src="${publicStaticPath}/IE/babel-browser.min.js"></script>
+
+    <link rel="stylesheet" href="${publicStaticPath}/elementUI/index.css" />
+    <script src="${publicStaticPath}/vue/vue.js"></script>
+    <script src="${publicStaticPath}/elementUI/index.js"></script>
+    <script src="${ctxPath}/static/lib/day/day.js"></script>
+    <script src="${publicStaticPath}/vue/axios.min.js"></script>
+
+    <script src="${ctxPath}/static/config/index.js"></script>
+    <script src="${ctxPath}/static/utils/GeneralUtil.js"></script>
+    <script src="${ctxPath}/static/trainRepair/trainDispatch/repairDispatchRecordQuery/api/index.js"></script>
+
+    <link rel="stylesheet" href="${ctxPath}/static/components/multipleSelect/multipleSelect.css" />
+    <script src="${ctxPath}/static/components/multipleSelect/multipleSelect.js"></script>
+
+    <link rel="stylesheet" href="${publicStaticPath}/common/base.css" />
+    <link rel="stylesheet" href="${ctxPath}/static/trainRepair/trainDispatch/repairDispatchRecordQuery/css/index.css" />
+  </head>
+  <body>
+    <div id="app" v-cloak>
+      <el-card class="box-card">
+        <div slot="header">
+          <span class="adorn"></span><h2>{{pageTitle}}</h2>
+        </div>
+        <el-container>
+          <el-header>
+            <el-form ref="queryFormRef" :model="queryFormData" :rules="queryFormRules" label-width="100px">
+              <el-row type="flex">
+                <el-col :span="24" class="form-left">
+                  <el-form-item label="运用所：" prop="unitCode" v-if="isCenter">
+                    <el-select v-model="queryFormData.unitCode" \@change="unitCodeChange">
+                      <el-option
+                        v-for="item in unitList"
+                        :key="item.unitCode"
+                        :label="item.unitName"
+                        :value="item.unitCode"
+                      ></el-option>
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item label="开始日期：" prop="startDate">
+                    <el-date-picker
+                      v-model="queryFormData.startDate"
+                      type="date"
+                      value-format="yyyy-MM-dd"
+                      placeholder="选择日期"
+                    ></el-date-picker>
+                  </el-form-item>
+                  <el-form-item label="结束日期：" prop="endDate">
+                    <el-date-picker
+                      v-model="queryFormData.endDate"
+                      type="date"
+                      value-format="yyyy-MM-dd"
+                      placeholder="选择日期"
+                    ></el-date-picker>
+                  </el-form-item>
+                  <el-form-item label="车型：" prop="trainType">
+                    <el-select v-model="queryFormData.trainType" \@change="trainsetTypeChange" clearable filterable>
+                      <el-option
+                      v-for="item in trainTypeList"
+                      :key="item.traintype"
+                      :value="item.traintype"
+                      :label="item.traintype"
+                    ></el-option>
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item label="车组：" prop="trainsetIdList">
+                    <!-- <el-tooltip effect="dark" :content="trainsetIdTooltipShow" :disabled="!trainsetIdTooltipShow" placement="right"> -->
+                    <el-select multiple collapse-tags v-model="queryFormData.trainsetIdList" clearable filterable>
+                      <el-option
+                        v-for="item in trainsetList"
+                        :key="item.trainsetid"
+                        :label="item.trainsetname"
+                        :value="item.trainsetid"
+                      ></el-option>
+                    </el-select>
+                    <!-- </el-tooltip> -->
+                  </el-form-item>
+                  <el-form-item label="作业类型：" prop="repairType">
+                    <el-select v-model="queryFormData.repairType" clearable filterable>
+                      <el-option
+                        v-for="item in itemTypeList"
+                        :key="item.itemTypeCode"
+                        :label="item.itemTypeName"
+                        :value="item.itemTypeCode"
+                      ></el-option>
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item label="作业班组：" prop="branchCode">
+                    <el-select
+                      v-model="queryFormData.branchCode"
+                      \@focus="getWorkTeamsByUnitCode(queryFormData.unitCode)"
+                      \@change="branchCodeChange"
+                      clearable
+                      filterable
+                    >
+                      <el-option
+                        v-for="item in workTeamList"
+                        :key="item.id"
+                        :label="item.name"
+                        :value="item.id"
+                      ></el-option>
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item label="作业人员：" prop="workerName">
+                    <el-autocomplete
+                      v-model="queryFormData.workerName"
+                      placeholder="请输入"
+                      :fetch-suggestions="querySearch"
+                      clearable
+                    >
+                      <template v-slot="{item}"> {{item.value = item.workName}} </template>
+                    </el-autocomplete>
+                  </el-form-item>
+                  <el-form-item label="作业任务：" prop="packetName">
+                    <el-input v-model.trim="queryFormData.packetName" clearable placeholder="请输入"></el-input>
+                  </el-form-item>
+                  <el-form-item label="作业项目：" prop="itemName">
+                    <el-input v-model.trim="queryFormData.itemName" clearable placeholder="请输入"></el-input>
+                  </el-form-item>
+                  <el-form-item style="flex: 1; text-align: right">
+                    <el-button type="primary" size="mini" \@click="getQueryTaskAllotList">查询</el-button>
+                    <el-button type="primary" size="mini" \@click="resetQueryFormFields">重置</el-button>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </el-form>
+          </el-header>
+          <el-main>
+            <div class="main-table" ref="mainTable">
+              <el-table :data="taskAllotData" :height="tableHeight" border>
+                <el-table-column type="index" label="序号" width="50"></el-table-column>
+                <el-table-column label="运用所" prop="unitName" show-overflow-tooltip v-if="isCenter"></el-table-column>
+                <el-table-column
+                  label="日计划"
+                  :formatter="dayPlanFormatter"
+                  sortable
+                  :sort-method="dayPlanSort"
+                  show-overflow-tooltip
+                >
+                </el-table-column>
+                <el-table-column label="车组" prop="trainsetName" sortable show-overflow-tooltip></el-table-column>
+                <el-table-column
+                  label="作业类型"
+                  prop="packetType"
+                  :formatter="packetTypeFormatter"
+                  sortable
+                  show-overflow-tooltip
+                >
+                </el-table-column>
+                <el-table-column label="作业任务" sortable prop="packetName" show-overflow-tooltip></el-table-column>
+                <el-table-column label="作业项目" sortable prop="itemName" show-overflow-tooltip></el-table-column>
+                <el-table-column label="辆序/部件" sortable prop="carNos" show-overflow-tooltip>
+                  <template slot-scope="scope">{{scope.row.carNos | carNosStr}}</template>
+                </el-table-column>
+                <el-table-column label="作业班组" sortable prop="deptName" show-overflow-tooltip></el-table-column>
+                <el-table-column label="作业人员" prop="workerNameList" show-overflow-tooltip>
+                  <template slot-scope="scope">{{scope.row.workerNameList.join(',')}}</template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </el-main>
+          <el-footer>
+            <el-pagination
+              :current-page="pageNum"
+              \@current-change="pageNumChange"
+              :page-sizes="[10, 20, 50,100]"
+              :page-size="pageSize"
+              \@size-change="pageSizeChange"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="tablePageTotal"
+            >
+            </el-pagination>
+          </el-footer>
+        </el-container>
+      </el-card>
+    </div>
+    <script
+      type="text/babel"
+      src="${ctxPath}/static/trainRepair/trainDispatch/repairDispatchRecordQuery/js/index.js"
+    ></script>
+  </body>
+</html>

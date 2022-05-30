@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" itemNames="width=device-width, initial-scale=1.0" />
+    <title>一级修作业统计</title>
+    <script src="${publicStaticPath}/IE/babel-browser.min.js"></script>
+    <link rel="stylesheet" href="${publicStaticPath}/elementUI/index.css" />
+    <script src="${publicStaticPath}/vue/vue.js"></script>
+    <script src="${publicStaticPath}/elementUI/index.js"></script>
+    <script src="${ctxPath}/static/lib/day/day.js"></script>
+    <script src="${publicStaticPath}/vue/axios.min.js"></script>
+    <script src="${publicStaticPath}/echarts5.0/echarts.min.js"></script>
+
+    <script src="${ctxPath}/static/config/index.js"></script>
+
+    <script src="${ctxPath}/static/trainRepair/jobStatistics/oneJobStatistics/api/index.js"></script>
+    <script src="${ctxPath}/static/utils/GeneralUtil.js"></script>
+
+    <link rel="stylesheet" href="${ctxPath}/static/components/multipleSelect/multipleSelect.css" />
+    <script src="${ctxPath}/static/components/multipleSelect/multipleSelect.js"></script>
+
+    <link rel="stylesheet" href="${publicStaticPath}/common/base.css" />
+    <link rel="stylesheet" href="${ctxPath}/static/trainRepair/jobStatistics/oneJobStatistics/css/index.css" />
+    <script>
+      const unitCode = '${thirdOrganCode}'; //所编码
+      const ctxPath = '${ctxPath}';
+    </script>
+  </head>
+  <body>
+    <div id="app" v-cloak>
+      <el-card class="box-card">
+        <div slot="header">
+          <span class="adorn"></span>
+          <h2>{{pageTitle}}</h2>
+        </div>
+
+        <el-container>
+          <el-header>
+            <el-form :inline="true" ref="queryForm" :model="queryData" :rules="queryRules" size="mini" class="bb-form">
+              <div class="fl">
+                <el-form-item label-width="75px" label="运用所：" prop="unitCode" v-if="isCenter">
+                  <el-select v-model="queryData.unitCode" \@change="unitCodeChange">
+                    <el-option
+                      v-for="item in unitList"
+                      :key="item.unitCode"
+                      :label="item.unitName"
+                      :value="item.unitCode"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item label-width="82px" label="开始日期：" prop="startTime">
+                  <el-date-picker
+                    v-model="queryData.startTime"
+                    type="date"
+                    value-format="timestamp"
+                    placeholder="选择日期"
+                    \@change="timeChange"
+                  ></el-date-picker>
+                </el-form-item>
+                <el-form-item label-width="82px" label="结束日期：" prop="endTime">
+                  <el-date-picker
+                    v-model="queryData.endTime"
+                    type="date"
+                    value-format="timestamp"
+                    placeholder="选择日期"
+                    \@change="timeChange"
+                  ></el-date-picker>
+                </el-form-item>
+                <el-form-item label-width="42px" label="车型：" prop="trainsetType">
+                  <el-select v-model="queryData.trainsetType" \@change="trainsetTypeChange" clearable filterable>
+                    <el-option
+                      v-for="item in trainTypeList"
+                      :key="item.traintype"
+                      :value="item.traintype"
+                      :label="item.traintype"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item label-width="42px" label="车组：" prop="trainsetNames">
+                  <el-select multiple collapse-tags v-model="queryData.trainsetNames" clearable filterable>
+                    <el-option
+                      v-for="item in trainsetList"
+                      :key="item.trainsetid"
+                      :label="item.trainsetname"
+                      :value="item.trainsetname"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item label-width="70px" label="作业班组：" prop="deptNames">
+                  <el-select
+                    multiple
+                    collapse-tags
+                    v-model="queryData.deptNames"
+                    \@focus="getWorkTeamsByUnitCode(queryData.unitCode)"
+                    clearable
+                    filterable
+                  >
+                    <el-option
+                      v-for="item in workTeamList"
+                      :key="item.id"
+                      :label="item.name"
+                      :value="item.name"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item label-width="70px" label="作业内容：" prop="itemName">
+                  <el-input v-model.trim="queryData.itemName" placeholder="请输入"> </el-input>
+                </el-form-item>
+              </div>
+
+              <div class="fr">
+                <el-form-item>
+                  <el-button type="primary" size="mini" \@click="queryBtnClick">查询</el-button>
+                  <el-button type="primary" size="mini" \@click="resetQueryForm">重置</el-button>
+                </el-form-item>
+              </div>
+            </el-form>
+          </el-header>
+          <el-main>
+            <el-tabs type="border-card" v-model="activeTab" \@tab-click="tabClick">
+              <el-tab-pane label="作业时长统计分析" name="time">
+                <div class="tab">
+                  <div class="tab-left">
+                    <div
+                      v-show="workShowInfo.averageYesDuration===0&&workShowInfo.averageNoDuration===0"
+                      style="border-bottom: 1px solid #c0c4cc"
+                    >
+                      <h1 style="font-size: 18px; margin-top: 1px; margin-left: 5px">平均时长</h1>
+                    </div>
+                    <div
+                      v-show="!(workShowInfo.averageYesDuration===0&&workShowInfo.averageNoDuration===0)"
+                      ref="average-duration-charts"
+                      style="border-bottom: 1px solid #c0c4cc"
+                    ></div>
+                    <div ref="day-duration-charts"></div>
+                  </div>
+                  <div class="tab-right">
+                    <div class="work-show">
+                      <div class="show-title">
+                        {{workShowInfo.startTime}}至{{workShowInfo.endTime}}，共完成一级修动车组{{workShowInfo.trainsetCount}}/{{workShowInfo.column}}列
+                      </div>
+                      <div class="clocks">
+                        <div class="clock-item">
+                          <div class="clock-title danger">有电作业</div>
+                          <div class="clock">
+                            <div class="clock-text">
+                              <p>总时长</p>
+                              <p>{{workShowInfo.yesDuration}}分钟</p>
+                            </div>
+                          </div>
+                          <div class="clock">
+                            <div class="clock-text">
+                              <p>平均时长</p>
+                              <p>{{workShowInfo.averageYesDuration}}分钟</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="clock-item">
+                          <div class="clock-title safe">无电作业</div>
+                          <div class="clock">
+                            <div class="clock-text">
+                              <p>总时长</p>
+                              <p>{{workShowInfo.noDuration}}分钟</p>
+                            </div>
+                          </div>
+                          <div class="clock">
+                            <div class="clock-text">
+                              <p>平均时长</p>
+                              <p>{{workShowInfo.averageNoDuration}}分钟</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="show-board">
+                        <div class="board-list">
+                          <div class="board-item" v-for="item in workShowInfo.itemDurations">
+                            <span>{{item.trainsetType}}</span><span>{{item.trainsetSubtype}}</span
+                            ><span>{{item.itemName}}</span><span>总时长：{{item.itemTotalDuration}}分钟</span
+                            ><span>平均时长：{{item.itemAverageDuration}}分钟</span>
+                          </div>
+                        </div>
+                        <div class="board-list p">
+                          <div class="board-item" v-if="workShowInfo.noTrainsetDuration.minDayPlanId">
+                            <span>无电作业时间最短车组：{{workShowInfo.noTrainsetDuration.minTrainsetName}}</span
+                            ><span>班次：{{dayPlanFormatter('','',workShowInfo.noTrainsetDuration.minDayPlanId)}}</span
+                            ><span>时间：{{workShowInfo.noTrainsetDuration.minTrainsetDuration}}分钟</span>
+                          </div>
+                          <div class="board-item" v-if="workShowInfo.noTrainsetDuration.maxDayPlanId">
+                            <span>无电作业时间最长车组：{{workShowInfo.noTrainsetDuration.maxTrainsetName}}</span
+                            ><span>班次：{{dayPlanFormatter('','',workShowInfo.noTrainsetDuration.maxDayPlanId)}}</span
+                            ><span>时间：{{workShowInfo.noTrainsetDuration.maxTrainsetDuration}}分钟</span>
+                          </div>
+                          <div class="board-item" v-if="workShowInfo.yesTrainsetDuration.minDayPlanId">
+                            <span>有电作业时间最短车组：{{workShowInfo.yesTrainsetDuration.minTrainsetName}}</span
+                            ><span>班次：{{dayPlanFormatter('','',workShowInfo.yesTrainsetDuration.minDayPlanId)}}</span
+                            ><span>时间：{{workShowInfo.yesTrainsetDuration.minTrainsetDuration}}分钟</span>
+                          </div>
+                          <div class="board-item" v-if="workShowInfo.yesTrainsetDuration.maxDayPlanId">
+                            <span>有电作业时间最长车组：{{workShowInfo.yesTrainsetDuration.maxTrainsetName}}</span
+                            ><span>班次：{{dayPlanFormatter('','',workShowInfo.yesTrainsetDuration.maxDayPlanId)}}</span
+                            ><span>时间：{{workShowInfo.yesTrainsetDuration.maxTrainsetDuration}}分钟</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="show-table" ref="mainTable">
+                      <el-table
+                        :data="groupWorkTimeMap[workTimeTable.pageNum]"
+                        :height="workTimeTable.height"
+                        :max-height="workTimeTable.height"
+                        border
+                      >
+                        <el-table-column label="序号" type="index" width="50"></el-table-column>
+                        <el-table-column
+                          label="班次"
+                          prop="dayPlanId"
+                          sortable
+                          :formatter="dayPlanFormatter"
+                          show-overflow-tooltip
+                        ></el-table-column>
+                        <el-table-column
+                          label="车组"
+                          prop="trainsetName"
+                          sortable
+                          show-overflow-tooltip
+                        ></el-table-column>
+                        <el-table-column
+                          label="供断电状态"
+                          prop="powerState"
+                          :formatter="powerStateFormatter"
+                          show-overflow-tooltip
+                        ></el-table-column>
+                        <el-table-column
+                          label="检修班组"
+                          prop="deptName"
+                          sortable
+                          show-overflow-tooltip
+                        ></el-table-column>
+                        <el-table-column label="操作" show-overflow-tooltip>
+                          <template v-slot="{row}">
+                            <el-button type="primary" plain size="mini" \@click="openDetailDialog(row)">
+                              <i class="self-icon view"></i>查看
+                            </el-button>
+                          </template>
+                        </el-table-column>
+                      </el-table>
+                    </div>
+                    <el-pagination
+                      class="show-table-pagination mar-10"
+                      \@size-change="workTimeTablePageSizeChange"
+                      \@current-change="workTimeTablePageNumChange"
+                      :current-page="workTimeTable.pageNum"
+                      :page-sizes="[10, 20, 50,100]"
+                      :page-size="workTimeTable.pageSize"
+                      layout="total, sizes, prev, pager, next, jumper"
+                      :total="workTimeTable.total"
+                    >
+                    </el-pagination>
+                  </div>
+                </div>
+              </el-tab-pane>
+              <el-tab-pane label="作业预警统计分析" name="warning">
+                <div class="warning">
+                  <div class="warning-charts">
+                    <div ref="team-charts"></div>
+                    <div ref="person-charts"></div>
+                  </div>
+                  <div class="warning-table" ref="warningTable">
+                    <el-table
+                      :data="warningList"
+                      border
+                      :height="warningTable.height"
+                      :max-height="warningTable.height"
+                    >
+                      <el-table-column label="序号" type="index" width="50"></el-table-column>
+                      <el-table-column
+                        label="车组号"
+                        prop="trainsetName"
+                        sortable
+                        show-overflow-tooltip
+                      ></el-table-column>
+                      <el-table-column label="班组" prop="deptName" sortable show-overflow-tooltip></el-table-column>
+                      <el-table-column
+                        label="作业人员"
+                        prop="workerName"
+                        sortable
+                        show-overflow-tooltip
+                      ></el-table-column>
+                      <el-table-column
+                        label="作业内容"
+                        prop="itemName"
+                        sortable
+                        show-overflow-tooltip
+                      ></el-table-column>
+                      <el-table-column
+                        label="预警时间"
+                        prop="createTime"
+                        sortable
+                        show-overflow-tooltip
+                      ></el-table-column>
+                      <el-table-column label="预警信息" prop="worningContent" show-overflow-tooltip></el-table-column>
+                      <el-table-column label="确认人" prop="effectStuffName" show-overflow-tooltip></el-table-column>
+                      <el-table-column label="确认时间" prop="effectTime" show-overflow-tooltip></el-table-column>
+                    </el-table>
+                  </div>
+                  <el-pagination
+                    \@size-change="warningTablePageSizeChange"
+                    \@current-change="warningTablePageNumChange"
+                    :current-page="warningTable.pageNum"
+                    :page-sizes="[10, 20, 50,100]"
+                    :page-size="warningTable.pageSize"
+                    layout="total, sizes, prev, pager, next, jumper"
+                    :total="warningTable.total"
+                  >
+                  </el-pagination>
+                </div>
+              </el-tab-pane>
+            </el-tabs>
+          </el-main>
+        </el-container>
+      </el-card>
+
+      <el-dialog
+        title="作业时长-查看"
+        width="80%"
+        :visible.sync="detailDialog.visible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        class="center-dialog"
+        top="auto"
+        custom-class="detail-dialog"
+      >
+        <div class="detail-title">
+          <span>{{dayPlanFormatter('','',rowData.dayPlanId)}}</span>
+          <span>{{rowData.trainsetName}}</span>
+          <span>{{powerStateFormatter('','',rowData.powerState)}}</span>
+        </div>
+        <el-table :data="detailDialog.detailList" border height="500">
+          <el-table-column label="序号" type="index" width="50"></el-table-column>
+          <el-table-column label="作业内容" prop="itemName" sortable show-overflow-tooltip></el-table-column>
+          <el-table-column label="班组" prop="deptName" show-overflow-tooltip></el-table-column>
+          <el-table-column label="作业人员" prop="workName" sortable show-overflow-tooltip></el-table-column>
+          <el-table-column
+            label="开始时间"
+            prop="startTime"
+            sortable
+            :formatter="timeFormatter"
+            show-overflow-tooltip
+          ></el-table-column>
+          <el-table-column
+            label="结束时间"
+            prop="endTime"
+            sortable
+            :formatter="timeFormatter"
+            show-overflow-tooltip
+          ></el-table-column>
+          <el-table-column label="作业时长" prop="duration" sortable show-overflow-tooltip></el-table-column>
+        </el-table>
+        <el-pagination
+          \@size-change="detailTablePageSizeChange"
+          \@current-change="detailTablePageNumChange"
+          :current-page="detailDialog.detailTable.pageNum"
+          :page-sizes="[10, 20, 50,100]"
+          :page-size="detailDialog.detailTable.pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="detailDialog.detailTable.total"
+          class="mar-10"
+        >
+        </el-pagination>
+      </el-dialog>
+    </div>
+    <script type="text/babel" src="${ctxPath}/static/trainRepair/jobStatistics/oneJobStatistics/js/index.js"></script>
+  </body>
+</html>

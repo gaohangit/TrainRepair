@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.common.bill.basetemplate.dao.BaseTemplateMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        ${tableAlias}S_TEMPLATEID as "${columnPrefix}templateId",
+        ${tableAlias}S_TEMPLATENO as "${columnPrefix}templateNo",
+        ${tableAlias}S_TEMPLATENAME as "${columnPrefix}templateName",
+        ${tableAlias}S_TEMPLATETYPECODE as "${columnPrefix}templateTypeCode",
+        ${tableAlias}S_TRAINSETTYPE as "${columnPrefix}trainsetType",
+        ${tableAlias}S_BATCH as "${columnPrefix}batch",
+        ${tableAlias}S_REMARK as "${columnPrefix}remark",
+        ${tableAlias}S_TEMPLATEPATH as "${columnPrefix}templatePath",
+        ${tableAlias}S_ITEMCODE as "${columnPrefix}itemCode",
+        ${tableAlias}S_ITEMNAME as "${columnPrefix}itemName",
+        ${tableAlias}I_MARSHALCOUNT as "${columnPrefix}marshalCount",
+        ${tableAlias}I_MARSHALLINGTYPE as "${columnPrefix}marshallingType",
+        ${tableAlias}C_ALLOWEDITROW as "${columnPrefix}allowEditRow",
+        ${tableAlias}C_ALLOWEDITCOLUMN as "${columnPrefix}allowEditColumn"
+    </sql>
+
+</mapper>

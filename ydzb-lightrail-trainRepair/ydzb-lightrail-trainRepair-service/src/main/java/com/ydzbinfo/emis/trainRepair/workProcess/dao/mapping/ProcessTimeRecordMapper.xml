@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ydzbinfo.emis.trainRepair.workProcess.dao.ProcessTimeRecordMapper">
+
+    <!--&lt;!&ndash; 通用查询映射结果 &ndash;&gt;-->
+    <!--<resultMap id="BaseResultMap"-->
+               <!--type="com.ydzbinfo.emis.trainRepair.model.workProcess.ProcessTimeRecord">-->
+        <!--<id column="S_PROCESSID" property="processId"/>-->
+        <!--<result column="S_PROCESSPERSONID" property="processPersonId"/>-->
+        <!--<result column="D_ITEMTIMESTATE" property="itemTimeState"/>-->
+        <!--<result column="D_TIME" property="time"/>-->
+    <!--</resultMap>-->
+
+    <!--&lt;!&ndash; 通用查询结果列 &ndash;&gt;-->
+    <!--<sql id="Base_Column_List">-->
+        <!--S_PROCESSID AS processId,-->
+        <!--S_PROCESSPERSONID AS processPersonId,-->
+        <!--D_ITEMTIMESTATE AS itemTimeState,-->
+        <!--D_TIME AS time-->
+    <!--</sql>-->
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.ydzbinfo.emis.trainRepair.workprocess.querymodel.ProcessTimeRecord">
+        <id column="S_PROCESSID" property="processId" />
+        <result column="D_ITEMTIMESTATE" property="itemTimeState" />
+        <result column="D_TIME" property="time" />
+        <result column="S_PROCESSPERSONID" property="processPersonId" />
+        <result column="C_FLAG" property="flag" />
+        <result column="D_DELTIME" property="delTime" />
+        <result column="S_DELUSERCODE" property="delUserCode" />
+        <result column="S_DELUSERNAME" property="delUserName" />
+        <result column="S_RECORDTIME" property="recordTime" />
+        <result column="S_RECORDERNAME" property="recorderName" />
+        <result column="S_RECORDERCODE" property="recorderCode" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        S_PROCESSID, D_ITEMTIMESTATE, D_TIME, S_PROCESSPERSONID, C_FLAG, D_DELTIME, S_DELUSERCODE, S_DELUSERNAME, S_RECORDTIME, S_RECORDERNAME, S_RECORDERCODE
+    </sql>
+
+    <!-- 通过作业过程人员获取时间记录集合 -->
+    <select id="getTimeRecordListByPerson" resultType="com.ydzbinfo.emis.trainRepair.workprocess.querymodel.ProcessTimeRecord">
+        select
+        <include refid="Base_Column_List"></include>
+        from XZY_M_PROCESSTIMERECORD
+        where
+        S_PROCESSPERSONID = #{processPersonId}
+    </select>
+
+    <!-- 增加时间记录 -->
+    <insert id="addTimeRecord" parameterType="com.ydzbinfo.emis.trainRepair.workprocess.querymodel.ProcessTimeRecord">
+        insert into XZY_M_PROCESSTIMERECORD
+        (
+        <if test="processPersonId != null and processPersonId != ''">
+            S_PROCESSPERSONID,
+        </if>
+        <if test="itemTimeState != null and itemTimeState != ''">
+            D_ITEMTIMESTATE,
+        </if>
+        D_TIME,
+        S_PROCESSID
+        )
+        values (
+        <if test="processPersonId != null and processPersonId != ''">
+            #{processPersonId},
+        </if>
+        <if test="itemTimeState != null and itemTimeState != ''">
+            #{itemTimeState},
+        </if>
+        TO_DATE(TO_CHAR(SYSDATE,'YYYY/MM/DD
+        HH24:MI:SS'),'YYYY-MM-DD HH24:MI:SS'),
+        #{processId}
+        )
+    </insert>
+
+    <!-- 根据人员id删除时间记录 -->
+    <delete id="deleteTimeRecordByPerson" parameterType="String">
+        delete
+        from XZY_M_PROCESSTIMERECORD
+        where S_PROCESSPERSONID = #{processPersonId}
+    </delete>
+
+    <!-- 根据id删除时间记录 -->
+    <delete id="deleteTimeRecord" parameterType="String">
+        delete
+        from XZY_M_PROCESSTIMERECORD
+        where S_PROCESSID = #{id}
+    </delete>
+
+    <!-- 根据processID获取当前作业过程所在项目层级的时间记录 -->
+    <select id="getItemTimeRecordListByProcessID"
+            resultType="com.ydzbinfo.emis.trainRepair.workprocess.model.ProcessTimeRecordWithWorkerInfo">
+        select PTR.S_PROCESSID       AS processId,
+               PTR.S_PROCESSPERSONID AS processPersonId,
+               PTR.D_ITEMTIMESTATE   AS itemTimeState,
+               PTR.D_TIME            AS time,
+               PP.S_WORKERID         as workerId,
+               PP.S_WORKERNAME       as workerName,
+               PP.S_WORKERTYPE       as workerType,
+               PP.S_PROCESSID        as mainProcessId
+        from XZY_M_PROCESSTIMERECORD PTR
+                 left outer join XZY_M_PROCESSPERSON PP on PP.S_PROCESSPERSONID = PTR.S_PROCESSPERSONID
+        where PTR.S_PROCESSPERSONID in (
+            select P.S_PROCESSPERSONID
+            from XZY_M_PROCESSPERSON P
+                     left join XZY_M_PROCESSCARPART X on P.S_PROCESSID = X.S_PROCESSID
+            where X.S_CARNO is null
+              and (X.S_DAYPLANID, X.S_TRAINSETID, X.S_ITEMCODE) in
+                  (select X2.S_DAYPLANID, X2.S_TRAINSETID, X2.S_ITEMCODE
+                   from XZY_M_PROCESSCARPART X2
+                   where X2.S_PROCESSID = #{processID})
+        )
+    </select>
+
+    <!-- 根据workerId和processId计算辆序级别的人员记录数量 -->
+    <select id="countCarLevelPersonByWorkerIdAndProcessId" resultType="int">
+        select count(1)
+        from XZY_M_PROCESSPERSON P
+                 left join XZY_M_PROCESSCARPART X on P.S_PROCESSID = X.S_PROCESSID
+        where X.S_CARNO is not null
+          and P.S_WORKERID = #{workerId}
+          and (X.S_DAYPLANID, X.S_TRAINSETID, X.S_ITEMCODE) in
+              (select X2.S_DAYPLANID, X2.S_TRAINSETID, X2.S_ITEMCODE
+               from XZY_M_PROCESSCARPART X2
+               where X2.S_PROCESSID = #{processId})
+    </select>
+
+    <update id="updateProcessTimeRecordById"
+            parameterType="com.ydzbinfo.emis.trainRepair.workprocess.querymodel.ProcessTimeRecord">
+        update XZY_M_PROCESSTIMERECORD
+        <trim suffixOverrides=",">
+            set
+            <if test="time != null and time != ''">
+                D_TIME = to_date(#{time},'yyyy-MM-dd HH24:mi:ss'),
+            </if>
+            <if test="itemTimeState != null and itemTimeState != ''">
+                D_ITEMTIMESTATE = #{itemTimeState},
+            </if>
+            <if test="processPersonId != null and processPersonId != ''">
+                S_PROCESSPERSONID = #{processPersonId}
+            </if>
+        </trim>
+        where S_PROCESSID = #{processId}
+    </update>
+
+    <select id="selectPersonId" resultType="java.lang.String">
+        select
+        p.S_PROCESSPERSONID AS processPersonId
+        from  XZY_M_PROCESSPERSON p
+        left join XZY_M_PROCESSCARPART pc on pc.S_PROCESSID = p.S_PROCESSID
+        where
+        p.S_WORKERID = #{workerId}
+        and pc.S_TRAINSETID = #{trainsetId}
+        and pc.S_REPAIRTYPE = #{repairType}
+        and pc.S_ITEMCODE = #{itemCode}
+        and pc.S_DAYPLANID = #{dayplanId}
+        and pc.C_FLAG = 1
+        and p.C_FLAG = 1
+    </select>
+
+
+    <!--根据辆序表主键集合查询要删除的人员表集合-->
+    <select id="getDelTimeRecordList" parameterType="list" resultType="com.ydzbinfo.emis.trainRepair.workprocess.querymodel.ProcessTimeRecord">
+        select
+        S_PROCESSID as processId
+        from
+        XZY_M_PROCESSTIMERECORD
+        where 1=1
+        and S_PROCESSPERSONID in
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+</mapper>
